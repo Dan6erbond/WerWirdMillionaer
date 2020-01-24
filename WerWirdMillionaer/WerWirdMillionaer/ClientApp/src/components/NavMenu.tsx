@@ -41,5 +41,5 @@ export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }
         this.setState({
             isOpen: !this.state.isOpen
         });
-    }
+    } 
 }
