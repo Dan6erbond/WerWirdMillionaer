@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WhoWantsToBeAMillionaire.Models;
+using WhoWantsToBeAMillionaire.Models.Users;
 
 namespace WhoWantsToBeAMillionaire
 {
@@ -25,6 +27,9 @@ namespace WhoWantsToBeAMillionaire
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+            
+            services.AddSingleton<IRepository<User>, UserMySqlRepository>();
+            services.AddSingleton<UserManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
