@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WhoWantsToBeAMillionaire.Models;
-using WhoWantsToBeAMillionaire.Models.Api.ApiErrors;
 using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users;
 using WhoWantsToBeAMillionaire.Models.Exceptions;
 using WhoWantsToBeAMillionaire.Models.Users;
@@ -25,21 +21,15 @@ namespace WhoWantsToBeAMillionaire.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] UserCredentials credentials)
         {
-            var specification = new UserSpecification(username: credentials.Username);
-            if (_userRepository.Query(specification).FirstOrDefault() != null)
+            try
             {
-                var message = $"User {credentials.Username} already exists.";
-                return BadRequest(new UserAlreadyExistsError(message));
+                _userManager.CreateUser(credentials);
+                return Ok();
             }
-
-            PasswordHasher hasher = new PasswordHasher();
-            hasher.GenerateSalt().HashPassword(hasher.Salt, credentials.Password);
-
-            var user = new User(credentials.Username, hasher.Salt, hasher.Hashed);
-
-            _userRepository.Create(user);
-
-            return Ok();
+            catch (UserAlreadyExistsException e)
+            {
+                return BadRequest(new UserAlreadyExistsError(e.Message));
+            }
         }
 
         [HttpGet("login")]

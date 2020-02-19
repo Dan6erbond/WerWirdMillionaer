@@ -8,13 +8,29 @@ namespace WhoWantsToBeAMillionaire.Models.Users
     public class UserManager
     {
         private readonly IRepository<User> _userRepository;
-        private readonly List<User> _loggedInUsers = new List<User>();
+        private readonly List<LoggedInUser> _loggedInUsers = new List<LoggedInUser>();
 
         public UserManager(IRepository<User> userRepository)
         {
             _userRepository = userRepository;
         }
 
+        public void CreateUser(UserCredentials credentials)
+        {
+            var specification = new UserSpecification(username: credentials.Username);
+            if (_userRepository.Query(specification).FirstOrDefault() != null)
+            {
+                throw new UserAlreadyExistsException($"User {credentials.Username} already exists.");
+            }
+
+            PasswordHasher hasher = new PasswordHasher();
+            hasher.GenerateSalt().HashPassword(hasher.Salt, credentials.Password);
+
+            var user = new User(credentials.Username, hasher.Salt, hasher.Hashed);
+
+            _userRepository.Create(user);
+        }
+        
         public string LogInUser(UserCredentials credentials)
         {
             var specification = new UserSpecification(username: credentials.Username);
@@ -31,13 +47,12 @@ namespace WhoWantsToBeAMillionaire.Models.Users
             if (password == user.Password)
             {
                 var token = Guid.NewGuid().ToString();
-                user.Token = token;
-                _loggedInUsers.Add(user);
+                var loggedInUser = new LoggedInUser(user.UserId, token);
+                _loggedInUsers.Add(loggedInUser);
                 return token;
             }
 
             throw new IncorrectPasswordException($"Incorrect password given for user {credentials.Username}");
         }
-        
     }
 }

@@ -9,7 +9,6 @@ namespace WhoWantsToBeAMillionaire.Models.Users
         public bool IsAdmin { get; set; } = false;
         public string Salt { get; set; }
         public string Password { get; set; }
-        public string Token { get; set; }
 
         public User()
         {
