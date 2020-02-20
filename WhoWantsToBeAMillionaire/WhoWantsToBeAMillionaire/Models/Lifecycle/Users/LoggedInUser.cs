@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Users
+﻿namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
 {
     public class LoggedInUser
     {

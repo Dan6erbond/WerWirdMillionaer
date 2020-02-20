@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Exceptions;
 
-namespace WhoWantsToBeAMillionaire.Models.Users
+namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
 {
     public class UserManager
     {

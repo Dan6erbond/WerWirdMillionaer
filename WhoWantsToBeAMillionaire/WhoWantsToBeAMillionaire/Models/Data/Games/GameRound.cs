@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Game
+﻿namespace WhoWantsToBeAMillionaire.Models.Data.Games
 {
     public class GameRound
     {

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users;
+using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Exceptions;
-using WhoWantsToBeAMillionaire.Models.Users;
+using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
 namespace WhoWantsToBeAMillionaire.Controllers
 {

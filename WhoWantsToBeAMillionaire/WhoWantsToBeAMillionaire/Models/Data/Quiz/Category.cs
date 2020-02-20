@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Quiz
+﻿namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
 {
     public class Category
     {

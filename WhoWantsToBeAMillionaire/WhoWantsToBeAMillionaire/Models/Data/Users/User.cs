@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WhoWantsToBeAMillionaire.Models.Users
+namespace WhoWantsToBeAMillionaire.Models.Data.Users
 {
     public class User
     {

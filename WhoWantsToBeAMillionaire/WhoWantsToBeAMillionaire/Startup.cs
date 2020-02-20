@@ -7,7 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WhoWantsToBeAMillionaire.Models;
-using WhoWantsToBeAMillionaire.Models.Users;
+using WhoWantsToBeAMillionaire.Models.Data.Users;
+using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
 namespace WhoWantsToBeAMillionaire
 {

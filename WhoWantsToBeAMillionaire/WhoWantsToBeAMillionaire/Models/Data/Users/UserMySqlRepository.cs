@@ -5,7 +5,7 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
-namespace WhoWantsToBeAMillionaire.Models.Users
+namespace WhoWantsToBeAMillionaire.Models.Data.Users
 {
     public class UserMySqlRepository : IRepository<User>
     {
