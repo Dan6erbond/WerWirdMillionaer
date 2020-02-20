@@ -15,9 +15,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
     {
         private readonly IRepository<User> _userRepository;
         private readonly IConfiguration _configuration;
-
-        private readonly List<LoggedInUser> _loggedInUsers = new List<LoggedInUser>();
-
+        
         public UserManager(IRepository<User> userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
@@ -73,10 +71,6 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
-
-            
-            var loggedInUser = new LoggedInUser(user.UserId);
-            _loggedInUsers.Add(loggedInUser);
             
             return token;
         }
