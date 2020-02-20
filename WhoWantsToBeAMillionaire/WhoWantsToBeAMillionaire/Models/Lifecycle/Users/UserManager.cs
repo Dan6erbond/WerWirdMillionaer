@@ -51,20 +51,25 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
             }
 
             var token = Guid.NewGuid().ToString();
+            
             var loggedInUser = new LoggedInUser(user.UserId, token);
             _loggedInUsers.Add(loggedInUser);
+            
             return token;
         }
 
         public User GetUser(string token)
         {
             var loggedInUser =
-                _loggedInUsers.FirstOrDefault(u => u.Token == token); // TODO check if token expired
-
+                _loggedInUsers.FirstOrDefault(u => u.ValidToken(token));
+            
             if (loggedInUser == null)
             {
                 throw new InvalidTokenException($"Invalid or expired token given.");
             }
+            
+            var index = _loggedInUsers.FindIndex(u => u.UserId == loggedInUser.UserId);
+            _loggedInUsers[index].Request();
 
             var specification = new UserSpecification(userId: loggedInUser.UserId);
             var user = _userRepository.Query(specification).First();

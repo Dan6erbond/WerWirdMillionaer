@@ -54,7 +54,8 @@ namespace WhoWantsToBeAMillionaire.Controllers
             {
                 return Ok(new
                 {
-                    token = _userManager.LogInUser(credentials)
+                    token = _userManager.LogInUser(credentials),
+                    expires = "1 hour"
                 });
             }
             catch (IncorrectPasswordException e)
