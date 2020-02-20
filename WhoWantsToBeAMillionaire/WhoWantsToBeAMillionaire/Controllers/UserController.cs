@@ -10,12 +10,10 @@ namespace WhoWantsToBeAMillionaire.Controllers
     [Route("api/users")]
     public class UserController : Controller
     {
-        private readonly IRepository<User> _userRepository;
         private readonly UserManager _userManager;
 
-        public UserController(IRepository<User> userRepository, UserManager userManager)
+        public UserController(UserManager userManager)
         {
-            _userRepository = userRepository;
             _userManager = userManager;
         }
 
