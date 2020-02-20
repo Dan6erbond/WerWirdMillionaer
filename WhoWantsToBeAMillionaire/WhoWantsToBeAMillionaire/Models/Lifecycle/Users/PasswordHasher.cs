@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace WhoWantsToBeAMillionaire.Models.Data.Users
+namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
 {
     public class PasswordHasher
     {

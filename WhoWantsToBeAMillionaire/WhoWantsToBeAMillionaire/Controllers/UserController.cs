@@ -19,6 +19,20 @@ namespace WhoWantsToBeAMillionaire.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("data")]
+        public IActionResult GetUser([FromBody] UserCredentials credentials)
+        {
+            try
+            {
+                var user = _userManager.GetUser(credentials.Token);
+                return Ok(user);
+            }
+            catch (InvalidTokenException e)
+            {
+                return BadRequest(new InvalidTokenError(e.Message));
+            }
+        }
+
         [HttpPost("create")]
         public IActionResult Create([FromBody] UserCredentials credentials)
         {

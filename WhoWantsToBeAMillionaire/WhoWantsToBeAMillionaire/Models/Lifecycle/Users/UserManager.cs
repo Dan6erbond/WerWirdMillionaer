@@ -31,7 +31,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
 
             _userRepository.Create(user);
         }
-        
+
         public string LogInUser(UserCredentials credentials)
         {
             var specification = new UserSpecification(username: credentials.Username);
@@ -41,19 +41,34 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
             {
                 throw new UserDoesNotExistException($"User {credentials.Username} does not exist.");
             }
-            
+
             var hasher = new PasswordHasher(user.Salt);
             var password = hasher.HashPassword(hasher.Salt, credentials.Password).Hashed;
-            
-            if (password == user.Password)
+
+            if (password != user.Password)
             {
-                var token = Guid.NewGuid().ToString();
-                var loggedInUser = new LoggedInUser(user.UserId, token);
-                _loggedInUsers.Add(loggedInUser);
-                return token;
+                throw new IncorrectPasswordException($"Incorrect password given for user {credentials.Username}");
             }
 
-            throw new IncorrectPasswordException($"Incorrect password given for user {credentials.Username}");
+            var token = Guid.NewGuid().ToString();
+            var loggedInUser = new LoggedInUser(user.UserId, token);
+            _loggedInUsers.Add(loggedInUser);
+            return token;
+        }
+
+        public User GetUser(string token)
+        {
+            var loggedInUser =
+                _loggedInUsers.FirstOrDefault(u => u.Token == token); // TODO check if token expired
+
+            if (loggedInUser == null)
+            {
+                throw new InvalidTokenException($"Invalid or expired token given.");
+            }
+
+            var specification = new UserSpecification(userId: loggedInUser.UserId);
+            var user = _userRepository.Query(specification).First();
+            return user;
         }
     }
 }
