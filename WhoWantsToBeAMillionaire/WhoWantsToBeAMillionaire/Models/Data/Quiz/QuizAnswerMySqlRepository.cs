@@ -7,46 +7,46 @@ using MySql.Data.MySqlClient;
 
 namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
 {
-    public class QuizAnswerMySqlRepository : IRepository<QuizQuestion>
+    public class QuizAnswerMySqlRepository : IRepository<QuizAnswer>
     {
         private readonly IDbConnection _connection;
-        public IEnumerable<QuizQuestion> List { get; private set; }
+        public IEnumerable<QuizAnswer> List { get; private set; }
 
         public QuizAnswerMySqlRepository(IConfiguration config)
         {
             _connection = new MySqlConnection(config.GetConnectionString("Default"));
 
-            List = _connection.Query<QuizQuestion>("SELECT * FROM `answers`").ToList();
+            List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
-        public void Create(QuizQuestion item)
+        public void Create(QuizAnswer item)
         {
             var sql = "INSERT INTO `answers` (`AnswerId`, `QuestionId`, `Answer`, `Correct`) VALUES (NULL, @QuestionId, @Answer, @Correct);";
             _connection.Execute(sql, item);
             
-            List = _connection.Query<QuizQuestion>("SELECT * FROM `answers`").ToList();
+            List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
-        public void Update(QuizQuestion item)
+        public void Update(QuizAnswer item)
         {
             var sql = "UPDATE `answers` SET `QuestionId` = @QuestionId, `Answer` = @Answer, `Correct` = @Correct WHERE `answers`.`AnswerId` = @AnswerId";
             _connection.Execute(sql, item);
             
-            List = _connection.Query<QuizQuestion>("SELECT * FROM `answers`").ToList();
+            List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
-        public void Delete(QuizQuestion item)
+        public void Delete(QuizAnswer item)
         {
             var sql = "DELETE FROM `answers` WHERE `answers`.`AnswerId` = @AnswerId";
             _connection.Execute(sql, item);
             
-            List = _connection.Query<QuizQuestion>("SELECT * FROM `answers`").ToList();
+            List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
-        public List<QuizQuestion> Query(ISpecification<QuizQuestion> specification)
+        public List<QuizAnswer> Query(ISpecification<QuizAnswer> specification)
         {
-            var categories = List.Where(specification.Specificied).ToList();
-            return categories;
+            var answers = List.Where(specification.Specificied).ToList();
+            return answers;
         }
     }
 }
