@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
+﻿﻿namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 {
     public class Answer
     {
