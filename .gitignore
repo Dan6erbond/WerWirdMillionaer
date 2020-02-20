@@ -355,3 +355,4 @@ MigrationBackup/
 # Custom
 RavianandMohabirLB_M151_V232/
 .idea/
+Datenbank/insert_data.sql
