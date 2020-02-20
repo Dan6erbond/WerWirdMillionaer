@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.WebEncoders.Testing;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
@@ -19,7 +20,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
         }
 
         [HttpGet("start")]
-        public IActionResult Start()
+        public IActionResult StartGame()
         {
             return null;
         }
