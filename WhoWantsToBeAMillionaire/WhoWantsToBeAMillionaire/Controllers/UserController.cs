@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
@@ -11,24 +16,21 @@ namespace WhoWantsToBeAMillionaire.Controllers
     public class UserController : Controller
     {
         private readonly UserManager _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserController(UserManager userManager)
+        public UserController(UserManager userManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
+        [Authorize]
         [HttpGet("data")]
-        public IActionResult GetUser([FromBody] UserCredentials credentials)
+        public IActionResult GetUser()
         {
-            try
-            {
-                var user = _userManager.GetUser(credentials.Token);
-                return Ok(user);
-            }
-            catch (InvalidTokenException e)
-            {
-                return BadRequest(new InvalidTokenError(e.Message));
-            }
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+            return Ok(user);
         }
 
         [HttpPost("create")]
@@ -50,10 +52,12 @@ namespace WhoWantsToBeAMillionaire.Controllers
         {
             try
             {
+                var token = _userManager.LoginUser(credentials);
+                
                 return Ok(new
                 {
-                    token = _userManager.LogInUser(credentials),
-                    expires = "1 hour"
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    expiration = token.ValidTo
                 });
             }
             catch (IncorrectPasswordException e)
