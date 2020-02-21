@@ -6,7 +6,7 @@ namespace WhoWantsToBeAMillionaire.Models
 	{
 		IEnumerable<T> List { get; }
 		
-		public void Create(T item);
+		public int Create(T item);
 		public void Update(T item);
 		public void Delete(T item);
 

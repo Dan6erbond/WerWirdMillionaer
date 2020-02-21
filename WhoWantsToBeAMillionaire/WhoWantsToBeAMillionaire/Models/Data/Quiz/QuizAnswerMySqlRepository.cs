@@ -19,19 +19,25 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
             List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
-        public void Create(QuizAnswer item)
+        public int Create(QuizAnswer item)
         {
-            var sql = "INSERT INTO `answers` (`AnswerId`, `QuestionId`, `Answer`, `Correct`) VALUES (NULL, @QuestionId, @Answer, @Correct);";
-            _connection.Execute(sql, item);
-            
+            var sql =
+                @"INSERT INTO `answers` (`AnswerId`, `QuestionId`, `Answer`, `Correct`) VALUES (NULL, @QuestionId, @Answer, @Correct);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+            var id = _connection.Query<int>(sql, item).Single();
+
             List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
+
+            return id;
         }
 
         public void Update(QuizAnswer item)
         {
-            var sql = "UPDATE `answers` SET `QuestionId` = @QuestionId, `Answer` = @Answer, `Correct` = @Correct WHERE `answers`.`AnswerId` = @AnswerId";
+            var sql =
+                @"UPDATE `answers` SET `QuestionId` = @QuestionId, `Answer` = @Answer, `Correct` = @Correct 
+                WHERE `answers`.`AnswerId` = @AnswerId";
             _connection.Execute(sql, item);
-            
+
             List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 
@@ -39,7 +45,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
         {
             var sql = "DELETE FROM `answers` WHERE `answers`.`AnswerId` = @AnswerId";
             _connection.Execute(sql, item);
-            
+
             List = _connection.Query<QuizAnswer>("SELECT * FROM `answers`").ToList();
         }
 

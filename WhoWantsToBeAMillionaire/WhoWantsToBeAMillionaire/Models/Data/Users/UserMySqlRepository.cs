@@ -19,18 +19,24 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Users
             List = _connection.Query<User>("SELECT * FROM `users`").ToList();
         }
 
-        public void Create(User item)
+        public int Create(User item)
         {
             var sql =
-                "INSERT INTO `users` (`UserId`, `Username`, `IsAdmin`, `Salt`, `Password`) VALUES (NULL, @Username, @IsAdmin, @Salt, @Password);";
-            _connection.Execute(sql, item);
+                @"INSERT INTO `users` (`UserId`, `Username`, `IsAdmin`, `Salt`, `Password`) 
+                VALUES (NULL, @Username, @IsAdmin, @Salt, @Password);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+            var id = _connection.Query<int>(sql, item).Single();
+            
             List = _connection.Query<User>("SELECT * FROM users").ToList();
+
+            return id;
         }
 
         public void Update(User item)
         {
             var sql =
-                "UPDATE `users` SET `Username` = @Username, `IsAdmin` = @IsAdmin, `Salt` = @Salt, `Password` = @Password WHERE `users`.`UserId` = @UserId";
+                @"UPDATE `users` SET `Username` = @Username, `IsAdmin` = @IsAdmin, `Salt` = @Salt, `Password` = @Password 
+                WHERE `users`.`UserId` = @UserId";
             _connection.Execute(sql, item);
             List = _connection.Query<User>("SELECT * FROM users").ToList();
         }

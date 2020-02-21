@@ -20,18 +20,23 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
             List = _connection.Query<GameRound>("SELECT * FROM `rounds`").ToList();
         }
 
-        public void Create(GameRound item)
+        public int Create(GameRound item)
         {
             var sql =
-                "INSERT INTO `rounds` (`RoundId`, `GameId`, `QuestionId`, `AnswerId`, `Duration`, `UsedJoker`) VALUES (NULL, @GameId, @QuestionId, @AnswerId, @Duration, @UsedJoker);";
-            _connection.Execute(sql, item);
+                @"INSERT INTO `rounds` (`RoundId`, `GameId`, `QuestionId`, `AnswerId`, `Duration`, `UsedJoker`) 
+                VALUES (NULL, @GameId, @QuestionId, @AnswerId, @Duration, @UsedJoker);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+            var id = _connection.Query<int>(sql, item).Single();
 
             List = _connection.Query<GameRound>("SELECT * FROM `rounds`").ToList();
+
+            return id;
         }
 
         public void Update(GameRound item)
         {
-            var sql = "UPDATE `rounds` SET `GameId` = @GameId, `QuestionId` = @QuestionId, `AnswerId` = @AnswerId, `Duration` = @Duration, `UsedJoker` = @UsedJoker WHERE `rounds`.`RoundId` = @RoundId";
+            var sql =
+                "UPDATE `rounds` SET `GameId` = @GameId, `QuestionId` = @QuestionId, `AnswerId` = @AnswerId, `Duration` = @Duration, `UsedJoker` = @UsedJoker WHERE `rounds`.`RoundId` = @RoundId";
             _connection.Execute(sql, item);
 
             List = _connection.Query<GameRound>("SELECT * FROM `rounds`").ToList();

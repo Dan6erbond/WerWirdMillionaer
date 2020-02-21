@@ -19,17 +19,22 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
             List = _connection.Query<QuizQuestion>("SELECT * FROM `questions`").ToList();
         }
 
-        public void Create(QuizQuestion item)
+        public int Create(QuizQuestion item)
         {
-            var sql = "INSERT INTO `questions` (`QuestionId`, `CategoryId`, `Question`) VALUES (NULL, @CategoryId, @Question);";
-            _connection.Execute(sql, item);
+            var sql = @"INSERT INTO `questions` (`QuestionId`, `CategoryId`, `Question`) 
+            VALUES (NULL, @CategoryId, @Question);
+            SELECT CAST(SCOPE_IDENTITY() as int);";
+            var id = _connection.Query<int>(sql, item).Single();
             
             List = _connection.Query<QuizQuestion>("SELECT * FROM `questions`").ToList();
+
+            return id;
         }
 
         public void Update(QuizQuestion item)
         {
-            var sql = "UPDATE `questions` SET `CategoryId` = @CategoryId, `Question` = @Question WHERE `questions`.`QuestionId` = @QuestionId";
+            var sql = @"UPDATE `questions` SET `CategoryId` = @CategoryId, `Question` = @Question
+             WHERE `questions`.`QuestionId` = @QuestionId";
             _connection.Execute(sql, item);
             
             List = _connection.Query<QuizQuestion>("SELECT * FROM `questions`").ToList();
