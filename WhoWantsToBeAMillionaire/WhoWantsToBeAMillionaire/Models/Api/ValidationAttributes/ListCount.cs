@@ -15,8 +15,6 @@ namespace WhoWantsToBeAMillionaire.Models.Api.ValidationAttributes
             MaxCount = maxCount;
         }
 
-        public string GetErrorMessage() => $"The list must contain between {MinCount} and {MaxCount} items.";
-
         public override bool IsValid(object value)
         {
             var list = (List<object>) value;
