@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using WhoWantsToBeAMillionaire.Models;
+using WhoWantsToBeAMillionaire.Models.Data;
+using WhoWantsToBeAMillionaire.Models.Data.Games;
+using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
@@ -32,8 +35,13 @@ namespace WhoWantsToBeAMillionaire
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
-            
+
             services.AddSingleton<IRepository<User>, UserMySqlRepository>();
+            services.AddSingleton<IRepository<Category>, CategoryMySqlRepository>();
+            services.AddSingleton<IRepository<QuizQuestion>, QuizQuestionMySqlRepository>();
+            services.AddSingleton<IRepository<QuizAnswer>, QuizAnswerMySqlRepository>();
+            services.AddSingleton<IRepository<GameRound>, GameRoundMySqlRepository>();
+            
             services.AddSingleton<UserManager>();
             
             services.AddAuthentication(options =>
