@@ -169,7 +169,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                         },
                         new QuizQuestion
                         {
-                            Question = "Which famous British murderers of the 19th century was never arrested?",
+                            Question = "Which famous British murderer of the 19th century was never arrested?",
                             Answers = new List<QuizAnswer>
                             {
                                 new QuizAnswer("Jack the Ripper", true),
