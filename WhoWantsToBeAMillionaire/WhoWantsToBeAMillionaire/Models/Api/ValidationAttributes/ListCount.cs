@@ -6,13 +6,18 @@ namespace WhoWantsToBeAMillionaire.Models.Api.ValidationAttributes
 {
     public class ListCount : ValidationAttribute
     {
-        public int MinCount { get; }
-        public int? MaxCount { get; set; }
-
-        public ListCount(int minCount, int? maxCount = null)
+        private readonly int _minCount;
+        private readonly int? _maxCount;
+        
+        public ListCount(int minCount)
         {
-            MinCount = minCount;
-            MaxCount = maxCount;
+            _minCount = minCount;
+        }
+
+        public ListCount(int minCount, int maxCount)
+        {
+            _minCount = minCount;
+            _maxCount = maxCount;
         }
 
         public override bool IsValid(object value)
@@ -20,12 +25,12 @@ namespace WhoWantsToBeAMillionaire.Models.Api.ValidationAttributes
             var list = (List<object>) value;
             var count = list.Count;
 
-            if (count < MinCount)
+            if (count < _minCount)
             {
                 return false;
             }
 
-            if (MaxCount != null && count > MaxCount)
+            if (_maxCount != null && count > _maxCount)
             {
                 return false;
             }
