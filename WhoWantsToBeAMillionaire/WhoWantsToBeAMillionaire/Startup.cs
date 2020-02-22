@@ -15,6 +15,7 @@ using WhoWantsToBeAMillionaire.Models.Data;
 using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
+using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
 namespace WhoWantsToBeAMillionaire
@@ -43,6 +44,7 @@ namespace WhoWantsToBeAMillionaire
             services.AddSingleton<IRepository<GameRound>, GameRoundMySqlRepository>();
             
             services.AddSingleton<UserManager>();
+            services.AddSingleton<GameManager>();
             
             services.AddAuthentication(options =>
                 {
