@@ -24,7 +24,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Users
             var sql =
                 @"INSERT INTO `users` (`UserId`, `Username`, `IsAdmin`, `Salt`, `Password`) 
                 VALUES (NULL, @Username, @IsAdmin, @Salt, @Password);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
+                SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
             
             List = _connection.Query<User>("SELECT * FROM users").ToList();

@@ -22,7 +22,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
         public int Create(Category item)
         {
             var sql = @"INSERT INTO `categories` (`CategoryId`, `Name`) VALUES (NULL, @Name);
-            SELECT CAST(SCOPE_IDENTITY() as int);";
+            SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
 
             List = _connection.Query<Category>("SELECT * FROM `categories`").ToList();

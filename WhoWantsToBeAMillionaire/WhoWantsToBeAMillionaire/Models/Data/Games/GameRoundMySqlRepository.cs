@@ -25,7 +25,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
             var sql =
                 @"INSERT INTO `rounds` (`RoundId`, `GameId`, `QuestionId`, `AnswerId`, `Duration`, `UsedJoker`) 
                 VALUES (NULL, @GameId, @QuestionId, @AnswerId, @Duration, @UsedJoker);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
+                SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
 
             List = _connection.Query<GameRound>("SELECT * FROM `rounds`").ToList();
