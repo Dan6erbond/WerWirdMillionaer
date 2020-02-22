@@ -1,6 +1,6 @@
 ﻿namespace WhoWantsToBeAMillionaire.Models.Data.Games
 {
-    public class GameRound
+    public class Round
     {
         public int RoundId { get; set; }
         public int GameId { get; set; }
