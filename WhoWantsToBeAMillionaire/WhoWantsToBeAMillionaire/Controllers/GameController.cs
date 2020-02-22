@@ -40,14 +40,29 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            var gameId = _gameManager.StartGame(user, specification.Categories);
+            var question = _gameManager.StartGame(user, specification.Categories);
 
             return Ok(new
             {
-                gameId = gameId
+                question = question
+            });
+        }
+        
+        [HttpGet("askquestion")]
+        public IActionResult GetQuestion()
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            var question = _gameManager.GetQuestion(user);
+
+            return Ok(new
+            {
+                question = question
             });
         }
 
+        [AllowAnonymous]
         [HttpGet("categories")]
         public IEnumerable<Category> GetCategories()
         {

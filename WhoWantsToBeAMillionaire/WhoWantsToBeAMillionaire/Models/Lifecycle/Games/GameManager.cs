@@ -24,28 +24,44 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             _quizAnswerMySqlRepository = quizAnswerMySqlRepository;
         }
 
-        public string StartGame(User user, IEnumerable<int> categories)
+        public QuizQuestion StartGame(User user, IEnumerable<int> categories)
         {
-            var gameId = Guid.NewGuid().ToString();
             _runningGames.Add(new RunningGame(user.UserId, categories));
-            return gameId;
+            return GetQuestion(user);
         }
 
         public QuizQuestion GetQuestion(User user)
         {
-            var game = _runningGames.First(g => g.UserId == user.UserId);
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
+            var game = _runningGames[gameIndex];
 
-            // TODO: throw error if no game has been found
+            // TODO: Throw error if no game has been found
 
-            var specification = new QuizQuestionSpecification(game.Categories, game.QuestionIds);
-            var questions = _quizQuestionMySqlRepository.Query(specification);
+            var quizQuestionSpecification = new QuizQuestionSpecification(game.Categories, game.QuestionIds);
+            var quizQuestions = _quizQuestionMySqlRepository.Query(quizQuestionSpecification);
 
             // TODO: Check if no eligible questions exist
 
             var random = new Random();
-            var index = random.Next(questions.Count);
+            var index = random.Next(quizQuestions.Count);
+            var quizQuestion = quizQuestions[index];
 
-            return questions[index];
+            var quizAnswerSpecification = new QuizAnswerSpecification(quizQuestion.QuestionId);
+            var quizAnswers = _quizAnswerMySqlRepository.Query(quizAnswerSpecification);
+
+            quizQuestion.Answers = quizAnswers;
+            
+            // TODO: Move logic to model class
+            var question = new Question(quizQuestion.QuestionId);
+
+            if (_runningGames[gameIndex].CurrentQuestion != null)
+            {
+                _runningGames[gameIndex].AskedQuestions.Add(_runningGames[gameIndex].CurrentQuestion);
+            }
+            
+            _runningGames[gameIndex].CurrentQuestion = question;
+            
+            return quizQuestion;
         }
     }
 }

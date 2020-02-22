@@ -5,12 +5,12 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
     public class QuizQuestionSpecification : ISpecification<QuizQuestion>
     {
         private readonly List<int> _categories;
-        private readonly List<int> _excludeCategories;
+        private readonly List<int> _excludeQuestions;
 
-        public QuizQuestionSpecification(List<int> categories = null, List<int> excludeCategories = null)
+        public QuizQuestionSpecification(List<int> categories = null, List<int> excludeQuestions = null)
         {
             _categories = categories;
-            _excludeCategories = excludeCategories;
+            _excludeQuestions = excludeQuestions;
         }
 
         public bool Specificied(QuizQuestion item)
@@ -20,7 +20,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
                 return false;
             }
 
-            if (_excludeCategories != null && _excludeCategories.Contains(item.CategoryId))
+            if (_excludeQuestions != null && _excludeQuestions.Contains(item.QuestionId))
             {
                 return false;
             }

@@ -15,8 +15,15 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         {
             get
             {
-                var questionIds = new List<int>(CurrentQuestion.QuestionId);
+                var questionIds = new List<int>();
+                
+                if (CurrentQuestion != null)
+                {
+                    questionIds.Add(CurrentQuestion.QuestionId);
+                }
+                
                 AskedQuestions.ForEach(q => questionIds.Add(q.QuestionId));
+                
                 return questionIds;
             }
         }
