@@ -24,10 +24,35 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             _quizAnswerMySqlRepository = quizAnswerMySqlRepository;
         }
 
-        public QuizQuestion StartGame(User user, IEnumerable<int> categories)
+        public void StartGame(User user, IEnumerable<int> categories)
         {
+            // TODO: Make sure categories were selected
             _runningGames.Add(new RunningGame(user.UserId, categories));
-            return GetQuestion(user);
+        }
+
+        public bool AnswerQuestion(User user, int questionId, int answerId)
+        {
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
+            var game = _runningGames[gameIndex];
+            
+            // TODO: Throw error if no game has been found
+            
+            var quizQuestionSpecification = new QuizQuestionSpecification(questionId);
+            var quizQuestion = _quizQuestionMySqlRepository.Query(quizQuestionSpecification).FirstOrDefault();
+
+            // TODO: Check if question doesn't exist
+            // TODO: Check if question is the currently asked question
+
+            var quizAnswerSpecification = new QuizAnswerSpecification(answerId, questionId);
+            var quizAnswer = _quizAnswerMySqlRepository.Query(quizAnswerSpecification).FirstOrDefault();
+
+            // TODO: Check if answerId is valid
+
+            var answer = new Answer(quizAnswer.AnswerId, quizAnswer.Correct);
+
+            _runningGames[gameIndex].AnswerQuestion(answer);
+
+            return answer.Correct;
         }
 
         public QuizQuestion GetQuestion(User user)
@@ -36,8 +61,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var game = _runningGames[gameIndex];
 
             // TODO: Throw error if no game has been found
+            // TODO: Check if current question is unanswered
 
-            var quizQuestionSpecification = new QuizQuestionSpecification(game.Categories, game.QuestionIds);
+            var quizQuestionSpecification =
+                new QuizQuestionSpecification(categories: game.Categories, excludeQuestions: game.QuestionIds);
             var quizQuestions = _quizQuestionMySqlRepository.Query(quizQuestionSpecification);
 
             // TODO: Check if no eligible questions exist
@@ -46,21 +73,15 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var index = random.Next(quizQuestions.Count);
             var quizQuestion = quizQuestions[index];
 
-            var quizAnswerSpecification = new QuizAnswerSpecification(quizQuestion.QuestionId);
+            var quizAnswerSpecification = new QuizAnswerSpecification(questionId: quizQuestion.QuestionId);
             var quizAnswers = _quizAnswerMySqlRepository.Query(quizAnswerSpecification);
 
             quizQuestion.Answers = quizAnswers;
-            
+
             // TODO: Move logic to model class
             var question = new Question(quizQuestion.QuestionId);
+            _runningGames[gameIndex].AskQuestions(question);
 
-            if (_runningGames[gameIndex].CurrentQuestion != null)
-            {
-                _runningGames[gameIndex].AskedQuestions.Add(_runningGames[gameIndex].CurrentQuestion);
-            }
-            
-            _runningGames[gameIndex].CurrentQuestion = question;
-            
             return quizQuestion;
         }
     }

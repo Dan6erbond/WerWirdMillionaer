@@ -34,21 +34,18 @@ namespace WhoWantsToBeAMillionaire.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("start")]
+        [HttpPost("start")]
         public IActionResult StartGame([FromBody] GameSpecification specification)
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            var question = _gameManager.StartGame(user, specification.Categories);
+            _gameManager.StartGame(user, specification.Categories);
 
-            return Ok(new
-            {
-                question = question
-            });
+            return Ok();
         }
         
-        [HttpGet("askquestion")]
+        [HttpGet("question")]
         public IActionResult GetQuestion()
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -59,6 +56,20 @@ namespace WhoWantsToBeAMillionaire.Controllers
             return Ok(new
             {
                 question = question
+            });
+        }
+
+        [HttpPost("answer")]
+        public IActionResult AnswerQuestion([FromBody] AnswerSpecification specification)
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            var correct = _gameManager.AnswerQuestion(user, specification.QuestionId, specification.AnswerId);
+            
+            return Ok(new
+            {
+                correct = correct
             });
         }
 

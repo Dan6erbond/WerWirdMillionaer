@@ -16,14 +16,14 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             get
             {
                 var questionIds = new List<int>();
-                
+
                 if (CurrentQuestion != null)
                 {
                     questionIds.Add(CurrentQuestion.QuestionId);
                 }
-                
+
                 AskedQuestions.ForEach(q => questionIds.Add(q.QuestionId));
-                
+
                 return questionIds;
             }
         }
@@ -32,6 +32,20 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         {
             UserId = userId;
             Categories = categories.ToList();
+        }
+
+        public void AskQuestions(Question question)
+        {
+            if (CurrentQuestion != null)
+            {
+                AskedQuestions.Add(CurrentQuestion);
+            }
+            CurrentQuestion = question;
+        }
+
+        public void AnswerQuestion(Answer answer)
+        {
+            CurrentQuestion.AnsweredAnswer = answer;
         }
     }
 }
