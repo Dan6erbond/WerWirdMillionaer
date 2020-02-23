@@ -47,7 +47,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             }
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
         public IActionResult Login([FromBody] UserCredentials credentials)
         {
             try
