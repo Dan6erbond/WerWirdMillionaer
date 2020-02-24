@@ -1,36 +1,24 @@
 import * as React from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import {Nav, Navbar} from "react-bootstrap";
+
 import './NavMenu.css';
 
-export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }> {
-    public state = {
-        isOpen: false
-    };
-
+export default class NavMenu extends React.Component<{}> {
     public render() {
         return (
             <header>
-                <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" light>
-                    <Container>
-                        <NavbarBrand tag={Link} to="/">WhoWantsToBeAMillionaire</NavbarBrand>
-                        <NavbarToggler onClick={this.toggle} className="mr-2"/>
-                        <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={this.state.isOpen} navbar>
-                            <ul className="navbar-nav flex-grow">
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                                </NavItem>
-                            </ul>
-                        </Collapse>
-                    </Container>
+                <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+                    <Navbar.Brand href="/">Who wants to be a Millionaire?</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                    <Navbar.Collapse id="responsive-navbar-nav">
+                        <Nav className="justify-content-end" activeKey="/home">
+                            <Nav.Item>
+                                <Nav.Link href="/">Home</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    </Navbar.Collapse>
                 </Navbar>
             </header>
         );
-    }
-
-    private toggle = () => {
-        this.setState({
-            isOpen: !this.state.isOpen
-        });
     }
 }

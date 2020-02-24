@@ -1,8 +1,8 @@
-import * as UserState from './UserState';
+import * as UserState from './Users';
 
 // The top-level state object
 export interface ApplicationState {
-    userState: UserState.UserState | undefined;
+    userState: UserState.UserState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using

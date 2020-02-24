@@ -1,0 +1,12 @@
+﻿form {
+    display: inline-block;
+    text-align: left;
+}
+
+input.form-control {
+    width: 300px;
+}
+
+button[type=submit] {
+    float: right;
+}
