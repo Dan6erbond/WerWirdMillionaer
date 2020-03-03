@@ -13,6 +13,7 @@ using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 namespace WhoWantsToBeAMillionaire.Controllers
 {
     [Route("api/users")]
+    [ApiController]
     public class UserController : Controller
     {
         private readonly UserManager _userManager;
@@ -45,6 +46,18 @@ namespace WhoWantsToBeAMillionaire.Controllers
             {
                 return BadRequest(new UserAlreadyExistsError(e.Message));
             }
+            catch (PasswordNotContainsLettersException e)
+            {
+                return BadRequest(new PasswordNotContainsLettersError(e.Message));
+            }
+            catch (PasswordNotContainsSpecialCharactersException e)
+            {
+                return BadRequest(new PasswordNotContainsSpecialCharactersError(e.Message));
+            }
+            catch (PasswordTooShortException e)
+            {
+                return BadRequest(new PasswordTooShortError(e.Message));
+            }
         }
 
         [HttpPost("login")]
@@ -53,7 +66,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             try
             {
                 var token = _userManager.LoginUser(credentials);
-                
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),

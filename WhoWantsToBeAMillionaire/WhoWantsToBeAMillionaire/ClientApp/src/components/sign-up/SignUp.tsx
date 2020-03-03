@@ -31,19 +31,21 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             this.props.requestUserData(this.props.token);
         }
 
-        if (this.props.token && this.props.userData && !this.props.userData.IsAdmin) {
+        if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
             this.props.history.push("quiz");
-        } else if (this.props.token && this.props.userData && this.props.userData.IsAdmin) {
+        } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {
             this.props.history.push("admin");
         }
     }
 
     public render() {
+        let usernameTaken = this.props.apiError === "USER_ALREADY_EXISTS";
+        
         return (
             <div className="form-container">
-                <h4 className="title">Log in</h4>
+                <h4 className="title">Sign up</h4>
                 <br/>
-                <AuthenticationForm signUp={this.signUp}/>
+                <AuthenticationForm signUp={this.signUp} usernameTaken={usernameTaken}/>
             </div>
         );
     }

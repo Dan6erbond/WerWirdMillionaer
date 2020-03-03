@@ -30,6 +30,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
                 throw new UserAlreadyExistsException($"User {credentials.Username} already exists.");
             }
 
+            User.PasswordIsValid(credentials.Password);
+
             PasswordHasher hasher = new PasswordHasher();
             hasher.GenerateSalt().HashPassword(hasher.Salt, credentials.Password);
 

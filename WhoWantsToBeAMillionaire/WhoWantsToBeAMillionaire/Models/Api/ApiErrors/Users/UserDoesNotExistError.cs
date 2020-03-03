@@ -2,11 +2,7 @@
 {
     public class UserDoesNotExistError : ApiError
     {
-        public UserDoesNotExistError() : base(400, "User does not exist.")
-        {
-        }
-
-        public UserDoesNotExistError(string message) : base(400, "User does not exist.", message)
+        public UserDoesNotExistError(string message) : base("USER_DOES_NOT_EXIST", 400, "User does not exist.", message)
         {
         }
     }

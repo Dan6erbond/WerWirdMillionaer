@@ -13,6 +13,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
 {
     [Authorize]
     [Route("api/games")]
+    [ApiController]
     public class GameController : Controller
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

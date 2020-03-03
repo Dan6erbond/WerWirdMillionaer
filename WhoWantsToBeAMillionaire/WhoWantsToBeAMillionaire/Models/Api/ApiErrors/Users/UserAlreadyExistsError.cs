@@ -2,11 +2,8 @@
 {
     public class UserAlreadyExistsError : ApiError
     {
-        public UserAlreadyExistsError() : base(400, "User already exists.")
-        {
-        }
-
-        public UserAlreadyExistsError(string message) : base(400, "User already exists.", message)
+        public UserAlreadyExistsError(string message) : base("USER_ALREADY_EXISTS", 400, "User already exists.",
+            message)
         {
         }
     }

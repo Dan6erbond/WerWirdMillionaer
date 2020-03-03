@@ -1,5 +1,6 @@
 ﻿import {Action, Reducer} from 'redux';
 import {AppThunkAction} from './';
+import {ErrorResponse, KnownErrors, TokenResponse} from "./ApiResponse";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -7,22 +8,16 @@ import {AppThunkAction} from './';
 export interface UserState {
     token?: string;
     userCreated: boolean;
-    usernameCorrect: boolean;
-    passwordCorrect: boolean;
+    apiError?: KnownErrors;
     userData?: User;
 }
 
-export interface TokenResponse {
-    token: string;
-    expiration: string;
-}
-
 export interface User {
-    UserId: number;
-    Username: string;
-    IsAdmin: boolean;
-    Salt: string;
-    Password: string;
+    userId: number;
+    username: string;
+    isAdmin: boolean;
+    salt: string;
+    password: string;
 }
 
 // -----------------
@@ -44,14 +39,9 @@ interface SetUserCreatedAction {
     created: boolean;
 }
 
-interface SetUsernameCorrectAction {
-    type: 'SET_USERNAME_CORRECT';
-    correct: boolean;
-}
-
-interface SetPasswordCorrectAction {
-    type: 'SET_PASSWORD_CORRECT';
-    correct: boolean;
+interface SetApiErrorAction {
+    type: 'SET_API_ERROR';
+    error: KnownErrors | undefined;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -61,15 +51,14 @@ type KnownAction =
     SetUserTokenAction
     | SetUserDataAction
     | SetUserCreatedAction
-    | SetUsernameCorrectAction
-    | SetPasswordCorrectAction;
+    | SetApiErrorAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    requestUserData: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    requestUserData: (token: string): AppThunkAction<KnownAction> => (dispatch) => {
         fetch('api/users/data', {
             headers: {
                 "Accept": "application/json, text/plain, */*",
@@ -79,18 +68,20 @@ export const actionCreators = {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(response.statusText);
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        throw new Error(error.title);
+                    });
                 }
                 return response.json() as Promise<User>;
             })
             .then(data => {
                 dispatch({type: 'SET_USER_DATA', data: data});
             })
-            .catch((error: Error) => {
+            .catch(error => {
                 console.error(error);
             });
     },
-    createUser: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    createUser: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch) => {
         let body = {
             Username: username,
             Password: password
@@ -106,16 +97,28 @@ export const actionCreators = {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(response.statusText);
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        let type = error.type as KnownErrors;
+                        switch(type) {
+                            case "PASSWORD_NOT_CONTAINS_LETTERS":
+                            case "PASSWORD_TOO_SHORT":
+                            case "PASSWORD_NOT_CONTAINS_SPECIAL_CHARACTERS":
+                            case "USER_ALREADY_EXISTS":
+                                dispatch({type: 'SET_API_ERROR', error: type});
+                                break;
+                            default:
+                                console.error(error);
+                        }
+                        throw new Error(error.title);
+                    });
                 }
                 dispatch({type: 'SET_USER_CREATED', created: true});
-                return response;
             })
-            .catch((error: Error) => {
-                console.error(error);
+            .catch(error => {
+                console.error(error.message);
             });
     },
-    login: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    login: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch) => {
         let body = {
             Username: username,
             Password: password
@@ -131,15 +134,26 @@ export const actionCreators = {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(response.statusText);
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        let type = error.type as KnownErrors;
+                        switch(type) {
+                            case "USER_DOES_NOT_EXIST":
+                            case "INCORRECT_PASSWORD":
+                                dispatch({type: 'SET_API_ERROR', error: type});
+                                break;
+                            default:
+                                console.error(error);
+                        }
+                        throw new Error(error.title);
+                    });
                 }
                 return response.json() as Promise<TokenResponse>;
             })
-            .then(data => {
-                dispatch({type: 'SET_USER_TOKEN', token: data.token});
+            .then(d => {
+                dispatch({type: 'SET_USER_TOKEN', token: d.token});
             })
-            .catch((error: Error) => {
-                console.error(error);
+            .catch(error => {
+                console.error(error.message);
             });
     }
 };
@@ -151,8 +165,7 @@ const unloadedState: UserState = {
     token: undefined,
     userData: undefined,
     userCreated: false,
-    usernameCorrect: false,
-    passwordCorrect: false
+    apiError: undefined
 };
 
 export const reducer: Reducer<UserState> = (state: UserState | undefined, incomingAction: Action): UserState => {
@@ -167,40 +180,28 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
                 token: action.token,
                 userData: state.userData,
                 userCreated: state.userCreated,
-                usernameCorrect: state.usernameCorrect,
-                passwordCorrect: state.passwordCorrect
+                apiError: state.apiError
             };
         case 'SET_USER_DATA':
             return {
                 token: state.token,
                 userData: action.data,
                 userCreated: state.userCreated,
-                usernameCorrect: state.usernameCorrect,
-                passwordCorrect: state.passwordCorrect
+                apiError: state.apiError
             };
         case 'SET_USER_CREATED':
             return {
                 token: state.token,
                 userData: state.userData,
                 userCreated: action.created,
-                usernameCorrect: state.usernameCorrect,
-                passwordCorrect: state.passwordCorrect
+                apiError: state.apiError
             };
-        case 'SET_USERNAME_CORRECT':
+        case 'SET_API_ERROR':
             return {
                 token: state.token,
                 userData: state.userData,
                 userCreated: state.userCreated,
-                usernameCorrect: action.correct,
-                passwordCorrect: state.passwordCorrect
-            };
-        case 'SET_PASSWORD_CORRECT':
-            return {
-                token: state.token,
-                userData: state.userData,
-                userCreated: state.userCreated,
-                usernameCorrect: state.usernameCorrect,
-                passwordCorrect: action.correct
+                apiError: action.error
             };
         default:
             return state;

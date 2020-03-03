@@ -26,19 +26,27 @@ class Home extends React.Component<HomeProps, HomeState> {
     public componentDidUpdate(prevProps: Readonly<HomeProps>, prevState: Readonly<{}>, snapshot?: any) {   
         if (this.props.token && !this.props.userData) {
             this.props.requestUserData(this.props.token);
-        } else if (this.props.token && this.props.userData && !this.props.userData.IsAdmin) {
+        } else if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
             this.props.history.push("quiz");
-        } else if (this.props.token && this.props.userData && this.props.userData.IsAdmin) {
+        } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {
             this.props.history.push("admin");
         }
     }
 
     public render() {
+        let usernameCorrect = true;
+        let passwordCorrect = true;
+        
+        if (this.state.tries > 0 && this.props.apiError !== undefined) {
+            usernameCorrect = this.props.apiError !== "USER_DOES_NOT_EXIST";
+            passwordCorrect = this.props.apiError !== "INCORRECT_PASSWORD";
+        }
+        
         return (
             <div className="form-container">
                 <h4 className="title">Log in</h4>
                 <br/>
-                <AuthenticationForm login={this.login}/>
+                <AuthenticationForm login={this.login} usernameCorrect={usernameCorrect} passwordCorrect={passwordCorrect}/>
             </div>
         );
     }
