@@ -7,13 +7,23 @@ import {RouteComponentProps} from "react-router";
 type QuizProps =
     UserStateStore.UserState
     & typeof UserStateStore.actionCreators
-    & RouteComponentProps; 
+    & RouteComponentProps;
 
 class Quiz extends React.Component<QuizProps> {
-    componentDidMount() {
+    constructor(props: QuizProps) {
+        super(props);
+    }
+    
+    public componentDidMount() {
         if (!this.props.token) {
             this.props.history.push("/");
-        }        
+        }
+    }
+    
+    public render() {
+        return (
+            <div>Test</div>
+        );
     }
 }
 
