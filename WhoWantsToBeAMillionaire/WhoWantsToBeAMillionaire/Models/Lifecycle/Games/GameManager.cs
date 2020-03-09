@@ -13,7 +13,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         private readonly IRepository<QuizQuestion> _quizQuestionMySqlRepository;
         private readonly IRepository<QuizAnswer> _quizAnswerMySqlRepository;
 
-        private readonly List<RunningGame> _runningGames = new List<RunningGame>();
+        private List<RunningGame> runningGames = new List<RunningGame>();
 
         public GameManager(IRepository<Category> categoryMySqlRepository,
             IRepository<QuizQuestion> quizQuestionMySqlRepository,
@@ -26,16 +26,25 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         public void StartGame(User user, IEnumerable<int> categories)
         {
-            // TODO: Make sure categories were selected
-            _runningGames.Add(new RunningGame(user.UserId, categories));
+            // Remove any already running user games
+            runningGames = runningGames.Where(g => g.UserId != user.UserId).ToList();
+            runningGames.Add(new RunningGame(user.UserId, categories));
+        }
+
+        public void EndGame(User user)
+        {
+            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
+            
+            // TODO: Throw error if no game has been found (gameIndex = -1)
+            
+            
         }
 
         public bool AnswerQuestion(User user, int questionId, int answerId)
         {
-            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
-            var game = _runningGames[gameIndex];
+            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
             
-            // TODO: Throw error if no game has been found
+            // TODO: Throw error if no game has been found (gameIndex = -1)
             
             var quizQuestionSpecification = new QuizQuestionSpecification(questionId);
             var quizQuestion = _quizQuestionMySqlRepository.Query(quizQuestionSpecification).FirstOrDefault();
@@ -50,15 +59,15 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var answer = new Answer(quizAnswer.AnswerId, quizAnswer.Correct);
 
-            _runningGames[gameIndex].AnswerQuestion(answer);
+            runningGames[gameIndex].AnswerQuestion(answer);
 
             return answer.Correct;
         }
 
         public QuizQuestion GetQuestion(User user)
         {
-            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
-            var game = _runningGames[gameIndex];
+            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
+            var game = runningGames[gameIndex];
 
             // TODO: Throw error if no game has been found
             // TODO: Check if current question is unanswered
@@ -67,20 +76,31 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 new QuizQuestionSpecification(categories: game.Categories, excludeQuestions: game.QuestionIds);
             var quizQuestions = _quizQuestionMySqlRepository.Query(quizQuestionSpecification);
 
-            // TODO: Check if no eligible questions exist
-
             var random = new Random();
-            var index = random.Next(quizQuestions.Count);
-            var quizQuestion = quizQuestions[index];
+            int index = 0;
+            QuizQuestion quizQuestion = null; 
+
+            if (quizQuestions.Count != 0)
+            {
+                index = random.Next(quizQuestions.Count);
+                quizQuestion = quizQuestions[index];
+            }
+            else
+            {
+                var genericQuestions = _quizQuestionMySqlRepository.List.ToList();
+                index = random.Next(genericQuestions.Count);
+                quizQuestion = genericQuestions[index];
+            }
 
             var quizAnswerSpecification = new QuizAnswerSpecification(questionId: quizQuestion.QuestionId);
             var quizAnswers = _quizAnswerMySqlRepository.Query(quizAnswerSpecification);
+            quizAnswers.Shuffle();
 
             quizQuestion.Answers = quizAnswers;
 
             // TODO: Move logic to model class
             var question = new Question(quizQuestion.QuestionId);
-            _runningGames[gameIndex].AskQuestions(question);
+            runningGames[gameIndex].AskQuestion(question);
 
             return quizQuestion;
         }

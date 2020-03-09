@@ -27,11 +27,12 @@
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
         <None Include="ClientApp\src\components\forms\AuthenticationForm.tsx" />
         <None Include="ClientApp\src\components\home\Home.tsx" />
+        <None Include="ClientApp\src\components\quiz\CategorySelection.tsx" />
         <None Include="ClientApp\src\components\quiz\Question.tsx" />
         <None Include="ClientApp\src\components\quiz\Quiz.tsx" />
         <None Include="ClientApp\src\components\sign-up\SignUp.tsx" />
         <None Include="ClientApp\src\store\ApiResponse.ts" />
-        <None Include="ClientApp\src\store\Game.ts" />
+        <None Include="ClientApp\src\store\Specification.ts" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

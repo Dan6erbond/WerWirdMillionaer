@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace WhoWantsToBeAMillionaire.Models.Api.ValidationAttributes
 {
@@ -22,7 +23,7 @@ namespace WhoWantsToBeAMillionaire.Models.Api.ValidationAttributes
 
         public override bool IsValid(object value)
         {
-            var list = (List<object>) value;
+            var list = ((IEnumerable) value).Cast<object>().ToList();
             var count = list.Count;
 
             if (count < _minCount)

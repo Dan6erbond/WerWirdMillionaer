@@ -2,6 +2,12 @@
 import {AppThunkAction} from './';
 import {ErrorResponse, KnownErrors, TokenResponse} from "./ApiResponse";
 
+export interface User {
+    userId: number;
+    username: string;
+    isAdmin: boolean;
+}
+
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
@@ -10,14 +16,6 @@ export interface UserState {
     userCreated: boolean;
     apiError?: KnownErrors;
     userData?: User;
-}
-
-export interface User {
-    userId: number;
-    username: string;
-    isAdmin: boolean;
-    salt: string;
-    password: string;
 }
 
 // -----------------

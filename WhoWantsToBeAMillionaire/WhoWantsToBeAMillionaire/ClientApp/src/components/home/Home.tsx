@@ -23,10 +23,20 @@ class Home extends React.Component<HomeProps, HomeState> {
         this.login = this.login.bind(this);
     }
 
-    public componentDidUpdate(prevProps: Readonly<HomeProps>, prevState: Readonly<{}>, snapshot?: any) {   
+    public componentDidMount() {
+        console.log(this.props.token);
+        this.doForwards();
+    }
+
+    public componentDidUpdate(prevProps: Readonly<HomeProps>, prevState: Readonly<{}>, snapshot?: any) {
+        this.doForwards();
+    }
+
+    private doForwards() {
         if (this.props.token && !this.props.userData) {
             this.props.requestUserData(this.props.token);
         } else if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
+            console.log("Forwarding to quiz...");
             this.props.history.push("quiz");
         } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {
             this.props.history.push("admin");
@@ -36,23 +46,29 @@ class Home extends React.Component<HomeProps, HomeState> {
     public render() {
         let usernameCorrect = true;
         let passwordCorrect = true;
-        
+
         if (this.state.tries > 0 && this.props.apiError !== undefined) {
             usernameCorrect = this.props.apiError !== "USER_DOES_NOT_EXIST";
             passwordCorrect = this.props.apiError !== "INCORRECT_PASSWORD";
         }
-        
+
         return (
             <div className="form-container">
                 <h4 className="title">Log in</h4>
                 <br/>
-                <AuthenticationForm login={this.login} usernameCorrect={usernameCorrect} passwordCorrect={passwordCorrect}/>
+                <AuthenticationForm login={this.login} usernameCorrect={usernameCorrect}
+                                    passwordCorrect={passwordCorrect}/>
             </div>
         );
     }
 
     private login(username: string, password: string) {
-        this.setState({tries: this.state.tries+1});
+        this.setState({tries: this.state.tries + 1});
+
+        console.log(this.state.tries);
+        console.log(username);
+        console.log(password);
+
         this.props.login(username, password);
     }
 }

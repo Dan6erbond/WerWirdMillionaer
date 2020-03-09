@@ -45,6 +45,17 @@ namespace WhoWantsToBeAMillionaire.Controllers
 
             return Ok();
         }
+
+        [HttpGet("end")]
+        public IActionResult EndGame()
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            _gameManager.EndGame(user);
+
+            return Ok();
+        }
         
         [HttpGet("question")]
         public IActionResult GetQuestion()
@@ -54,10 +65,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
 
             var question = _gameManager.GetQuestion(user);
 
-            return Ok(new
-            {
-                question = question
-            });
+            return Ok(question);
         }
 
         [HttpPost("answer")]
@@ -73,7 +81,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
                 correct = correct
             });
         }
-
+        
         [AllowAnonymous]
         [HttpGet("categories")]
         public IEnumerable<Category> GetCategories()

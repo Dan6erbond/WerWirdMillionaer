@@ -34,7 +34,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             Categories = categories.ToList();
         }
 
-        public void AskQuestions(Question question)
+        public void AskQuestion(Question question)
         {
             if (CurrentQuestion != null)
             {

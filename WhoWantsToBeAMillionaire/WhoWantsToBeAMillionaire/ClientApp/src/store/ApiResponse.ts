@@ -19,3 +19,7 @@ export type KnownErrors =
     | "PASSWORD_NOT_CONTAINS_LETTERS"
     | "PASSWORD_NOT_CONTAINS_SPECIAL_CHARACTERS"
     | "PASSWORD_TOO_SHORT";
+
+export interface AnswerResponse {
+    correct: boolean;
+}
