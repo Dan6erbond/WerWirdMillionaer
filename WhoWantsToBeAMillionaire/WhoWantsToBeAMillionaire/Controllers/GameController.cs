@@ -58,14 +58,12 @@ namespace WhoWantsToBeAMillionaire.Controllers
         }
         
         [HttpGet("question")]
-        public IActionResult GetQuestion()
+        public QuizQuestion GetQuestion()
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
-
-            var question = _gameManager.GetQuestion(user);
-
-            return Ok(question);
+            
+            return _gameManager.GetQuestion(user);
         }
 
         [HttpPost("answer")]
@@ -80,6 +78,15 @@ namespace WhoWantsToBeAMillionaire.Controllers
             {
                 correct = correct
             });
+        }
+
+        [HttpGet("joker")]
+        public QuizQuestion UseJoker()
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            return _gameManager.UseJoker(user);
         }
         
         [AllowAnonymous]

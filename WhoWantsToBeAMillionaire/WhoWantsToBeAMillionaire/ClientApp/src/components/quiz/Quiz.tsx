@@ -8,7 +8,7 @@ import Question from "./Question";
 import {bindActionCreators} from "redux";
 import {Category, QuizQuestion} from "../../store/Games";
 import CategorySelection from "./CategorySelection";
-import {Alert} from "react-bootstrap";
+import {Alert, Button} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
 
 interface QuizProps {
@@ -30,6 +30,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.selectCategories = this.selectCategories.bind(this);
         this.answerQuestion = this.answerQuestion.bind(this);
         this.addSeconds = this.addSeconds.bind(this);
+        this.useJoker = this.useJoker.bind(this);
     }
 
     public componentDidMount() {
@@ -41,15 +42,15 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.props.gameActions.fetchCategories(); // not checking if categories already fetched to call componentDidUpdate after
     }
 
-    public componentDidUpdate(prevProps: Readonly<QuizProps>, prevState: Readonly<{}>, snapshot?: any) {
+    public componentDidUpdate(prevProps: Readonly<QuizProps>, prevState: Readonly<QuizState>, snapshot?: any) {
         const token = this.props.users.token!!;
         const answering = this.props.games.answering;
         const answerCorrect = this.props.games.answerCorrect;
-        const loadingQuestion = this.props.games.loadingQuestion; 
+        const loadingQuestion = this.props.games.loadingQuestion;
         const currentQuestion = this.props.games.currentQuestion;
         const gameStarted = this.props.games.gameStarted;
-        
-        if (!answering && !answerCorrect &&currentQuestion) {
+
+        if (!answering && !answerCorrect && currentQuestion) {
             // TODO: End game
             console.log("Lose!");
         } else if (!answering && answerCorrect && !loadingQuestion) {
@@ -61,6 +62,13 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
 
     private addSeconds() {
         this.setState({secondsElapsed: this.state.secondsElapsed + 1});
+    }
+
+    private useJoker() {
+        if (!this.props.games.usedJoker) {
+            const token = this.props.users.token!!;
+            this.props.gameActions.useJoker(token);
+        }
     }
 
     private selectCategories(categories: number[]) {
@@ -88,6 +96,11 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                 <br/>
                 {loading && gameStarted ? <p>Loading...</p> : gameStarted && question ?
                     <div>
+                        <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
+                            <Button variant="dark" onClick={() => this.useJoker()} style={{float: 'right'}}
+                                    disabled={this.props.games.usedJoker}>Use Joker</Button>
+                        </div>
+                        <br/>
                         <Question question={question} answerQuestion={this.answerQuestion}/>
                         <br/>
                         {answerCorrect ? <Alert variant='success'>Correct!</Alert> : answerCorrect === false ?

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 
@@ -11,6 +12,20 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public List<Question> AskedQuestions { get; } = new List<Question>();
         public Question CurrentQuestion { get; set; }
 
+        public bool JokerUsed
+        {
+            get
+            {
+                var jokerUsed = CurrentQuestion.JokerUsed;
+                if (!jokerUsed)
+                {
+                    jokerUsed = AskedQuestions.FirstOrDefault(q => q.JokerUsed) != null;
+                }
+
+                return jokerUsed;
+            }
+        }
+
         public List<int> QuestionIds
         {
             get
@@ -19,15 +34,20 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
                 if (CurrentQuestion != null)
                 {
-                    questionIds.Add(CurrentQuestion.QuestionId);
+                    questionIds.Add(CurrentQuestion.QuizQuestion.QuestionId);
                 }
 
-                AskedQuestions.ForEach(q => questionIds.Add(q.QuestionId));
+                AskedQuestions.ForEach(q => questionIds.Add(q.QuizQuestion.QuestionId));
 
                 return questionIds;
             }
         }
 
+        public QuizQuestion UseJoker()
+        {
+            return CurrentQuestion.UseJoker();
+        }
+        
         public RunningGame(int userId, IEnumerable<int> categories)
         {
             UserId = userId;
@@ -40,12 +60,32 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             {
                 AskedQuestions.Add(CurrentQuestion);
             }
+
+            question.TimeAsked = DateTime.Now;
             CurrentQuestion = question;
         }
 
         public void AnswerQuestion(Answer answer)
         {
+            CurrentQuestion.TimeAnswered = DateTime.Now;
             CurrentQuestion.AnsweredAnswer = answer;
+        }
+
+        public QuizResult End(bool won = false)
+        {
+            long timeElapsed = 0;
+            foreach (var question in AskedQuestions)
+            {
+                timeElapsed += question.TimeAsked.CompareTo(question.TimeAnswered);
+            }
+
+            return new QuizResult
+            {
+                Won = won,
+                Points = AskedQuestions.Count,
+                TimeElapsed = timeElapsed,
+                JokerUsed = JokerUsed
+            };
         }
     }
 }

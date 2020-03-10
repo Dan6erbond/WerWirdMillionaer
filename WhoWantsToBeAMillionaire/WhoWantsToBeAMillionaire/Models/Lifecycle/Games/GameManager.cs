@@ -31,13 +31,16 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             runningGames.Add(new RunningGame(user.UserId, categories));
         }
 
-        public void EndGame(User user)
+        public QuizResult EndGame(User user)
         {
             var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
             
             // TODO: Throw error if no game has been found (gameIndex = -1)
-            
-            
+
+            var runningGame = runningGames[gameIndex];
+            runningGames.RemoveAt(gameIndex);
+
+            return runningGame.End();
         }
 
         public bool AnswerQuestion(User user, int questionId, int answerId)
@@ -98,11 +101,16 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             quizQuestion.Answers = quizAnswers;
 
-            // TODO: Move logic to model class
-            var question = new Question(quizQuestion.QuestionId);
+            var question = new Question(quizQuestion);
             runningGames[gameIndex].AskQuestion(question);
 
             return quizQuestion;
+        }
+
+        public QuizQuestion UseJoker(User user)
+        {
+            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
+            return runningGames[gameIndex].UseJoker();
         }
     }
 }

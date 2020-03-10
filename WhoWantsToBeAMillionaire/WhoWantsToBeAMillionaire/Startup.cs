@@ -3,15 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using WhoWantsToBeAMillionaire.Models;
-using WhoWantsToBeAMillionaire.Models.Data;
 using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
@@ -32,7 +29,12 @@ namespace WhoWantsToBeAMillionaire
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers()
+                .AddNewtonsoftJson();
             services.AddControllersWithViews();
+
+            services.AddMvc()
+                .AddJsonOptions(options => { options.JsonSerializerOptions.IgnoreNullValues = true; });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
@@ -42,10 +44,10 @@ namespace WhoWantsToBeAMillionaire
             services.AddSingleton<IRepository<QuizQuestion>, QuizQuestionMySqlRepository>();
             services.AddSingleton<IRepository<QuizAnswer>, QuizAnswerMySqlRepository>();
             services.AddSingleton<IRepository<Round>, RoundMySqlRepository>();
-            
+
             services.AddSingleton<UserManager>();
             services.AddSingleton<GameManager>();
-            
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,10 +64,11 @@ namespace WhoWantsToBeAMillionaire
                         ValidateAudience = true,
                         ValidAudience = Configuration["Tokens:Audience"],
                         ValidIssuer = Configuration["Tokens:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:SecureKey"]))
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:SecureKey"]))
                     };
                 });
-            
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
@@ -88,7 +91,7 @@ namespace WhoWantsToBeAMillionaire
             app.UseSpaStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -13,33 +13,15 @@ export default class Question extends React.Component<QuestionProps> {
         super(props);
 
         this.answerQuestion = this.answerQuestion.bind(this);
-        this.answerQuestionZero = this.answerQuestionZero.bind(this);
-        this.answerQuestionOne = this.answerQuestionOne.bind(this);
-        this.answerQuestionTwo = this.answerQuestionTwo.bind(this);
-        this.answerQuestionThree = this.answerQuestionThree.bind(this);
     }
 
-    private answerQuestion(answer: QuizAnswer) {
+    private answerQuestion(answerNr: number) {
+        const answer = this.props.question.answers[answerNr];
+        
         this.props.answerQuestion({
             questionId: this.props.question.questionId,
             answerId: answer.answerId
         });
-    }
-
-    private answerQuestionZero() {
-        this.answerQuestion(this.props.question.answers[0]);
-    }
-
-    private answerQuestionOne() {
-        this.answerQuestion(this.props.question.answers[1]);
-    }
-
-    private answerQuestionTwo() {
-        this.answerQuestion(this.props.question.answers[2]);
-    }
-
-    private answerQuestionThree() {
-        this.answerQuestion(this.props.question.answers[3]);
     }
 
     public render() {
@@ -50,13 +32,15 @@ export default class Question extends React.Component<QuestionProps> {
                     <Row>
                         <Col>
                             <Button variant="primary" size="lg" block
-                                    onClick={this.answerQuestionZero}>
+                                    onClick={() => this.answerQuestion(0)}
+                                    disabled={this.props.question.answers[0].correct === false}>
                                 {this.props.question.answers[0].answer}
                             </Button>
                         </Col>
                         <Col>
                             <Button variant="primary" size="lg" block
-                                    onClick={this.answerQuestionOne}>
+                                    onClick={() => this.answerQuestion(1)}
+                                    disabled={this.props.question.answers[1].correct === false}>
                                 {this.props.question.answers[1].answer}
                             </Button>
                         </Col>
@@ -65,13 +49,15 @@ export default class Question extends React.Component<QuestionProps> {
                     <Row>
                         <Col>
                             <Button variant="primary" size="lg" block
-                                    onClick={this.answerQuestionTwo}>
+                                    onClick={() => this.answerQuestion(2)}
+                                    disabled={this.props.question.answers[2].correct === false}>
                                 {this.props.question.answers[2].answer}
                             </Button>
                         </Col>
                         <Col>
                             <Button variant="primary" size="lg" block
-                                    onClick={this.answerQuestionThree}>
+                                    onClick={() => this.answerQuestion(3)}
+                                    disabled={this.props.question.answers[3].correct === false}>
                                 {this.props.question.answers[3].answer}
                             </Button>
                         </Col>
