@@ -1,6 +1,7 @@
 ﻿import {Action, Reducer} from 'redux';
 import {AppThunkAction} from './';
 import {ErrorResponse, KnownErrors, TokenResponse} from "./ApiResponse";
+import {GameState} from "./Games";
 
 export interface User {
     userId: number;
@@ -170,38 +171,24 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
     if (state === undefined) {
         return unloadedState;
     }
+    
+    const retVal: UserState = Object.assign({}, state);
 
     const action = incomingAction as KnownAction;
     switch (action.type) {
         case 'SET_USER_TOKEN':
-            return {
-                token: action.token,
-                userData: state.userData,
-                userCreated: state.userCreated,
-                apiError: state.apiError
-            };
+            retVal.token = action.token;
+            break;
         case 'SET_USER_DATA':
-            return {
-                token: state.token,
-                userData: action.data,
-                userCreated: state.userCreated,
-                apiError: state.apiError
-            };
+            retVal.userData = action.data;
+            break;
         case 'SET_USER_CREATED':
-            return {
-                token: state.token,
-                userData: state.userData,
-                userCreated: action.created,
-                apiError: state.apiError
-            };
+            retVal.userCreated = action.created;
+            break;
         case 'SET_API_ERROR':
-            return {
-                token: state.token,
-                userData: state.userData,
-                userCreated: state.userCreated,
-                apiError: action.error
-            };
-        default:
-            return state;
+            retVal.apiError = action.error;
+            break;
     }
+    
+    return retVal;
 };

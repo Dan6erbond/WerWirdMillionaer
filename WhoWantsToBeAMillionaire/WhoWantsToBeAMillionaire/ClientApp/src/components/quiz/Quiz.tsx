@@ -6,9 +6,8 @@ import * as GameStateStore from "../../store/Games";
 import {RouteComponentProps} from "react-router";
 import Question from "./Question";
 import {bindActionCreators} from "redux";
-import {Category, QuizQuestion} from "../../store/Games";
 import CategorySelection from "./CategorySelection";
-import {Alert, Button} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
 
 interface QuizProps {
@@ -31,6 +30,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.answerQuestion = this.answerQuestion.bind(this);
         this.addSeconds = this.addSeconds.bind(this);
         this.useJoker = this.useJoker.bind(this);
+        this.ensureDataFetched = this.ensureDataFetched.bind(this);
     }
 
     public componentDidMount() {
@@ -39,24 +39,34 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         }
 
         this.props.gameActions.reset();
-        this.props.gameActions.fetchCategories(); // not checking if categories already fetched to call componentDidUpdate after
+        this.ensureDataFetched();
     }
 
     public componentDidUpdate(prevProps: Readonly<QuizProps>, prevState: Readonly<QuizState>, snapshot?: any) {
+        this.ensureDataFetched();
+    }
+
+    private ensureDataFetched() {
         const token = this.props.users.token!!;
         const answering = this.props.games.answering;
-        const answerCorrect = this.props.games.answerCorrect;
         const loadingQuestion = this.props.games.loadingQuestion;
-        const currentQuestion = this.props.games.currentQuestion;
-        const gameStarted = this.props.games.gameStarted;
 
-        if (!answering && !answerCorrect && currentQuestion) {
-            // TODO: End game
-            console.log("Lose!");
-        } else if (!answering && answerCorrect && !loadingQuestion) {
-            this.props.gameActions.fetchQuestion(token);
-        } else if (!currentQuestion && gameStarted) {
-            this.props.gameActions.fetchQuestion(token);
+        if (!this.props.games.categories) {
+            this.props.gameActions.fetchCategories();
+        }
+
+        if (this.props.games.runningGame) {
+            const answerCorrect = this.props.games.runningGame.answerCorrect;
+            const currentQuestion = this.props.games.runningGame.currentQuestion;
+
+            if (!answering && !answerCorrect && currentQuestion) {
+                // TODO: End game
+                console.log("Lose!");
+            } else if (!answering && answerCorrect && !loadingQuestion) {
+                this.props.gameActions.fetchQuestion(token);
+            } else if (!currentQuestion) {
+                this.props.gameActions.fetchQuestion(token);
+            }
         }
     }
 
@@ -65,7 +75,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     }
 
     private useJoker() {
-        if (!this.props.games.usedJoker) {
+        if (this.props.games.runningGame && !this.props.games.runningGame.usedJoker) {
             const token = this.props.users.token!!;
             this.props.gameActions.useJoker(token);
         }
@@ -83,30 +93,30 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     }
 
     public render() {
-        const loading = this.props.games.answering || this.props.games.loadingQuestion;
-        const gameStarted = this.props.games.gameStarted;
+        const loading = this.props.games.answering || this.props.games.loadingQuestion || !this.props.games.categories;
+        const runningGame = this.props.games.runningGame;
 
         const categories = this.props.games.categories;
-        const question = this.props.games.currentQuestion;
-        const answerCorrect = this.props.games.answerCorrect;
+        const question = runningGame ? runningGame.currentQuestion : undefined;
+        const quizResult = runningGame ? runningGame.result : undefined;
+        const usedJoker = runningGame ? runningGame.usedJoker : undefined;
 
         return (
             <div>
-                {gameStarted ? <p>{this.state.secondsElapsed}</p> : null}
+                {runningGame ? <p>{this.state.secondsElapsed}</p> : null}
                 <br/>
-                {loading && gameStarted ? <p>Loading...</p> : gameStarted && question ?
-                    <div>
-                        <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
-                            <Button variant="dark" onClick={() => this.useJoker()} style={{float: 'right'}}
-                                    disabled={this.props.games.usedJoker}>Use Joker</Button>
-                        </div>
-                        <br/>
-                        <Question question={question} answerQuestion={this.answerQuestion}/>
-                        <br/>
-                        {answerCorrect ? <Alert variant='success'>Correct!</Alert> : answerCorrect === false ?
-                            <Alert variant='danger'>Wrong!</Alert> : null}
-                    </div> : categories ?
-                        <CategorySelection categories={categories} selectCategories={this.selectCategories}/> : null}
+                {quizResult ?
+                    <p>Game over!</p> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
+                        <div>
+                            <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
+                                <Button variant="dark" onClick={() => this.useJoker()} style={{float: 'right'}}
+                                        disabled={usedJoker}>Use Joker</Button>
+                            </div>
+                            <br/>
+                            <Question question={question} answerQuestion={this.answerQuestion}/>
+                        </div> : categories && !quizResult ?
+                            <CategorySelection categories={categories}
+                                               selectCategories={this.selectCategories}/> : null}
             </div>
         );
     }

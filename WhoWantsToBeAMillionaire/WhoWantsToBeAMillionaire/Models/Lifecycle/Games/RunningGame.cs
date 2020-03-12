@@ -73,10 +73,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         public QuizResult End(bool won = false)
         {
-            long timeElapsed = 0;
+            int timeElapsed = 0;
             foreach (var question in AskedQuestions)
             {
-                timeElapsed += question.TimeAsked.CompareTo(question.TimeAnswered);
+                timeElapsed += (question.TimeAnswered - question.TimeAsked).Seconds;
             }
 
             return new QuizResult

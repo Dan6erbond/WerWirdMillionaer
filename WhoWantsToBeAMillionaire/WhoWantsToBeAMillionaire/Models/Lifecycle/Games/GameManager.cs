@@ -43,7 +43,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             return runningGame.End();
         }
 
-        public bool AnswerQuestion(User user, int questionId, int answerId)
+        public dynamic AnswerQuestion(User user, int questionId, int answerId)
         {
             var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
             
@@ -64,7 +64,11 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             runningGames[gameIndex].AnswerQuestion(answer);
 
-            return answer.Correct;
+            if (answer.Correct)
+            {
+                return new AnswerResult(answer.Correct);
+            }
+            return EndGame(user);
         }
 
         public QuizQuestion GetQuestion(User user)

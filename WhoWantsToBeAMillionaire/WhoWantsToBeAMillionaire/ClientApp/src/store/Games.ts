@@ -1,7 +1,6 @@
 ﻿import {Action, Reducer} from 'redux';
 import {AppThunkAction} from './';
-import {AnswerResponse, ErrorResponse} from "./ApiResponse";
-import CategorySelection from "../components/quiz/CategorySelection";
+import {AnswerResult, ErrorResponse, QuizResult} from "./ApiResponse";
 import {AnswerSpecification, GameSpecification} from "./Specification";
 
 export interface Category {
@@ -14,6 +13,7 @@ export interface QuizQuestion {
     categoryId: number;
     question: string;
     answers: QuizAnswer[];
+    uses: number;
 }
 
 export interface QuizAnswer {
@@ -22,31 +22,31 @@ export interface QuizAnswer {
     correct: boolean | undefined;
 }
 
+interface RunningGame {
+    askedQuestions: QuizQuestion[];
+    currentQuestion?: QuizQuestion;
+    answerCorrect?: boolean;
+    result?: QuizResult;
+    usedJoker: boolean;
+}
+
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface GameState {
-    gameStarted: boolean;
-    currentQuestion?: QuizQuestion;
+    runningGame?: RunningGame;
     categories?: Category[];
-    answerCorrect?: boolean;
     answering: boolean;
     loadingQuestion: boolean;
-    usedJoker: boolean;
 }
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface SetGameStartedAction {
-    type: 'SET_GAME_STARTED';
-    started: boolean;
-}
-
-interface SetCurrentQuestionAction {
-    type: 'SET_CURRENT_QUESTION';
-    question: QuizQuestion;
+interface SetRunningGameAction {
+    type: 'SET_RUNNING_GAME';
+    game: RunningGame | undefined;
 }
 
 interface SetLoadingQuestionAction {
@@ -59,11 +59,6 @@ interface SetCategoriesAction {
     categories: Category[];
 }
 
-interface SetAnswerCorrectAction {
-    type: 'SET_ANSWER_CORRECT';
-    correct: boolean | undefined;
-}
-
 interface SetAnsweringAction {
     type: 'SET_ANSWERING';
     answering: boolean;
@@ -73,23 +68,15 @@ interface ResetAction {
     type: 'RESET';
 }
 
-interface SetUsedJokerAction {
-    type: 'SET_USED_JOKER';
-    usedJoker: boolean;
-}
-
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 
 type KnownAction =
-    SetGameStartedAction
-    | SetCurrentQuestionAction
+    SetRunningGameAction
     | SetLoadingQuestionAction
     | SetCategoriesAction
-    | SetAnswerCorrectAction
     | SetAnsweringAction
-    | ResetAction
-    | SetUsedJokerAction;
+    | ResetAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -115,13 +102,22 @@ export const actionCreators = {
                         });
                     });
                 }
-                dispatch({type: 'SET_GAME_STARTED', started: true});
+                dispatch({
+                    type: 'SET_RUNNING_GAME',
+                    game: {
+                        answerCorrect: undefined,
+                        askedQuestions: [],
+                        currentQuestion: undefined,
+                        result: undefined,
+                        usedJoker: false
+                    }
+                });
             })
             .catch(error => {
                 console.error(error);
             });
     },
-    fetchQuestion: (token: string): AppThunkAction<KnownAction> => (dispatch) => {
+    fetchQuestion: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         fetch('api/games/question', {
             headers: {
                 "Accept": "application/json, text/plain, */*",
@@ -138,14 +134,16 @@ export const actionCreators = {
                 return response.json() as Promise<QuizQuestion>;
             })
             .then(data => {
-                console.log(data);
-                dispatch({type: 'SET_CURRENT_QUESTION', question: data});
+                const runningGame = getState().gameState.runningGame!!;
+                if (runningGame.currentQuestion) runningGame.askedQuestions.push(runningGame.currentQuestion);
+                runningGame.currentQuestion = data;
+                dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
             })
             .catch(error => {
                 console.error(error);
             });
     },
-    useJoker: (token: string): AppThunkAction<KnownAction> => (dispatch) => {
+    useJoker: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         fetch('api/games/joker', {
             headers: {
                 "Accept": "application/json, text/plain, */*",
@@ -162,8 +160,10 @@ export const actionCreators = {
                 return response.json() as Promise<QuizQuestion>;
             })
             .then(data => {
-                dispatch({type: 'SET_CURRENT_QUESTION', question: data});
-                dispatch({type: 'SET_USED_JOKER', usedJoker: true});
+                const runningGame = getState().gameState.runningGame!!;
+                runningGame.currentQuestion = data;
+                runningGame.usedJoker = true;
+                dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
             })
             .catch(error => {
                 console.error(error);
@@ -187,14 +187,13 @@ export const actionCreators = {
                 return response.json() as Promise<Category[]>;
             })
             .then(data => {
-                console.log(data);
                 dispatch({type: 'SET_CATEGORIES', categories: data});
             })
             .catch(error => {
                 console.error(error);
             });
     },
-    answerQuestion: (token: string, specification: AnswerSpecification): AppThunkAction<KnownAction> => (dispatch) => {
+    answerQuestion: (token: string, specification: AnswerSpecification): AppThunkAction<KnownAction> => (dispatch, getState) => {
         dispatch({type: 'SET_ANSWERING', answering: true});
 
         fetch('api/games/answer', {
@@ -208,7 +207,10 @@ export const actionCreators = {
         })
             .then(response => {
                 if (!response.ok) {
-                    dispatch({type: 'SET_ANSWER_CORRECT', correct: false});
+                    const runningGame = getState().gameState.runningGame!!;
+                    runningGame.answerCorrect = false;
+                    dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+                    
                     return response.text().then(text => {
                         console.error(text);
                         return (response.json() as Promise<ErrorResponse>).then(error => {
@@ -216,10 +218,21 @@ export const actionCreators = {
                         });
                     });
                 }
-                return response.json() as Promise<AnswerResponse>;
+                return response.json() as Promise<AnswerResult | QuizResult>;
             })
             .then(data => {
-                dispatch({type: 'SET_ANSWER_CORRECT', correct: data.correct});
+                console.log(data);
+                const runningGame = getState().gameState.runningGame!!;
+                switch (data.type) {
+                    case "ANSWER_RESULT":
+                        runningGame.answerCorrect = data.correct;
+                        dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+                        break;
+                    case "QUIZ_RESULT":
+                        runningGame.result = data;
+                        dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+                        break;
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -234,13 +247,10 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: GameState = {
-    gameStarted: false,
-    currentQuestion: undefined,
+    runningGame: undefined,
     categories: undefined,
-    answerCorrect: undefined,
     answering: false,
     loadingQuestion: false,
-    usedJoker: false
 };
 
 export const reducer: Reducer<GameState> = (state: GameState | undefined, incomingAction: Action): GameState => {
@@ -248,81 +258,24 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
         return unloadedState;
     }
 
+    const retVal: GameState = Object.assign({}, state);
+
     const action = incomingAction as KnownAction;
     switch (action.type) {
-        case "SET_GAME_STARTED":
-            return {
-                gameStarted: action.started,
-                currentQuestion: state.currentQuestion,
-                categories: state.categories,
-                answerCorrect: state.answerCorrect,
-                answering: state.answering,
-                loadingQuestion: state.loadingQuestion,
-                usedJoker: state.usedJoker
-            };
-        case "SET_CURRENT_QUESTION":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: action.question,
-                categories: state.categories,
-                answerCorrect: undefined,
-                answering: state.answering,
-                loadingQuestion: false,
-                usedJoker: state.usedJoker
-            };
+        case "SET_RUNNING_GAME":
+            retVal.runningGame = action.game;
+            break;
         case "SET_CATEGORIES":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: state.currentQuestion,
-                categories: action.categories,
-                answerCorrect: state.answerCorrect,
-                answering: state.answering,
-                loadingQuestion: state.loadingQuestion,
-                usedJoker: state.usedJoker
-            };
-        case "SET_ANSWER_CORRECT":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: state.currentQuestion,
-                categories: state.categories,
-                answerCorrect: action.correct,
-                answering: false,
-                loadingQuestion: state.loadingQuestion,
-                usedJoker: state.usedJoker
-            };
+            retVal.categories = action.categories;
+            break;
         case "SET_ANSWERING":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: state.currentQuestion,
-                categories: state.categories,
-                answerCorrect: state.answerCorrect,
-                answering: action.answering,
-                loadingQuestion: state.loadingQuestion,
-                usedJoker: state.usedJoker
-            };
+            retVal.answering = action.answering;
+            break;
         case "SET_LOADING_QUESTION":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: state.currentQuestion,
-                categories: state.categories,
-                answerCorrect: state.answerCorrect,
-                answering: state.answering,
-                loadingQuestion: action.loading,
-                usedJoker: state.usedJoker
-            };
-        case "SET_USED_JOKER":
-            return {
-                gameStarted: state.gameStarted,
-                currentQuestion: state.currentQuestion,
-                categories: state.categories,
-                answerCorrect: state.answerCorrect,
-                answering: state.answering,
-                loadingQuestion: state.loadingQuestion,
-                usedJoker: action.usedJoker
-            };
+            retVal.loadingQuestion = action.loading;
+            break;
         case "RESET":
             return unloadedState;
-        default:
-            return state;
     }
+    return retVal;
 };
