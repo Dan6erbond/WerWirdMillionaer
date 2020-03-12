@@ -37,8 +37,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         if (!this.props.users.token) {
             this.props.history.push("/");
         }
-
-        this.props.gameActions.reset();
+        
         this.ensureDataFetched();
     }
 
