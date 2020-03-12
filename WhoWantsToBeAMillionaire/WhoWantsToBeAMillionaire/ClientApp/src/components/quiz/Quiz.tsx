@@ -19,14 +19,15 @@ interface QuizProps {
 
 interface QuizState {
     secondsElapsed: number;
+    counterInterval?: ReturnType<typeof setInterval>;
 }
 
 class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     constructor(props: QuizProps & RouteComponentProps) {
         super(props);
-        this.state = {secondsElapsed: 0};
+        this.state = {secondsElapsed: 0, counterInterval: undefined};
 
-        this.selectCategories = this.selectCategories.bind(this);
+        this.startGame = this.startGame.bind(this);
         this.answerQuestion = this.answerQuestion.bind(this);
         this.addSeconds = this.addSeconds.bind(this);
         this.useJoker = this.useJoker.bind(this);
@@ -37,7 +38,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         if (!this.props.users.token) {
             this.props.history.push("/");
         }
-        
+
         this.ensureDataFetched();
     }
 
@@ -56,10 +57,12 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
 
         if (this.props.games.runningGame) {
             const answerCorrect = this.props.games.runningGame.answerCorrect;
+            const quizResult = this.props.games.runningGame.result;
             const currentQuestion = this.props.games.runningGame.currentQuestion;
 
-            if (!answering && !answerCorrect && currentQuestion) {
-                // TODO: End game
+            if (quizResult && !quizResult.won && this.state.counterInterval) {
+                if (this.state.counterInterval) clearTimeout(this.state.counterInterval);
+                this.setState({secondsElapsed: 0, counterInterval: undefined});
                 console.log("Lose!");
             } else if (!answering && answerCorrect && !loadingQuestion) {
                 this.props.gameActions.fetchQuestion(token);
@@ -80,10 +83,11 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         }
     }
 
-    private selectCategories(categories: number[]) {
+    private startGame(categories: number[]) {
         const token = this.props.users.token!!;
         this.props.gameActions.startGame(token, {categories: categories});
-        setInterval(this.addSeconds, 1000);
+        const interval: ReturnType<typeof setInterval> = setInterval(this.addSeconds, 1000);
+        this.setState({counterInterval: interval});
     }
 
     private answerQuestion(specification: AnswerSpecification) {
@@ -115,7 +119,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                             <Question question={question} answerQuestion={this.answerQuestion}/>
                         </div> : categories && !quizResult ?
                             <CategorySelection categories={categories}
-                                               selectCategories={this.selectCategories}/> : null}
+                                               play={this.startGame}/> : null}
             </div>
         );
     }

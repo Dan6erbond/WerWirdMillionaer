@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import {QuizAnswer, QuizQuestion} from "../../store/Games";
+import {QuizQuestion} from "../../store/Games";
 import {Button, Col, Container, Row} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
 

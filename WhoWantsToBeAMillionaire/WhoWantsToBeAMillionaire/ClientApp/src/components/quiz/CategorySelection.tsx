@@ -4,7 +4,7 @@ import {Button, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 
 interface CategorySelectionProps {
     categories: Category[];
-    selectCategories: (categories: number[]) => void;
+    play: (categories: number[]) => void;
 }
 
 interface CategorySelectionState {
@@ -28,7 +28,7 @@ export default class CategorySelection extends React.Component<CategorySelection
     private selectCategories() {
         const selectedCategories = this.state.selectedCategories;
         if (selectedCategories.length >= 1){
-            this.props.selectCategories(selectedCategories);
+            this.props.play(selectedCategories);
         }
     }
 

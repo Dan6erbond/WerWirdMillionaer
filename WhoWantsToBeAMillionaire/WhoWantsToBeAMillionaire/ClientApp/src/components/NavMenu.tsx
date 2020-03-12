@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {ApplicationState} from "../store";
 import * as UserStateStore from "../store/Users";
 import {RouteComponentProps} from "react-router";
-import {Button, Nav, Navbar} from "react-bootstrap";
+import {Nav, Navbar} from "react-bootstrap";
 
 import './NavMenu.css';
 import {SyntheticEvent} from "react";

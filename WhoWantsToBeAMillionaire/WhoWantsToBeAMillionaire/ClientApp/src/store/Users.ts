@@ -1,7 +1,6 @@
 ﻿import {Action, Reducer} from 'redux';
 import {AppThunkAction} from './';
 import {ErrorResponse, KnownErrors, TokenResponse} from "./ApiResponse";
-import {GameState} from "./Games";
 
 export interface User {
     userId: number;
