@@ -9,6 +9,7 @@ import {bindActionCreators} from "redux";
 import CategorySelection from "./CategorySelection";
 import {Button} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
+import QuizEnd from "./QuizEnd";
 
 interface QuizProps {
     users: UserStateStore.UserState;
@@ -105,11 +106,14 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
 
         return (
             <div>
-                {runningGame ? <p>{this.state.secondsElapsed}</p> : null}
-                <br/>
                 {quizResult ?
-                    <p>Game over!</p> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
+                    <div>
+                        <br/>
+                        <QuizEnd result={quizResult}/>
+                    </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
+                            {runningGame ? <p>{this.state.secondsElapsed}</p> : null}
+                            <br/>
                             <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
                                 <Button variant="dark" onClick={() => this.useJoker()} style={{float: 'right'}}
                                         disabled={usedJoker}>Use Joker</Button>
