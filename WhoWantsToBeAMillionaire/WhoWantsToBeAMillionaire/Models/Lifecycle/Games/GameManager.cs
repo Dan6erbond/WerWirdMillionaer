@@ -10,43 +10,66 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 {
     public class GameManager
     {
-        private readonly IRepository<Category> _categoryMySqlRepository;
         private readonly IRepository<QuizQuestion> _quizQuestionMySqlRepository;
         private readonly IRepository<QuizAnswer> _quizAnswerMySqlRepository;
+        private readonly IRepository<Game> _gameMySqlRepository;
+        private readonly IRepository<Round> _roundMySqlRepository;
 
-        private List<RunningGame> runningGames = new List<RunningGame>();
+        private List<RunningGame> _runningGames = new List<RunningGame>();
 
-        public GameManager(IRepository<Category> categoryMySqlRepository,
+        public GameManager(IRepository<Game> gameMySqlRepository,
             IRepository<QuizQuestion> quizQuestionMySqlRepository,
-            IRepository<QuizAnswer> quizAnswerMySqlRepository)
+            IRepository<QuizAnswer> quizAnswerMySqlRepository,
+            IRepository<Round> roundMySqlRepository)
         {
-            _categoryMySqlRepository = categoryMySqlRepository;
             _quizQuestionMySqlRepository = quizQuestionMySqlRepository;
             _quizAnswerMySqlRepository = quizAnswerMySqlRepository;
+            _gameMySqlRepository = gameMySqlRepository;
+            _roundMySqlRepository = roundMySqlRepository;
         }
 
         public void StartGame(User user, IEnumerable<int> categories)
         {
             // Remove any already running user games
-            runningGames = runningGames.Where(g => g.UserId != user.UserId).ToList();
-            runningGames.Add(new RunningGame(user.UserId, categories));
+            _runningGames = _runningGames.Where(g => g.UserId != user.UserId).ToList();
+            _runningGames.Add(new RunningGame(user.UserId, categories));
         }
 
         public QuizResult EndGame(User user)
         {
-            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
             
             // TODO: Throw error if no game has been found (gameIndex = -1)
 
-            var runningGame = runningGames[gameIndex];
-            runningGames.RemoveAt(gameIndex);
+            var runningGame = _runningGames[gameIndex];
+            _runningGames.RemoveAt(gameIndex);
+
+            var game = new Game
+            {
+                Start = runningGame.AskedQuestions[0].TimeAsked,
+                UserId = user.UserId
+            };
+            var gameId = _gameMySqlRepository.Create(game);
+
+            foreach (var question in runningGame.AskedQuestions)
+            {
+                var round = new Round
+                {
+                    Duration = (question.TimeAnswered - question.TimeAsked).Seconds,
+                    AnswerId = question.AnsweredAnswer.AnswerId,
+                    GameId = gameId,
+                    QuestionId = question.QuestionId,
+                    UsedJoker = question.JokerUsed
+                };
+                _roundMySqlRepository.Create(round);
+            }
 
             return runningGame.End();
         }
 
         public dynamic AnswerQuestion(User user, int questionId, int answerId)
         {
-            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
             
             // TODO: Throw error if no game has been found (gameIndex = -1)
             
@@ -63,7 +86,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var answer = new GameAnswer(quizAnswer);
 
-            runningGames[gameIndex].AnswerQuestion(answer);
+            _runningGames[gameIndex].AnswerQuestion(answer);
 
             if (answer.Correct)
             {
@@ -72,10 +95,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             return EndGame(user);
         }
 
-        public QuizQuestion GetQuestion(User user)
+        public IQuestion<GameAnswer> GetQuestion(User user)
         {
-            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
-            var game = runningGames[gameIndex];
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
+            var game = _runningGames[gameIndex];
 
             // TODO: Throw error if no game has been found
             // TODO: Check if current question is unanswered
@@ -105,15 +128,15 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             quizQuestion.Answers = quizAnswers;
 
             var question = new GameQuestion(quizQuestion);
-            runningGames[gameIndex].AskQuestion(question);
+            _runningGames[gameIndex].AskQuestion(question);
 
-            return quizQuestion;
+            return question;
         }
 
         public IQuestion<GameAnswer> UseJoker(User user)
         {
-            var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
-            return runningGames[gameIndex].UseJoker();
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
+            return _runningGames[gameIndex].UseJoker();
         }
     }
 }

@@ -36,7 +36,6 @@ class Home extends React.Component<HomeProps, HomeState> {
         if (this.props.token && !this.props.userData) {
             this.props.requestUserData(this.props.token);
         } else if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
-            console.log("Forwarding to quiz...");
             this.props.history.push("quiz");
         } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {
             this.props.history.push("admin");
@@ -64,11 +63,6 @@ class Home extends React.Component<HomeProps, HomeState> {
 
     private login(username: string, password: string) {
         this.setState({tries: this.state.tries + 1});
-
-        console.log(this.state.tries);
-        console.log(username);
-        console.log(password);
-
         this.props.login(username, password);
     }
 }

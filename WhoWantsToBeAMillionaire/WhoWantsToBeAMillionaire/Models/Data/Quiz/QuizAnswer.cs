@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
-
-namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
+﻿namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
 {
     public class QuizAnswer : IAnswer
     {

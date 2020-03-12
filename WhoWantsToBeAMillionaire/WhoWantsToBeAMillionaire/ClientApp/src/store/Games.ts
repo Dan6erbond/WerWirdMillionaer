@@ -135,6 +135,7 @@ export const actionCreators = {
                 return response.json() as Promise<QuizQuestion>;
             })
             .then(data => {
+                console.log(data)
                 const runningGame = getState().gameState.runningGame!!;
                 if (runningGame.currentQuestion) runningGame.askedQuestions.push(runningGame.currentQuestion);
                 runningGame.currentQuestion = data;
