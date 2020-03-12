@@ -9,8 +9,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
     {
         public int UserId { get; }
         public List<int> Categories { get; }
-        public List<Question> AskedQuestions { get; } = new List<Question>();
-        public Question CurrentQuestion { get; set; }
+        public List<GameQuestion> AskedQuestions { get; } = new List<GameQuestion>();
+        public GameQuestion CurrentQuestion { get; set; }
 
         public bool JokerUsed
         {
@@ -34,16 +34,16 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
                 if (CurrentQuestion != null)
                 {
-                    questionIds.Add(CurrentQuestion.QuizQuestion.QuestionId);
+                    questionIds.Add(CurrentQuestion.QuestionId);
                 }
 
-                AskedQuestions.ForEach(q => questionIds.Add(q.QuizQuestion.QuestionId));
+                AskedQuestions.ForEach(q => questionIds.Add(q.QuestionId));
 
                 return questionIds;
             }
         }
 
-        public QuizQuestion UseJoker()
+        public GameQuestion UseJoker()
         {
             return CurrentQuestion.UseJoker();
         }
@@ -54,21 +54,21 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             Categories = categories.ToList();
         }
 
-        public void AskQuestion(Question question)
+        public void AskQuestion(GameQuestion gameQuestion)
         {
             if (CurrentQuestion != null)
             {
                 AskedQuestions.Add(CurrentQuestion);
             }
 
-            question.TimeAsked = DateTime.Now;
-            CurrentQuestion = question;
+            gameQuestion.TimeAsked = DateTime.Now;
+            CurrentQuestion = gameQuestion;
         }
 
-        public void AnswerQuestion(Answer answer)
+        public void AnswerQuestion(GameAnswer gameAnswer)
         {
             CurrentQuestion.TimeAnswered = DateTime.Now;
-            CurrentQuestion.AnsweredAnswer = answer;
+            CurrentQuestion.AnsweredAnswer = gameAnswer;
         }
 
         public QuizResult End(bool won = false)

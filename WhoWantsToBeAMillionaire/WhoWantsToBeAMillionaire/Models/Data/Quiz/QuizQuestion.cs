@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
 {
-    public class QuizQuestion
+    public class QuizQuestion : IQuestion<QuizAnswer>
     {
         public int QuestionId { get; set; }
         public int CategoryId { get; set; }

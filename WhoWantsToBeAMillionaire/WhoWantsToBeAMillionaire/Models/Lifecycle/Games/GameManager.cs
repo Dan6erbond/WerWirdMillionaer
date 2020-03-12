@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
@@ -60,7 +61,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             // TODO: Check if answerId is valid
 
-            var answer = new Answer(quizAnswer.AnswerId, quizAnswer.Correct);
+            var answer = new GameAnswer(quizAnswer);
 
             runningGames[gameIndex].AnswerQuestion(answer);
 
@@ -101,17 +102,15 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var quizAnswerSpecification = new QuizAnswerSpecification(questionId: quizQuestion.QuestionId);
             var quizAnswers = _quizAnswerMySqlRepository.Query(quizAnswerSpecification);
-            quizAnswers.Shuffle();
-
             quizQuestion.Answers = quizAnswers;
 
-            var question = new Question(quizQuestion);
+            var question = new GameQuestion(quizQuestion);
             runningGames[gameIndex].AskQuestion(question);
 
             return quizQuestion;
         }
 
-        public QuizQuestion UseJoker(User user)
+        public IQuestion<GameAnswer> UseJoker(User user)
         {
             var gameIndex = runningGames.FindIndex(g => g.UserId == user.UserId);
             return runningGames[gameIndex].UseJoker();
