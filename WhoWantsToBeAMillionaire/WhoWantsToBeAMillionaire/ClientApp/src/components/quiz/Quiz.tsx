@@ -47,26 +47,24 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     }
 
     private ensureDataFetched() {
+        const counterInterval = this.state.counterInterval;
         const token = this.props.users.token!!;
-        const answering = this.props.games.answering;
-        const loadingQuestion = this.props.games.loadingQuestion;
+        const loading = this.props.games.answering || this.props.games.loadingQuestion;
 
         if (!this.props.games.categories) {
             this.props.gameActions.fetchCategories();
         }
 
-        if (this.props.games.runningGame) {
-            const answerCorrect = this.props.games.runningGame.answerCorrect;
-            const quizResult = this.props.games.runningGame.result;
-            const currentQuestion = this.props.games.runningGame.currentQuestion;
+        const runningGame = this.props.games.runningGame;
+        if (runningGame) {
+            const answerCorrect = runningGame.answerCorrect;
+            const quizResult = runningGame.result;
+            const currentQuestion = runningGame.currentQuestion;
 
-            if (quizResult && !quizResult.won && this.state.counterInterval) {
-                if (this.state.counterInterval) clearTimeout(this.state.counterInterval);
+            if (quizResult && counterInterval) {
+                if (counterInterval) clearTimeout(counterInterval);
                 this.setState({secondsElapsed: 0, counterInterval: undefined});
-                console.log("Lose!");
-            } else if (!answering && answerCorrect && !loadingQuestion) {
-                this.props.gameActions.fetchQuestion(token);
-            } else if (!currentQuestion) {
+            } else if (!loading && (!currentQuestion || answerCorrect)) {
                 this.props.gameActions.fetchQuestion(token);
             }
         }
@@ -102,6 +100,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const categories = this.props.games.categories;
         const question = runningGame ? runningGame.currentQuestion : undefined;
         const quizResult = runningGame ? runningGame.result : undefined;
+        if (quizResult) console.log(quizResult);
         const usedJoker = runningGame ? runningGame.usedJoker : undefined;
 
         return (
@@ -117,7 +116,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                             </div>
                             <br/>
                             <Question question={question} answerQuestion={this.answerQuestion}/>
-                        </div> : categories && !quizResult ?
+                        </div> : categories ?
                             <CategorySelection categories={categories}
                                                play={this.startGame}/> : null}
             </div>

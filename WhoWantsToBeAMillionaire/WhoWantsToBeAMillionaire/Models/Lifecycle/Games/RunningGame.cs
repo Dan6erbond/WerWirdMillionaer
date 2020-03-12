@@ -82,7 +82,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             return new QuizResult
             {
                 Won = won,
-                Points = AskedQuestions.Count,
+                Points = AskedQuestions.Count * 30, // since only correctly answered questions land in the list
                 TimeElapsed = timeElapsed,
                 JokerUsed = JokerUsed
             };

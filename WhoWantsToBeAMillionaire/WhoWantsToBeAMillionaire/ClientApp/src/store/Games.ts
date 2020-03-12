@@ -118,6 +118,7 @@ export const actionCreators = {
             });
     },
     fetchQuestion: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        dispatch({type: 'SET_LOADING_QUESTION', loading: true});
         fetch('api/games/question', {
             headers: {
                 "Accept": "application/json, text/plain, */*",
@@ -137,6 +138,7 @@ export const actionCreators = {
                 const runningGame = getState().gameState.runningGame!!;
                 if (runningGame.currentQuestion) runningGame.askedQuestions.push(runningGame.currentQuestion);
                 runningGame.currentQuestion = data;
+                runningGame.answerCorrect = false;
                 dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
             })
             .catch(error => {
@@ -170,8 +172,6 @@ export const actionCreators = {
             });
     },
     fetchCategories: (): AppThunkAction<KnownAction> => (dispatch) => {
-        dispatch({type: 'SET_LOADING_QUESTION', loading: true});
-
         fetch('api/games/categories', {
             headers: {
                 "Accept": "application/json, text/plain, */*",
@@ -221,18 +221,16 @@ export const actionCreators = {
                 return response.json() as Promise<AnswerResult | QuizResult>;
             })
             .then(data => {
-                console.log(data);
                 const runningGame = getState().gameState.runningGame!!;
                 switch (data.type) {
                     case "ANSWER_RESULT":
                         runningGame.answerCorrect = data.correct;
-                        dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
                         break;
                     case "QUIZ_RESULT":
                         runningGame.result = data;
-                        dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
                         break;
                 }
+                dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
             })
             .catch(error => {
                 console.error(error);
@@ -264,6 +262,8 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
     switch (action.type) {
         case "SET_RUNNING_GAME":
             retVal.runningGame = action.game;
+            retVal.loadingQuestion = false;
+            retVal.answering = false;
             break;
         case "SET_CATEGORIES":
             retVal.categories = action.categories;

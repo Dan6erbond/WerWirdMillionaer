@@ -1,9 +1,9 @@
-﻿﻿using System;
- using System.Collections.Generic;
- using System.Linq;
- using WhoWantsToBeAMillionaire.Models.Data.Quiz;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 
- namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
+namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 {
     public class Question
     {
@@ -23,19 +23,17 @@
             JokerUsed = true;
 
             var random = new Random();
-            int unhiddenIndex;
-            do
+            var indexes = new List<int>();
+            for (int i = 0; i < 2; i++)
             {
-                unhiddenIndex = random.Next(QuizQuestion.Answers.Count);
-            } while (QuizQuestion.Answers[unhiddenIndex].Correct);
-            
-            for (var i = 0; i < QuizQuestion.Answers.Count; i++)
-            {
-                var answer = QuizQuestion.Answers[i];
-                if (!answer.Correct && i != unhiddenIndex)
+                int index;
+                do
                 {
-                    QuizQuestion.Answers[i].HiddenAnswer = true;
-                }
+                    index = random.Next(QuizQuestion.Answers.Count);
+                } while (QuizQuestion.Answers[index].Correct || indexes.Contains(index));
+                
+                indexes.Add(index);
+                QuizQuestion.Answers[index].HiddenAnswer = true;
             }
 
             return QuizQuestion;
