@@ -38,7 +38,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public QuizResult EndGame(User user)
         {
             var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
-            
+
             // TODO: Throw error if no game has been found (gameIndex = -1)
 
             var runningGame = _runningGames[gameIndex];
@@ -56,7 +56,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var round = new Round
                 {
                     Duration = (question.TimeAnswered - question.TimeAsked).Seconds,
-                    AnswerId = question.AnsweredAnswer.AnswerId,
+                    AnswerId = question.AnsweredAnswer,
                     GameId = gameId,
                     QuestionId = question.QuestionId,
                     UsedJoker = question.JokerUsed
@@ -70,9 +70,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public dynamic AnswerQuestion(User user, int questionId, int answerId)
         {
             var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
-            
+
             // TODO: Throw error if no game has been found (gameIndex = -1)
-            
+
             var quizQuestionSpecification = new QuizQuestionSpecification(questionId);
             var quizQuestion = _quizQuestionMySqlRepository.Query(quizQuestionSpecification).FirstOrDefault();
 
@@ -84,14 +84,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             // TODO: Check if answerId is valid
 
-            var answer = new GameAnswer(quizAnswer);
+            var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
+            if (result.Correct) return result;
 
-            _runningGames[gameIndex].AnswerQuestion(answer);
-
-            if (answer.Correct)
-            {
-                return new AnswerResult(answer.Correct);
-            }
             return EndGame(user);
         }
 
@@ -108,8 +103,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var quizQuestions = _quizQuestionMySqlRepository.Query(quizQuestionSpecification);
 
             var random = new Random();
-            int index = 0;
-            QuizQuestion quizQuestion = null; 
+            int index;
+            QuizQuestion quizQuestion;
 
             if (quizQuestions.Count != 0)
             {
@@ -127,7 +122,13 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var quizAnswers = _quizAnswerMySqlRepository.Query(quizAnswerSpecification);
             quizQuestion.Answers = quizAnswers;
 
-            var question = new GameQuestion(quizQuestion);
+            var correctAnswer = quizAnswers.First(a => a.Correct);
+
+            var roundSpecification = new RoundSpecification(questionId: quizQuestion.QuestionId);
+            var rounds = _roundMySqlRepository.Query(roundSpecification);
+            var correctlyAnswered = rounds.Count(r => r.AnswerId == correctAnswer.AnswerId);
+
+            var question = new GameQuestion(quizQuestion, rounds.Count, correctlyAnswered);
             _runningGames[gameIndex].AskQuestion(question);
 
             return question;

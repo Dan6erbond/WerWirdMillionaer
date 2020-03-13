@@ -12,6 +12,8 @@ export interface QuizQuestion {
     questionId: number;
     categoryId: number;
     question: string;
+    timesAsked: number;
+    correctlyAnswered: number;
     answers: QuizAnswer[];
     uses: number;
 }

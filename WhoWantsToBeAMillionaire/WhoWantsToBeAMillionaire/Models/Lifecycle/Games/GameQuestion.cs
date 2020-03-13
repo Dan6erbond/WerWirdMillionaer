@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Cms;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 
 namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
@@ -11,12 +12,14 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public int QuestionId { get; set; }
         public string Question { get; set; }
         public List<GameAnswer> Answers { get; set; } = new List<GameAnswer>();
-        [JsonIgnore] public GameAnswer AnsweredAnswer { get; set; }
+        public int TimesAsked { get; set; }
+        public int CorrectlyAnswered { get; set; }
+        [JsonIgnore] public int AnsweredAnswer { get; set; }
         [JsonIgnore] public bool JokerUsed { get; private set; } = false;
         [JsonIgnore] public DateTime TimeAsked { get; set; }
         [JsonIgnore] public DateTime TimeAnswered { get; set; }
 
-        public GameQuestion(QuizQuestion question)
+        public GameQuestion(QuizQuestion question, int timesAsked, int correctlyAnswered)
         {
             QuestionId = question.QuestionId;
             Question = question.Question;
@@ -26,6 +29,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 Answers.Add(new GameAnswer(answer));
             }
             Answers.Shuffle();
+
+            TimesAsked = timesAsked;
+            CorrectlyAnswered = correctlyAnswered;
         }
         
         public GameQuestion UseJoker()

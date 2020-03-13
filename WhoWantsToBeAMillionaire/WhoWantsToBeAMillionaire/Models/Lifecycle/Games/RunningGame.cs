@@ -56,19 +56,16 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         public void AskQuestion(GameQuestion gameQuestion)
         {
-            if (CurrentQuestion != null)
-            {
-                AskedQuestions.Add(CurrentQuestion);
-            }
-
             gameQuestion.TimeAsked = DateTime.Now;
             CurrentQuestion = gameQuestion;
         }
 
-        public void AnswerQuestion(GameAnswer gameAnswer)
+        public AnswerResult AnswerQuestion(QuizAnswer answer)
         {
             CurrentQuestion.TimeAnswered = DateTime.Now;
-            CurrentQuestion.AnsweredAnswer = gameAnswer;
+            CurrentQuestion.AnsweredAnswer = answer.AnswerId;
+            AskedQuestions.Add(CurrentQuestion);
+            return new AnswerResult(answer.Correct);
         }
 
         public QuizResult End(bool won = false)

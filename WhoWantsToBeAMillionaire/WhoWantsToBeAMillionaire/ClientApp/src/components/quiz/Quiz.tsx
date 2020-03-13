@@ -33,6 +33,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.addSeconds = this.addSeconds.bind(this);
         this.useJoker = this.useJoker.bind(this);
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
+        this.playAgain = this.playAgain.bind(this);
     }
 
     public componentDidMount() {
@@ -88,6 +89,10 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const interval: ReturnType<typeof setInterval> = setInterval(this.addSeconds, 1000);
         this.setState({counterInterval: interval});
     }
+    
+    private playAgain() {
+        this.props.gameActions.reset();
+    }
 
     private answerQuestion(specification: AnswerSpecification) {
         const token = this.props.users.token!!;
@@ -109,7 +114,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                 {quizResult ?
                     <div>
                         <br/>
-                        <QuizEnd result={quizResult}/>
+                        <QuizEnd result={quizResult} playAgain={this.playAgain}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
                             {runningGame ? <p>{this.state.secondsElapsed}</p> : null}

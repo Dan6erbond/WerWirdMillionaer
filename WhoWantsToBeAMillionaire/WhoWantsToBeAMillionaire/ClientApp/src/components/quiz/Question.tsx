@@ -17,7 +17,7 @@ export default class Question extends React.Component<QuestionProps> {
 
     private answerQuestion(answerNr: number) {
         const answer = this.props.question.answers[answerNr];
-        
+
         this.props.answerQuestion({
             questionId: this.props.question.questionId,
             answerId: answer.answerId
@@ -27,7 +27,12 @@ export default class Question extends React.Component<QuestionProps> {
     public render() {
         return (
             <div>
-                <h1 className="display-4">{this.props.question.question}</h1>
+                <div>
+                    <h1 className="display-4">{this.props.question.question}</h1>
+                    <br/>
+                    <p style={{textAlign: 'center'}}>{this.props.question.timesAsked == 0 ? "Never asked" :
+                        `${Math.round(this.props.question.correctlyAnswered * 100 / this.props.question.timesAsked)}% correctly answered`}</p>
+                </div>
                 <Container>
                     <Row>
                         <Col>
