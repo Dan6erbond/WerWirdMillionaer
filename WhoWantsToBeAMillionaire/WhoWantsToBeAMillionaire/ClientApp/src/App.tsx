@@ -8,11 +8,13 @@ import Quiz from "./components/quiz/Quiz";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
+import Leaderboard from "./components/leaderboard/Leaderboard";
 
 export default () => (
     <Layout>
         <Route exact path='/' component={Home} />
         <Route path='/sign-up' component={SignUp} />
         <Route path='/quiz' component={Quiz} />
+        <Route path='/leaderboard' component={Leaderboard} />
     </Layout>
 );

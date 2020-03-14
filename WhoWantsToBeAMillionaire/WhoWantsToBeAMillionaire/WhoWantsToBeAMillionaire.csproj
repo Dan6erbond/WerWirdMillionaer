@@ -28,6 +28,7 @@
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
         <None Include="ClientApp\src\components\forms\AuthenticationForm.tsx" />
         <None Include="ClientApp\src\components\home\Home.tsx" />
+        <None Include="ClientApp\src\components\leaderboard\Home.tsx" />
         <None Include="ClientApp\src\components\quiz\CategorySelection.tsx" />
         <None Include="ClientApp\src\components\quiz\Question.tsx" />
         <None Include="ClientApp\src\components\quiz\Quiz.tsx" />

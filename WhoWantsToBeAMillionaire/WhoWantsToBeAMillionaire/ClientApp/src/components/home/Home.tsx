@@ -24,7 +24,6 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
 
     public componentDidMount() {
-        console.log(this.props.token);
         this.doForwards();
     }
 

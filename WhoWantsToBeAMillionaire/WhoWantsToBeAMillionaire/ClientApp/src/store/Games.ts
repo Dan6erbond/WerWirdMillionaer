@@ -2,6 +2,19 @@
 import {AppThunkAction} from './';
 import {AnswerResult, ErrorResponse, QuizResult} from "./ApiResponse";
 import {AnswerSpecification, GameSpecification} from "./Specification";
+import {LeaderboardSort} from "../components/leaderboard/Leaderboard";
+
+declare global {
+    interface Array<T> {
+        sortBy(property: string, ascending: boolean): Array<T>;
+    }
+}
+
+Array.prototype.sortBy = function (property: string, ascending: boolean) {
+    return this.sort(function (a, b) {
+        return a[property] == b[property] ? 0 : (a[property] > b[property]) && ascending ? 1 : -1;
+    });
+};
 
 export interface Category {
     categoryId: number;
@@ -32,6 +45,25 @@ interface RunningGame {
     usedJoker: boolean;
 }
 
+interface Game {
+    gameId: number;
+    username: string;
+    start: string;
+    rounds: Round[];
+    points: number;
+    duration: number;
+    rank: number;
+    weightedPoints: number;
+}
+
+interface Round {
+    roundId: number;
+    questionId: number;
+    answerId?: number;
+    duration: number;
+    usedJoker: boolean;
+}
+
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
@@ -40,6 +72,7 @@ export interface GameState {
     categories?: Category[];
     answering: boolean;
     loadingQuestion: boolean;
+    leaderboard?: Game[];
 }
 
 // -----------------
@@ -70,6 +103,11 @@ interface ResetAction {
     type: 'RESET';
 }
 
+interface SetLeaderboardAction {
+    type: 'SET_LEADERBOARD';
+    leaderboard: Game[];
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 
@@ -78,7 +116,8 @@ type KnownAction =
     | SetLoadingQuestionAction
     | SetCategoriesAction
     | SetAnsweringAction
-    | ResetAction;
+    | ResetAction
+    | SetLeaderboardAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -137,7 +176,6 @@ export const actionCreators = {
                 return response.json() as Promise<QuizQuestion>;
             })
             .then(data => {
-                console.log(data)
                 const runningGame = getState().gameState.runningGame!!;
                 if (runningGame.currentQuestion) runningGame.askedQuestions.push(runningGame.currentQuestion);
                 runningGame.currentQuestion = data;
@@ -213,7 +251,7 @@ export const actionCreators = {
                     const runningGame = getState().gameState.runningGame!!;
                     runningGame.answerCorrect = false;
                     dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
-                    
+
                     return response.text().then(text => {
                         console.error(text);
                         return (response.json() as Promise<ErrorResponse>).then(error => {
@@ -241,6 +279,66 @@ export const actionCreators = {
     },
     reset: (): AppThunkAction<KnownAction> => (dispatch) => {
         dispatch({type: 'RESET'});
+    },
+    fetchLeaderboard: (): AppThunkAction<KnownAction> => (dispatch) => {
+        fetch('api/games/leaderboard', {
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-type": "application/json"
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        throw new Error(error.title);
+                    });
+                }
+                return response.json() as Promise<Game[]>;
+            })
+            .then(data => {
+                dispatch({type: 'SET_LEADERBOARD', leaderboard: data});
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    },
+    sortLeaderboard: (sort: LeaderboardSort): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        let leaderboard = Object.assign([], getState().gameState.leaderboard);
+
+        switch (sort) {
+            case LeaderboardSort.PointsAscending:
+                leaderboard.sortBy('points', true);
+                break;
+            case LeaderboardSort.PointsDescending:
+                leaderboard.sortBy('points', false);
+                break;
+            case LeaderboardSort.RankAscending:
+                leaderboard.sortBy('rank', true);
+                break;
+            case LeaderboardSort.RankDescending:
+                leaderboard.sortBy('rank', false);
+                break;
+            case LeaderboardSort.UsernameAscending:
+                leaderboard.sortBy('username', true);
+                break;
+            case LeaderboardSort.UsernameDescending:
+                leaderboard.sortBy('username', false);
+                break;
+            case LeaderboardSort.WeightedPointsAscending:
+                leaderboard.sortBy('weightedPoints', true);
+                break;
+            case LeaderboardSort.WeightedPointsDescending:
+                leaderboard.sortBy('weightedPoints', false);
+                break;
+            case LeaderboardSort.GameTimeSortAscending:
+                leaderboard.sortBy('duration', true);
+                break;
+            case LeaderboardSort.GameTimeSortDescending:
+                leaderboard.sortBy('duration', false);
+                break;
+        }
+
+        dispatch({type: 'SET_LEADERBOARD', leaderboard: leaderboard});
     }
 };
 
@@ -252,6 +350,7 @@ const unloadedState: GameState = {
     categories: undefined,
     answering: false,
     loadingQuestion: false,
+    leaderboard: undefined
 };
 
 export const reducer: Reducer<GameState> = (state: GameState | undefined, incomingAction: Action): GameState => {
@@ -279,6 +378,9 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
             break;
         case "RESET":
             return unloadedState;
+        case "SET_LEADERBOARD":
+            retVal.leaderboard = action.leaderboard;
+            break;
     }
     return retVal;
 };

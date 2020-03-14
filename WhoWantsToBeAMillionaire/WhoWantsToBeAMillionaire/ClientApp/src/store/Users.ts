@@ -42,6 +42,10 @@ interface SetApiErrorAction {
     error: KnownErrors | undefined;
 }
 
+interface SignOutAction {
+    type: 'SIGN_OUT';
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 
@@ -49,7 +53,8 @@ type KnownAction =
     SetUserTokenAction
     | SetUserDataAction
     | SetUserCreatedAction
-    | SetApiErrorAction;
+    | SetApiErrorAction
+    | SignOutAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -153,6 +158,9 @@ export const actionCreators = {
             .catch(error => {
                 console.error(error.message);
             });
+    },
+    signOut: (): AppThunkAction<KnownAction> => (dispatch) => {
+        dispatch({type: 'SIGN_OUT'});
     }
 };
 
@@ -186,6 +194,12 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
             break;
         case 'SET_API_ERROR':
             retVal.apiError = action.error;
+            break;
+        case "SIGN_OUT":
+            retVal.apiError = undefined;
+            retVal.userCreated = false;
+            retVal.userData = undefined;
+            retVal.token = undefined;
             break;
     }
     

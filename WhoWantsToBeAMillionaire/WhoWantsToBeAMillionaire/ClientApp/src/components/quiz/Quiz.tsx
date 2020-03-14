@@ -34,18 +34,23 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.useJoker = this.useJoker.bind(this);
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
         this.playAgain = this.playAgain.bind(this);
+        this.doForwards = this.doForwards.bind(this);
     }
 
     public componentDidMount() {
-        if (!this.props.users.token) {
-            this.props.history.push("/");
-        }
-
+        this.doForwards();
         this.ensureDataFetched();
     }
 
     public componentDidUpdate(prevProps: Readonly<QuizProps>, prevState: Readonly<QuizState>, snapshot?: any) {
+        this.doForwards();
         this.ensureDataFetched();
+    }
+
+    private doForwards() {
+        if (!this.props.users.token) {
+            this.props.history.push("/");
+        }
     }
 
     private ensureDataFetched() {
@@ -89,7 +94,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const interval: ReturnType<typeof setInterval> = setInterval(this.addSeconds, 1000);
         this.setState({counterInterval: interval});
     }
-    
+
     private playAgain() {
         this.props.gameActions.reset();
     }

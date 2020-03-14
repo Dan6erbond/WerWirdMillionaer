@@ -6,7 +6,6 @@ import {RouteComponentProps} from "react-router";
 import {Nav, Navbar} from "react-bootstrap";
 
 import './NavMenu.css';
-import {SyntheticEvent} from "react";
 import {Link, NavLink} from "react-router-dom";
 
 type NavMenuProps =
@@ -32,9 +31,12 @@ class NavMenu extends React.Component<NavMenuProps> {
                             <Nav.Item>
                                 <NavLink to="/" className="nav-link">Home</NavLink>
                             </Nav.Item>
+                            <Nav.Item>
+                                <NavLink to="/leaderboard" className="nav-link">Leaderboard</NavLink>
+                            </Nav.Item>
                             {this.props.token ?
                                 <Nav.Item>
-                                    <Nav.Link onSelect={this.signOut}>Sign out</Nav.Link>
+                                    <Nav.Link onClick={this.signOut}>Sign out</Nav.Link>
                                 </Nav.Item> : null}
                         </Nav>
                     </Navbar.Collapse>
@@ -44,7 +46,7 @@ class NavMenu extends React.Component<NavMenuProps> {
     }
 
     private signOut() {
-        console.log("click");
+        this.props.signOut();
     }
 }
 
