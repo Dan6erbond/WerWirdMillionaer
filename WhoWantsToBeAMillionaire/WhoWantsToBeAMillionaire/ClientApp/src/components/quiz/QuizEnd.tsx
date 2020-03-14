@@ -9,10 +9,6 @@ interface QuizEndProps {
 }
 
 export default class QuizEnd extends React.Component<QuizEndProps> {
-    constructor(props: QuizEndProps) {
-        super(props);
-    }
-
     public render() {
         return (
             <Jumbotron>
