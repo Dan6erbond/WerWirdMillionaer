@@ -28,9 +28,18 @@ class NavMenu extends React.Component<NavMenuProps> {
                     <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="justify-content-end" activeKey="/home">
-                            <Nav.Item>
-                                <NavLink to="/" className="nav-link">Home</NavLink>
-                            </Nav.Item>
+                            {!this.props.token ?
+                                <Nav.Item>
+                                    <NavLink to="/" className="nav-link">Home</NavLink>
+                                </Nav.Item> : null}
+                            {this.props.token ?
+                                <Nav.Item>
+                                    <NavLink to="/quiz" className="nav-link">Quiz</NavLink>
+                                </Nav.Item> : null}
+                            {this.props.token ?
+                                <Nav.Item>
+                                    <NavLink to="/games" className="nav-link">My Games</NavLink>
+                                </Nav.Item> : null}
                             <Nav.Item>
                                 <NavLink to="/leaderboard" className="nav-link">Leaderboard</NavLink>
                             </Nav.Item>
