@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.WebEncoders.Testing;
 using WhoWantsToBeAMillionaire.Models;
-using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
-using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
@@ -22,24 +20,20 @@ namespace WhoWantsToBeAMillionaire.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly IRepository<Category> _categoryRepository;
-        private readonly IRepository<Game> _gameRepository;
-        private readonly IRepository<Round> _roundRepository;
-        private readonly IRepository<User> _userRepository;
+        private readonly IRepository<QuizQuestion> _questionRepository;
         private readonly IRepository<QuizAnswer> _answerRepository;
 
         private readonly GameManager _gameManager;
         private readonly UserManager _userManager;
 
         public GameController(IHttpContextAccessor httpContextAccessor, IRepository<Category> categoryRepository,
-            IRepository<Game> gameRepository, IRepository<Round> roundRepository, GameManager gameManager,
-            IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository, UserManager userManager)
+            IRepository<QuizQuestion> questionRepository, IRepository<QuizAnswer> answerRepository,
+            GameManager gameManager, UserManager userManager)
         {
             _httpContextAccessor = httpContextAccessor;
 
             _categoryRepository = categoryRepository;
-            _gameRepository = gameRepository;
-            _roundRepository = roundRepository;
-            _userRepository = userRepository;
+            _questionRepository = questionRepository;
             _answerRepository = answerRepository;
 
             _gameManager = gameManager;
@@ -47,7 +41,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
         }
 
         [HttpPost("start")]
-        public IActionResult StartGame([FromBody] GameSpecification specification)
+        public IActionResult StartGame([FromBody] StartGameSpecification specification)
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
@@ -63,9 +57,9 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            _gameManager.EndGame(user);
+            var result = _gameManager.EndGame(user);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpGet("question")]
@@ -74,7 +68,24 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            return Ok(_gameManager.GetQuestion(user));
+            var question = _gameManager.GetQuestion(user);
+            
+            return Ok(question);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("questions/{id}")]
+        public IActionResult GetQuestionData(int id)
+        {
+            var questionSpecification = new QuizQuestionSpecification(id);
+            var question = _questionRepository.Query(questionSpecification).First();
+
+            var answerSpecification = new QuizAnswerSpecification(questionId: id);
+            var answers = _answerRepository.Query(answerSpecification);
+
+            question.Answers = answers;
+            
+            return Ok(question);
         }
 
         [HttpPost("answer")]
@@ -94,54 +105,35 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            return Ok(_gameManager.UseJoker(user));
+            var question = _gameManager.UseJoker(user);
+
+            return Ok(question);
+        }
+        
+        [HttpGet("my")]
+        public IActionResult GetUserGames()
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            var games = _gameManager.GetGames(user);
+            
+            return Ok(games);
         }
 
         [AllowAnonymous]
         [HttpGet("categories")]
         public IActionResult GetCategories()
         {
-            return Ok(_categoryRepository.List);
+            var categories = _categoryRepository.List;
+            return Ok(categories);
         }
 
         [AllowAnonymous]
         [HttpGet("leaderboard")]
-        public IActionResult GetRounds()
+        public IActionResult GetGames()
         {
-            var games = _gameRepository.List.ToList();
-
-            foreach (var game in games)
-            {
-                var userSpecification = new UserSpecification(game.UserId);
-                var user = _userRepository.Query(userSpecification).First();
-                game.Username = user.Username;
-
-                var roundSpecification = new RoundSpecification(game.GameId);
-                var rounds = _roundRepository.Query(roundSpecification);
-                game.Rounds = rounds;
-
-                foreach (var round in rounds)
-                {
-                    game.Duration += round.Duration;
-
-                    var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
-                    var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
-                    if (answer != null && answer.Correct)
-                    {
-                        game.Points += 30;
-                    }
-                }
-
-                game.WeightedPoints = game.Points / game.Duration;
-            }
-
-            games.Sort((game, game1) => game.CompareTo(game1));
-
-            for (int i = 0; i < games.Count; i++)
-            {
-                games[i].Rank = i + 1;
-            }
-
+            var games = _gameManager.GetGames();
             return Ok(games);
         }
     }

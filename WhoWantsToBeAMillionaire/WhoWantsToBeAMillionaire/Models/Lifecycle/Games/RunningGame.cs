@@ -11,6 +11,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public List<int> Categories { get; }
         public List<GameQuestion> AskedQuestions { get; } = new List<GameQuestion>();
         public GameQuestion CurrentQuestion { get; set; }
+        public DateTime TimeStarted { get; set; }
 
         public bool JokerUsed
         {
@@ -50,6 +51,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         
         public RunningGame(int userId, IEnumerable<int> categories)
         {
+            TimeStarted = DateTime.Now;
             UserId = userId;
             Categories = categories.ToList();
         }
@@ -63,23 +65,23 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public AnswerResult AnswerQuestion(QuizAnswer answer)
         {
             CurrentQuestion.TimeAnswered = DateTime.Now;
-            CurrentQuestion.AnsweredAnswer = answer.AnswerId;
+            CurrentQuestion.AnsweredAnswer = CurrentQuestion.Answers.First(a => a.AnswerId == answer.AnswerId);
             AskedQuestions.Add(CurrentQuestion);
             return new AnswerResult(answer.Correct);
         }
 
-        public QuizResult End(bool won = false)
+        public QuizResult End(bool won)
         {
-            int timeElapsed = 0;
-            foreach (var question in AskedQuestions)
-            {
-                timeElapsed += (question.TimeAnswered - question.TimeAsked).Seconds;
-            }
+            var timeEnded = DateTime.Now;
+            int timeElapsed = (timeEnded - TimeStarted).Seconds;
+
+            var correctlyAnswered = AskedQuestions.Where(q => q.AnsweredAnswer.Correct);
+            var points = correctlyAnswered.Count() * 30;
 
             return new QuizResult
             {
                 Won = won,
-                Points = AskedQuestions.Count * 30, // since only correctly answered questions land in the list
+                Points = points, // since only correctly answered questions land in the list
                 TimeElapsed = timeElapsed,
                 JokerUsed = JokerUsed
             };

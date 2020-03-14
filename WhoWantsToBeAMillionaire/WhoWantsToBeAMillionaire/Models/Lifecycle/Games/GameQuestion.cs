@@ -14,7 +14,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public List<GameAnswer> Answers { get; set; } = new List<GameAnswer>();
         public int TimesAsked { get; set; }
         public int CorrectlyAnswered { get; set; }
-        [JsonIgnore] public int AnsweredAnswer { get; set; }
+        [JsonIgnore] public GameAnswer AnsweredAnswer { get; set; }
         [JsonIgnore] public bool JokerUsed { get; private set; } = false;
         [JsonIgnore] public DateTime TimeAsked { get; set; }
         [JsonIgnore] public DateTime TimeAnswered { get; set; }

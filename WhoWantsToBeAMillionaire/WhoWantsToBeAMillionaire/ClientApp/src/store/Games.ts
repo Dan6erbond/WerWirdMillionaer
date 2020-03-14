@@ -34,7 +34,7 @@ interface RunningGame {
     usedJoker: boolean;
 }
 
-interface Game {
+export interface Game {
     gameId: number;
     username: string;
     start: string;
@@ -45,7 +45,7 @@ interface Game {
     weightedPoints: number;
 }
 
-interface Round {
+export interface Round {
     roundId: number;
     questionId: number;
     answerId?: number;
@@ -62,6 +62,7 @@ export interface GameState {
     answering: boolean;
     loadingQuestion: boolean;
     leaderboard?: Game[];
+    userGames?: Game[];
 }
 
 // -----------------
@@ -88,13 +89,14 @@ interface SetAnsweringAction {
     answering: boolean;
 }
 
-interface ResetAction {
-    type: 'RESET';
-}
-
 interface SetLeaderboardAction {
     type: 'SET_LEADERBOARD';
     leaderboard: Game[];
+}
+
+interface SetUserGamesAction {
+    type: 'SET_USER_GAMES';
+    games: Game[] | undefined;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -105,8 +107,8 @@ type KnownAction =
     | SetLoadingQuestionAction
     | SetCategoriesAction
     | SetAnsweringAction
-    | ResetAction
-    | SetLeaderboardAction;
+    | SetLeaderboardAction
+    | SetUserGamesAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -267,7 +269,37 @@ export const actionCreators = {
             });
     },
     reset: (): AppThunkAction<KnownAction> => (dispatch) => {
-        dispatch({type: 'RESET'});
+        dispatch({type: 'SET_USER_GAMES', games: undefined});
+        dispatch({type: 'SET_RUNNING_GAME', game: undefined});
+    },
+    endGame: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        fetch('api/games/end', {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error(text);
+                        return (response.json() as Promise<ErrorResponse>).then(error => {
+                            throw new Error(error.title);
+                        });
+                    });
+                }
+                return response.json() as Promise<QuizResult>;
+            })
+            .then(data => {
+                const runningGame = getState().gameState.runningGame!!;
+                runningGame.result = data;
+                dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+            })
+            .catch(error => {
+                console.error(error);
+            });
     },
     fetchLeaderboard: (): AppThunkAction<KnownAction> => (dispatch) => {
         fetch('api/games/leaderboard', {
@@ -286,6 +318,29 @@ export const actionCreators = {
             })
             .then(data => {
                 dispatch({type: 'SET_LEADERBOARD', leaderboard: data});
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    },
+    fetchUserGames: (token: string): AppThunkAction<KnownAction> => (dispatch) => {
+        fetch('api/games/my', {
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        throw new Error(error.title);
+                    });
+                }
+                return response.json() as Promise<Game[]>;
+            })
+            .then(data => {
+                dispatch({type: 'SET_USER_GAMES', games: data});
             })
             .catch(error => {
                 console.error(error);
@@ -339,7 +394,8 @@ const unloadedState: GameState = {
     categories: undefined,
     answering: false,
     loadingQuestion: false,
-    leaderboard: undefined
+    leaderboard: undefined,
+    userGames: undefined
 };
 
 export const reducer: Reducer<GameState> = (state: GameState | undefined, incomingAction: Action): GameState => {
@@ -365,10 +421,11 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
         case "SET_LOADING_QUESTION":
             retVal.loadingQuestion = action.loading;
             break;
-        case "RESET":
-            return unloadedState;
         case "SET_LEADERBOARD":
             retVal.leaderboard = action.leaderboard;
+            break;
+        case "SET_USER_GAMES":
+            retVal.userGames = action.games;
             break;
     }
     return retVal;

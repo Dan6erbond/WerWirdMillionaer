@@ -21,16 +21,26 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     constructor(props: SignUpProps) {
         super(props);
         this.state = {username: "", password: ""};
+        
         this.signUp = this.signUp.bind(this);
+        this.doForwards = this.doForwards.bind(this);        
+    }
+    
+    public componentDidMount() {
+        this.doForwards();
     }
 
-    public componentDidUpdate(prevProps: Readonly<SignUpProps>, prevState: Readonly<{}>, snapshot?: any) {
+    public componentDidUpdate() {
+        this.doForwards();
+        
         if (this.props.userCreated) {
             this.props.login(this.state.username, this.state.password);
         } else if (this.props.token) {
             this.props.requestUserData(this.props.token);
         }
-
+    }
+    
+    private doForwards(){
         if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
             this.props.history.push("quiz");
         } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {

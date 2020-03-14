@@ -35,6 +35,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
         this.playAgain = this.playAgain.bind(this);
         this.doForwards = this.doForwards.bind(this);
+        this.endGame = this.endGame.bind(this);
     }
 
     public componentDidMount() {
@@ -51,6 +52,11 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         if (!this.props.users.token) {
             this.props.history.push("/");
         }
+    }
+    
+    private endGame() {
+        const token = this.props.users.token!!;
+        this.props.gameActions.endGame(token);
     }
 
     private ensureDataFetched() {
@@ -130,6 +136,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                             </div>
                             <br/>
                             <Question question={question} answerQuestion={this.answerQuestion}/>
+                            <br/>
+                            <Button variant="outline-primary" onClick={this.endGame}>End Game</Button>
                         </div> : categories ?
                             <CategorySelection categories={categories}
                                                play={this.startGame}/> : null}

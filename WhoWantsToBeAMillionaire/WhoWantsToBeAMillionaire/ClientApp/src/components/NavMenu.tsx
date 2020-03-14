@@ -2,19 +2,23 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {ApplicationState} from "../store";
 import * as UserStateStore from "../store/Users";
+import * as GameStateStore from "../store/Games";
 import {RouteComponentProps} from "react-router";
 import {Nav, Navbar} from "react-bootstrap";
 
 import './NavMenu.css';
 import {Link, NavLink} from "react-router-dom";
+import {bindActionCreators} from "redux";
 
-type NavMenuProps =
-    UserStateStore.UserState
-    & typeof UserStateStore.actionCreators
-    & RouteComponentProps;
+interface NavMenuProps {
+    users: UserStateStore.UserState;
+    userActions: typeof UserStateStore.actionCreators;
+    games: GameStateStore.GameState;
+    gameActions: typeof GameStateStore.actionCreators;
+}
 
-class NavMenu extends React.Component<NavMenuProps> {
-    constructor(props: NavMenuProps) {
+class NavMenu extends React.Component<NavMenuProps & RouteComponentProps> {
+    constructor(props: NavMenuProps & RouteComponentProps) {
         super(props);
 
         this.signOut = this.signOut.bind(this);
@@ -28,22 +32,22 @@ class NavMenu extends React.Component<NavMenuProps> {
                     <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="justify-content-end" activeKey="/home">
-                            {!this.props.token ?
+                            {!this.props.users.token ?
                                 <Nav.Item>
                                     <NavLink to="/" className="nav-link">Home</NavLink>
                                 </Nav.Item> : null}
-                            {this.props.token ?
+                            {this.props.users.token ?
                                 <Nav.Item>
                                     <NavLink to="/quiz" className="nav-link">Quiz</NavLink>
                                 </Nav.Item> : null}
-                            {this.props.token ?
+                            {this.props.users.token ?
                                 <Nav.Item>
                                     <NavLink to="/games" className="nav-link">My Games</NavLink>
                                 </Nav.Item> : null}
                             <Nav.Item>
                                 <NavLink to="/leaderboard" className="nav-link">Leaderboard</NavLink>
                             </Nav.Item>
-                            {this.props.token ?
+                            {this.props.users.token ?
                                 <Nav.Item>
                                     <Nav.Link onClick={this.signOut}>Sign out</Nav.Link>
                                 </Nav.Item> : null}
@@ -55,11 +59,20 @@ class NavMenu extends React.Component<NavMenuProps> {
     }
 
     private signOut() {
-        this.props.signOut();
+        this.props.userActions.signOut();
+        this.props.gameActions.reset();
     }
 }
 
 export default connect(
-    (state: ApplicationState) => state.userState,
-    UserStateStore.actionCreators
+    (state: ApplicationState) => ({
+        users: state.userState,
+        games: state.gameState,
+    }),
+    (dispatch) => {
+        return {
+            userActions: bindActionCreators(UserStateStore.actionCreators, dispatch),
+            gameActions: bindActionCreators(GameStateStore.actionCreators, dispatch)
+        };
+    }
 )(NavMenu as any);
