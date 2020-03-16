@@ -158,24 +158,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         public List<Game> GetGames(User user = null)
         {
-            List<Game> games;
-
-            if (user != null)
-            {
-                var gameSpecification = new GameSpecification(user.UserId);
-                games = _gameRepository.Query(gameSpecification);
-            }
-            else
-            {
-                games = _gameRepository.List.ToList();
-            }
+            var games = _gameRepository.List.ToList(); // Grab all the games to calculate the rank
 
             foreach (var game in games)
             {
-                var userSpecification = new UserSpecification(game.UserId);
-                var u = _userRepository.Query(userSpecification).First();
-                game.Username = u.Username;
-
                 var roundSpecification = new RoundSpecification(game.GameId);
                 var rounds = _roundRepository.Query(roundSpecification);
                 game.Rounds = rounds;
@@ -191,8 +177,17 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                         game.Points += 30;
                     }
                 }
-
+                
+                if (user != null && game.UserId != user.UserId)
+                {
+                    continue; // Saves time by not grabbing information for unneeded games
+                }
+                
                 game.WeightedPoints = game.Points / Math.Max(game.Duration, 1);
+
+                var userSpecification = new UserSpecification(game.UserId);
+                var u = _userRepository.Query(userSpecification).First();
+                game.Username = u.Username;
             }
 
             games.Sort((game, game1) => game.CompareTo(game1));
@@ -200,6 +195,13 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             for (int i = 0; i < games.Count; i++)
             {
                 games[i].Rank = i + 1;
+            }
+            
+
+            if (user != null)
+            {
+                games = games.Where(g => g.UserId == user.UserId).ToList();
+                // TODO: Sort games by date
             }
 
             return games;

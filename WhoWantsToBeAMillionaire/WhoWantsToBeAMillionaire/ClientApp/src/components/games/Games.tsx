@@ -10,7 +10,7 @@ import {Game, Round} from "../../store/Games";
 import GameRound from "./GameRound";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { faStopwatch, faCoins, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import {faStopwatch, faCoins, faTrophy} from '@fortawesome/free-solid-svg-icons';
 
 interface GamesProps {
     users: UserStateStore.UserState;
@@ -60,7 +60,7 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
                         <Card key={i}>
                             <Card.Header>
                                 <Accordion.Toggle as={Button} variant="link" eventKey={`${i}`}>
-                                    {`Game played at ${g.start}`}
+                                    {`Game played at ${new Date(Date.parse(g.start)).toLocaleString()}`}
                                 </Accordion.Toggle>
                             </Card.Header>
                             <Accordion.Collapse eventKey={`${i}`}>
@@ -75,7 +75,7 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
                                         <FontAwesomeIcon icon={faTrophy}/> <b>Rank:</b> {g.rank}
                                     </p>
                                     <ListGroup>
-                                        {g.rounds.map((r: Round, j) => <GameRound round={r} key={j}/>)}                                        
+                                        {g.rounds.map((r: Round, j) => <GameRound round={r} key={j}/>)}
                                     </ListGroup>
                                 </Card.Body>
                             </Accordion.Collapse>
