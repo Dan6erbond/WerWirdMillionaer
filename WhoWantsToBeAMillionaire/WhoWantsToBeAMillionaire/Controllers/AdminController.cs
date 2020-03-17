@@ -63,7 +63,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             return Ok();
         }
         
-        [HttpGet("categories/add/")]
+        [HttpPost("categories/add")]
         public IActionResult AddCategory(Category category)
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -75,7 +75,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             return Ok(newCategory);
         }
         
-        [HttpGet("questions/categories/{id}")]
+        [HttpGet("categories/delete/{id}")]
         public IActionResult DeleteCategory(int id)
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;

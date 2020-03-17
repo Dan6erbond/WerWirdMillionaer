@@ -42,7 +42,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
 
     private ensureDataFetched() {
         if (!this.state.questions) {
-            fetch(`api/games/category/${this.props.category.categoryId}`, {
+            fetch(`api/games/category/${this.props.category.categoryId!!}`, {
                 headers: {
                     "Accept": "application/json, text/plain, */*",
                     "Content-type": "application/json"
@@ -96,7 +96,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
         const questions = this.state.questions;
         questions.push({
             questionId: undefined,
-            categoryId: this.props.category.categoryId,
+            categoryId: this.props.category.categoryId!!,
             question: "",
             timesAsked: 0,
             correctlyAnswered: 0,

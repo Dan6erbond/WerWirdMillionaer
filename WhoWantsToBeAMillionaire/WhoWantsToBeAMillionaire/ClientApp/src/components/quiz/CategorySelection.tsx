@@ -41,7 +41,7 @@ export default class CategorySelection extends React.Component<CategorySelection
                 <div>
                     <ToggleButtonGroup vertical type="checkbox" onChange={this.toggleCategory}>
                         {this.props.categories.map(c =>
-                            <ToggleButton value={c.categoryId} key={c.categoryId}>{c.name}</ToggleButton>
+                            <ToggleButton value={c.categoryId!!} key={c.categoryId!!}>{c.name}</ToggleButton>
                         )}
                     </ToggleButtonGroup>
                 </div>

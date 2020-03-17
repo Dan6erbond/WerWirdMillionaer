@@ -6,7 +6,7 @@ import {LeaderboardSort} from "../components/leaderboard/Leaderboard";
 import '../extensions';
 
 export interface Category {
-    categoryId: number;
+    categoryId: number | undefined;
     name: string;
 }
 
