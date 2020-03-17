@@ -19,8 +19,8 @@ export default class Question extends React.Component<QuestionProps> {
         const answer = this.props.question.answers[answerNr];
 
         this.props.answerQuestion({
-            questionId: this.props.question.questionId,
-            answerId: answer.answerId
+            questionId: this.props.question.questionId!!,
+            answerId: answer.answerId!!
         });
     }
 

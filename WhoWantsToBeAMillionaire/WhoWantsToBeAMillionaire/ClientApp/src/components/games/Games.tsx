@@ -10,7 +10,6 @@ import {Game, Round} from "../../store/Games";
 import GameRound from "./GameRound";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faStopwatch, faCoins, faTrophy} from '@fortawesome/free-solid-svg-icons';
 
 interface GamesProps {
     users: UserStateStore.UserState;
@@ -66,13 +65,13 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
                             <Accordion.Collapse eventKey={`${i}`}>
                                 <Card.Body>
                                     <p>
-                                        <FontAwesomeIcon icon={faStopwatch}/> <b>Game time:</b> {g.duration > 60 ?
+                                        <FontAwesomeIcon icon="stopwatch"/> <b>Game time:</b> {g.duration > 60 ?
                                         <span>{Math.round(g.duration / 60)} minutes {g.duration % 60} seconds</span>
                                         : <span>{g.duration} seconds</span>}
                                         <br/>
-                                        <FontAwesomeIcon icon={faCoins}/> <b>Points:</b> {g.points}
+                                        <FontAwesomeIcon icon="coins"/> <b>Points:</b> {g.points}
                                         <br/>
-                                        <FontAwesomeIcon icon={faTrophy}/> <b>Rank:</b> {g.rank}
+                                        <FontAwesomeIcon icon="trophy"/> <b>Rank:</b> {g.rank}
                                     </p>
                                     <ListGroup>
                                         {g.rounds.map((r: Round, j) => <GameRound round={r} key={j}/>)}

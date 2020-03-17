@@ -47,6 +47,10 @@ class NavMenu extends React.Component<NavMenuProps & RouteComponentProps> {
                             <Nav.Item>
                                 <NavLink to="/leaderboard" className="nav-link">Leaderboard</NavLink>
                             </Nav.Item>
+                            {this.props.users.token && this.props.users.userData && this.props.users.userData.isAdmin ?
+                                <Nav.Item>
+                                    <NavLink to="/admin" className="nav-link">Admin</NavLink>
+                                </Nav.Item> : null}
                             {this.props.users.token ?
                                 <Nav.Item>
                                     <Nav.Link onClick={this.signOut}>Sign out</Nav.Link>

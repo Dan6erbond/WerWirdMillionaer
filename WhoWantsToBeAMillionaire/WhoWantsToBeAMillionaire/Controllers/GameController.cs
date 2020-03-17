@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.WebEncoders.Testing;
 using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
+using WhoWantsToBeAMillionaire.Models.Lifecycle.Admin;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
@@ -25,10 +26,11 @@ namespace WhoWantsToBeAMillionaire.Controllers
 
         private readonly GameManager _gameManager;
         private readonly UserManager _userManager;
+        private readonly DataManager _dataManager;
 
         public GameController(IHttpContextAccessor httpContextAccessor, IRepository<Category> categoryRepository,
             IRepository<QuizQuestion> questionRepository, IRepository<QuizAnswer> answerRepository,
-            GameManager gameManager, UserManager userManager)
+            GameManager gameManager, DataManager dataManager, UserManager userManager)
         {
             _httpContextAccessor = httpContextAccessor;
 
@@ -38,6 +40,14 @@ namespace WhoWantsToBeAMillionaire.Controllers
 
             _gameManager = gameManager;
             _userManager = userManager;
+            _dataManager = dataManager;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("category/{id}")]
+        public IActionResult GetQuestions(int id)
+        {
+            return Ok(_dataManager.GetQuestions(id));
         }
 
         [HttpPost("start")]

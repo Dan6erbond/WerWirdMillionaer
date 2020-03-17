@@ -12,6 +12,7 @@ using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
+using WhoWantsToBeAMillionaire.Models.Lifecycle.Admin;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
@@ -48,6 +49,7 @@ namespace WhoWantsToBeAMillionaire
 
             services.AddSingleton<UserManager>();
             services.AddSingleton<GameManager>();
+            services.AddSingleton<DataManager>();
 
             services.AddAuthentication(options =>
                 {

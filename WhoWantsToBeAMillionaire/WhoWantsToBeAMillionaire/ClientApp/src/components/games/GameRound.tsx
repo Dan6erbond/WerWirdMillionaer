@@ -56,11 +56,11 @@ export default class GameRound extends React.Component<GameRoundProps, GameRound
         const question = this.state.question;
 
         if (question) {
-            const answeredAnswer = round.answerId ? question.answers.filter((a: QuizAnswer) => a.answerId == round.answerId)[0] : null;
+            const answeredAnswer = round.answerId ? question.answers.filter((a: QuizAnswer) => a.answerId === round.answerId)[0] : null;
             const correctAnswer = question.answers.filter((a: QuizAnswer) => a.correct)[0];
 
             return (
-                <ListGroup.Item variant={round.answerId == correctAnswer.answerId ? "success" : "danger"}>
+                <ListGroup.Item variant={round.answerId === correctAnswer.answerId ? "success" : "danger"}>
                     <h6>
                         {question.question} {round.usedJoker ?
                         <Badge variant="secondary">Joker Used</Badge> : null}
@@ -68,7 +68,7 @@ export default class GameRound extends React.Component<GameRoundProps, GameRound
                     {answeredAnswer ?
                         <span>
                             <b>Answered:</b> {answeredAnswer.answer}
-                            {answeredAnswer.answerId != correctAnswer.answerId ? <span>
+                            {answeredAnswer.answerId !== correctAnswer.answerId ? <span>
                                 <br/>
                                 <b>Correct answer:</b> {correctAnswer.answer}
                             </span> : null}

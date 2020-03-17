@@ -11,7 +11,7 @@ export interface Category {
 }
 
 export interface QuizQuestion {
-    questionId: number;
+    questionId: number | undefined;
     categoryId: number;
     question: string;
     timesAsked: number;
@@ -21,7 +21,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizAnswer {
-    answerId: number;
+    answerId: number | undefined;
     answer: string;
     correct: boolean | undefined;
 }

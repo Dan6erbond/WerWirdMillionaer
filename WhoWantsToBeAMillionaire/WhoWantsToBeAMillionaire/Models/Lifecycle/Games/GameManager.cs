@@ -11,8 +11,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 {
     public class GameManager
     {
-        private readonly IRepository<QuizQuestion> _quizRepository;
-        private readonly IRepository<QuizAnswer> _quizAnswerRepository;
+        private readonly IRepository<QuizQuestion> _questionRepository;
         private readonly IRepository<Game> _gameRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<QuizAnswer> _answerRepository;
@@ -20,12 +19,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         private List<RunningGame> _runningGames = new List<RunningGame>();
 
-        public GameManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> quizRepository,
-            IRepository<QuizAnswer> quizAnswerRepository, IRepository<Round> roundRepository,
+        public GameManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository,IRepository<Round> roundRepository,
             IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository)
         {
-            _quizRepository = quizRepository;
-            _quizAnswerRepository = quizAnswerRepository;
+            _questionRepository = questionRepository;
             _gameRepository = gameRepository;
             _roundRepository = roundRepository;
             _userRepository = userRepository;
@@ -91,13 +88,13 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             // TODO: Throw error if no game has been found (gameIndex = -1)
 
             var quizQuestionSpecification = new QuizQuestionSpecification(questionId);
-            var quizQuestion = _quizRepository.Query(quizQuestionSpecification).FirstOrDefault();
+            var quizQuestion = _questionRepository.Query(quizQuestionSpecification).FirstOrDefault();
 
             // TODO: Check if question doesn't exist
             // TODO: Check if question is the currently asked question
 
             var quizAnswerSpecification = new QuizAnswerSpecification(answerId, questionId);
-            var quizAnswer = _quizAnswerRepository.Query(quizAnswerSpecification).FirstOrDefault();
+            var quizAnswer = _answerRepository.Query(quizAnswerSpecification).FirstOrDefault();
 
             // TODO: Check if answerId is valid
 
@@ -117,7 +114,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var quizQuestionSpecification =
                 new QuizQuestionSpecification(categories: game.Categories, excludeQuestions: game.QuestionIds);
-            var quizQuestions = _quizRepository.Query(quizQuestionSpecification);
+            var quizQuestions = _questionRepository.Query(quizQuestionSpecification);
 
             var random = new Random();
             int index;
@@ -135,7 +132,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             }
 
             var quizAnswerSpecification = new QuizAnswerSpecification(questionId: quizQuestion.QuestionId);
-            var quizAnswers = _quizAnswerRepository.Query(quizAnswerSpecification);
+            var quizAnswers = _answerRepository.Query(quizAnswerSpecification);
             quizQuestion.Answers = quizAnswers;
 
             var correctAnswer = quizAnswers.First(a => a.Correct);
