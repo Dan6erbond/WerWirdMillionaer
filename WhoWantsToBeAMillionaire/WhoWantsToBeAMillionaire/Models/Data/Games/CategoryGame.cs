@@ -8,6 +8,10 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         public int CategoryId { get; set; }
         public int GameId { get; set; }
 
+        public CategoryGame()
+        {
+        }
+
         public CategoryGame(int categoryId, int gameId)
         {
             CategoryId = categoryId;

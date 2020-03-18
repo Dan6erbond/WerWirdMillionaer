@@ -24,7 +24,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         {
             var sql =
                 @"INSERT INTO `categoriesgames` (`CategoryGameId`, `CategoryId`, `GameId`) 
-                VALUES (NULL, @CategoryGameId, @CategoryId, @GameId);
+                VALUES (NULL, @CategoryId, @GameId);
                 SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
 
