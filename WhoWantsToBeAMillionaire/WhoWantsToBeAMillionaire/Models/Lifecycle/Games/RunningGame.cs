@@ -10,8 +10,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         public int UserId { get; }
         public List<int> Categories { get; }
         public List<GameQuestion> AskedQuestions { get; } = new List<GameQuestion>();
-        public GameQuestion CurrentQuestion { get; set; }
-        public DateTime TimeStarted { get; set; }
+        public GameQuestion CurrentQuestion { get; private set; }
+        public DateTime TimeStarted { get; }
 
         public bool JokerUsed
         {

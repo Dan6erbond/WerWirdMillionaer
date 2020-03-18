@@ -46,6 +46,7 @@ namespace WhoWantsToBeAMillionaire
             services.AddSingleton<IRepository<QuizAnswer>, QuizAnswerMySqlRepository>();
             services.AddSingleton<IRepository<Round>, RoundMySqlRepository>();
             services.AddSingleton<IRepository<Game>, GameMySqlRepository>();
+            services.AddSingleton<IRepository<CategoryGame>, CategoryGameMySqlRepository>();
 
             services.AddSingleton<UserManager>();
             services.AddSingleton<GameManager>();

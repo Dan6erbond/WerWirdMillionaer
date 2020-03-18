@@ -12,8 +12,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Game> _gameRepository;
         private readonly IRepository<Round> _roundRepository;
+        private readonly IRepository<CategoryGame> _categoryGameRepository;
 
-        public DataManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository, IRepository<Category> categoryRepository,
+        public DataManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository,
+            IRepository<Category> categoryRepository, IRepository<CategoryGame> categoryGameRepository,
             IRepository<Round> roundRepository, IRepository<QuizAnswer> answerRepository)
         {
             _categoryRepository = categoryRepository;
@@ -21,6 +23,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
             _answerRepository = answerRepository;
             _gameRepository = gameRepository;
             _roundRepository = roundRepository;
+            _categoryGameRepository = categoryGameRepository;
         }
 
         public List<QuizQuestion> GetQuestions(int categoryId)
@@ -34,7 +37,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
                 var quizAnswers = _answerRepository.Query(quizAnswerSpecification);
                 question.Answers = quizAnswers;
             }
-            
+
             return quizQuestions;
         }
 
@@ -47,7 +50,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
                 _answerRepository.Update(answer);
             }
         }
-        
+
         public QuizQuestion AddQuestion(QuizQuestion question)
         {
             var questionId = _questionRepository.Create(question);
@@ -72,12 +75,12 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
             {
                 _answerRepository.Delete(answer);
             }
-            
+
             var quizQuestionSpecification = new QuizQuestionSpecification(id);
             var quizQuestion = _questionRepository.Query(quizQuestionSpecification).First();
             _questionRepository.Delete(quizQuestion);
         }
-        
+
         public Category AddCategory(Category category)
         {
             var categoryId = _categoryRepository.Create(category);
@@ -90,6 +93,27 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
             var categorySpecification = new CategorySpecification(id);
             var category = _categoryRepository.Query(categorySpecification).First();
             _categoryRepository.Delete(category);
+        }
+
+        public void DeleteGame(int id)
+        {
+            var roundSpecification = new RoundSpecification(id);
+            var rounds = _roundRepository.Query(roundSpecification);
+            foreach (var round in rounds)
+            {
+                _roundRepository.Delete(round);
+            }
+
+            var categoryGameSpecification = new CategoryGameSpecification(gameId: id);
+            var categoryGames = _categoryGameRepository.Query(categoryGameSpecification);
+            foreach (var categoryGame in categoryGames)
+            {
+                _categoryGameRepository.Delete(categoryGame);
+            }
+
+            var gameSpecification = new GameSpecification(gameId: id);
+            var game = _gameRepository.Query(gameSpecification).First();
+            _gameRepository.Delete(game);
         }
     }
 }

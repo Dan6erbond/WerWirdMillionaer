@@ -15,6 +15,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         public int Points { get; set; }
         public int WeightedPoints { get; set; }
         public int Rank { get; set; }
+        public List<int> Categories { get; set; } = new List<int>();
 
         public override int GetHashCode()
         {

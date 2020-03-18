@@ -16,17 +16,19 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<QuizAnswer> _answerRepository;
         private readonly IRepository<Round> _roundRepository;
+        private readonly IRepository<CategoryGame> _categoryGameRepository;
 
         private List<RunningGame> _runningGames = new List<RunningGame>();
 
         public GameManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository,IRepository<Round> roundRepository,
-            IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository)
+            IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository, IRepository<CategoryGame> categoryGameRepository)
         {
             _questionRepository = questionRepository;
             _gameRepository = gameRepository;
             _roundRepository = roundRepository;
             _userRepository = userRepository;
             _answerRepository = answerRepository;
+            _categoryGameRepository = categoryGameRepository;
         }
 
         public void StartGame(User user, IEnumerable<int> categories)
@@ -52,12 +54,13 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             };
             var gameId = _gameRepository.Create(game);
 
+            if (runningGame.CurrentQuestion != null) runningGame.AskedQuestions.Add(runningGame.CurrentQuestion);
             foreach (var question in runningGame.AskedQuestions)
             {
                 var round = new Round
                 {
                     Duration = (question.TimeAnswered - question.TimeAsked).Seconds,
-                    AnswerId = question.AnsweredAnswer.AnswerId,
+                    AnswerId = question.AnsweredAnswer?.AnswerId,
                     GameId = gameId,
                     QuestionId = question.QuestionId,
                     UsedJoker = question.JokerUsed
@@ -65,17 +68,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 _roundRepository.Create(round);
             }
 
-            if (runningGame.CurrentQuestion != null)
+            foreach (var category in runningGame.Categories)
             {
-                var question = runningGame.CurrentQuestion;
-                var round = new Round
-                {
-                    Duration = (question.TimeAnswered - question.TimeAsked).Seconds,
-                    GameId = gameId,
-                    QuestionId = question.QuestionId,
-                    UsedJoker = question.JokerUsed
-                };
-                _roundRepository.Create(round);
+                var categoryGame = new CategoryGame(category, gameId);
+                _categoryGameRepository.Create(categoryGame);
             }
 
             return runningGame.End(won);
@@ -185,10 +181,19 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var userSpecification = new UserSpecification(game.UserId);
                 var u = _userRepository.Query(userSpecification).First();
                 game.Username = u.Username;
+                
+                var categoryGameSpecification = new CategoryGameSpecification(gameId: game.GameId);
+                var categoryGames = _categoryGameRepository.Query(categoryGameSpecification);
+                foreach (var categoryGame in categoryGames)
+                {
+                    game.Categories.Add(categoryGame.CategoryId);
+                }
             }
 
+            //TODO: Use IComparer<T>
             games.Sort((game, game1) => game.CompareTo(game1));
 
+            //TODO: Figure out more efficient way to complete this task
             for (int i = 0; i < games.Count; i++)
             {
                 games[i].Rank = i + 1;

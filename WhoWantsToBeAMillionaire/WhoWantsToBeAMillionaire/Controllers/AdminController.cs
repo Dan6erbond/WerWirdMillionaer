@@ -86,5 +86,17 @@ namespace WhoWantsToBeAMillionaire.Controllers
             _dataManager.DeleteCategory(id);
             return Ok();
         }
+        
+        [HttpGet("leaderboard/delete/{id}")]
+        public IActionResult DeleteGame(int id)
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+            
+            //TODO: Return error if user isn't administrator
+            
+            _dataManager.DeleteGame(id);
+            return Ok();
+        }
     }
 }
