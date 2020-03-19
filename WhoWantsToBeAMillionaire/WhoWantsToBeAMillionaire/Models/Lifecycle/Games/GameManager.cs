@@ -20,8 +20,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
         private List<RunningGame> _runningGames = new List<RunningGame>();
 
-        public GameManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository,IRepository<Round> roundRepository,
-            IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository, IRepository<CategoryGame> categoryGameRepository)
+        public GameManager(IRepository<Game> gameRepository, IRepository<QuizQuestion> questionRepository,
+            IRepository<Round> roundRepository,
+            IRepository<User> userRepository, IRepository<QuizAnswer> answerRepository,
+            IRepository<CategoryGame> categoryGameRepository)
         {
             _questionRepository = questionRepository;
             _gameRepository = gameRepository;
@@ -172,18 +174,18 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                         game.Points += 30;
                     }
                 }
-                
+
                 if (user != null && game.UserId != user.UserId)
                 {
                     continue; // Saves time by not grabbing information for unneeded games
                 }
-                
+
                 game.WeightedPoints = game.Points / Math.Max(game.Duration, 1);
 
                 var userSpecification = new UserSpecification(game.UserId);
                 var u = _userRepository.Query(userSpecification).First();
                 game.Username = u.Username;
-                
+
                 var categoryGameSpecification = new CategoryGameSpecification(gameId: game.GameId);
                 var categoryGames = _categoryGameRepository.Query(categoryGameSpecification);
                 foreach (var categoryGame in categoryGames)
@@ -192,22 +194,25 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 }
             }
 
-            //TODO: Use IComparer<T>
-            games.Sort((game, game1) => game.CompareTo(game1));
+            var pointsComparer = new GamePointsComparer();
+            games.Sort(pointsComparer);
 
             //TODO: Figure out more efficient way to complete this task
             for (int i = 0; i < games.Count; i++)
             {
                 games[i].Rank = i + 1;
             }
-            
+
 
             if (user != null)
             {
                 games = games.Where(g => g.UserId == user.UserId).ToList();
-                // TODO: Use IComparer<T> & sort games by date
+                var dateComparer = new GameDateComparer();
+                games.Sort(dateComparer);
+                return games;
             }
 
+            games = games.Where(g => g.Points > 0).ToList(); // remove lost games from leaderboard
             return games;
         }
     }
