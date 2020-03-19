@@ -158,13 +158,16 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var rounds = _roundRepository.Query(roundSpecification);
                 game.Rounds = rounds;
 
+                var lastAnswerSpecification = new QuizAnswerSpecification(rounds.Last().AnswerId);
+                var lastAnswer = _answerRepository.Query(lastAnswerSpecification).First();
+
                 foreach (var round in rounds)
                 {
                     game.Duration += round.Duration;
 
                     var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
                     var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
-                    if (answer != null && answer.Correct)
+                    if (answer != null && answer.Correct && lastAnswer.Correct)
                     {
                         game.Points += 30;
                     }
@@ -202,7 +205,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             if (user != null)
             {
                 games = games.Where(g => g.UserId == user.UserId).ToList();
-                // TODO: Sort games by date
+                // TODO: Use IComparer<T> & sort games by date
             }
 
             return games;

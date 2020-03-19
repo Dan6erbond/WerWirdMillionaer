@@ -70,8 +70,13 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var timeEnded = DateTime.Now;
             int timeElapsed = (timeEnded - TimeStarted).Seconds;
 
-            var correctlyAnswered = AskedQuestions.Where(q => q.AnsweredAnswer.Correct);
-            var points = correctlyAnswered.Count() * 30;
+            int points = 0;
+
+            if (won)
+            {
+                var correctlyAnswered = AskedQuestions.Where(q => q.AnsweredAnswer.Correct);
+                points = correctlyAnswered.Count() * 30;
+            }
 
             return new QuizResult
             {
