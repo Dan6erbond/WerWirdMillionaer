@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.WebEncoders.Testing;
 using WhoWantsToBeAMillionaire.Models;
+using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
+using WhoWantsToBeAMillionaire.Models.Exceptions;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Admin;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
@@ -78,11 +80,17 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            var question = _gameManager.GetQuestion(user);
-            
-            return Ok(question);
+            try
+            {
+                var question = _gameManager.GetQuestion(user);
+                return Ok(question);
+            }
+            catch (NoMoreQuestionsException e)
+            {
+                return BadRequest(new NoMoreQuestionsError(e.Message));
+            }
         }
-        
+
         [AllowAnonymous]
         [HttpGet("questions/{id}")]
         public IActionResult GetQuestionData(int id)
@@ -94,7 +102,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var answers = _answerRepository.Query(answerSpecification);
 
             question.Answers = answers;
-            
+
             return Ok(question);
         }
 
@@ -119,7 +127,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
 
             return Ok(question);
         }
-        
+
         [HttpGet("my")]
         public IActionResult GetUserGames()
         {
@@ -127,7 +135,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var user = _userManager.GetUser(username);
 
             var games = _gameManager.GetGames(user);
-            
+
             return Ok(games);
         }
 

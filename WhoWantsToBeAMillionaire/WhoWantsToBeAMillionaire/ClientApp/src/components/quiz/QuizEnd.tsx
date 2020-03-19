@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 interface QuizEndProps {
     result: QuizResult;
     playAgain: () => void;
+    questionsOver: boolean;
 }
 
 export default class QuizEnd extends React.Component<QuizEndProps> {
@@ -13,7 +14,7 @@ export default class QuizEnd extends React.Component<QuizEndProps> {
         return (
             <Jumbotron>
                 <h1>Game over!</h1>
-                <p>{this.props.result.won ? "You won." : "You lost."}</p>
+                <p>{this.props.result.won ? this.props.questionsOver ? "You won since we don't have more questions to offer." : "You won." : "You lost."}</p>
                 <p>
                     Game time: {this.props.result.timeElapsed > 60 ?
                         <span>{Math.round(this.props.result.timeElapsed / 60)} minutes {this.props.result.timeElapsed % 60} seconds</span>

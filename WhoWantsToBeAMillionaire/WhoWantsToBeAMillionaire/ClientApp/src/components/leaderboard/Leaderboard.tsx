@@ -35,13 +35,14 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
     constructor(props: LeaderboardProps & RouteComponentProps) {
         super(props);
         this.state = {sort: LeaderboardSort.RankAscending};
-        
+
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
         this.toggleRankSort = this.toggleRankSort.bind(this);
         this.toggleUsernameSort = this.toggleUsernameSort.bind(this);
         this.togglePointsSort = this.togglePointsSort.bind(this);
         this.toggleWeightedPointsSort = this.toggleWeightedPointsSort.bind(this);
         this.toggleGameTimeSort = this.toggleGameTimeSort.bind(this);
+        this.deleteGame = this.deleteGame.bind(this);
     }
 
     public componentDidMount() {
@@ -63,19 +64,19 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
         this.setState({sort: sort});
         this.props.gameActions.sortLeaderboard(sort);
     }
-    
+
     private toggleUsernameSort() {
         let sort = this.state.sort === LeaderboardSort.UsernameAscending ? LeaderboardSort.UsernameDescending : LeaderboardSort.UsernameAscending;
         this.setState({sort: sort});
         this.props.gameActions.sortLeaderboard(sort);
     }
-    
+
     private togglePointsSort() {
         let sort = this.state.sort === LeaderboardSort.PointsAscending ? LeaderboardSort.PointsDescending : LeaderboardSort.PointsAscending;
         this.setState({sort: sort});
         this.props.gameActions.sortLeaderboard(sort);
     }
-    
+
     private toggleWeightedPointsSort() {
         let sort = this.state.sort === LeaderboardSort.WeightedPointsAscending ? LeaderboardSort.WeightedPointsDescending : LeaderboardSort.WeightedPointsAscending;
         this.setState({sort: sort});
@@ -88,6 +89,12 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
         this.props.gameActions.sortLeaderboard(sort);
     }
 
+    private deleteGame(index: number) {
+        const token = this.props.users.token;
+        if (!token) return;
+        this.props.gameActions.deleteGame(index, token);
+    }
+
     public render() {
         return (
             <div>
@@ -98,23 +105,40 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th style={{verticalAlign: 'middle'}}># <Button variant="light" onClick={this.toggleRankSort}>⇅</Button></th>
-                            <th style={{verticalAlign: 'middle'}}>Username <Button variant="light" onClick={this.toggleUsernameSort}>⇅</Button></th>
-                            <th style={{verticalAlign: 'middle'}}>Points <Button variant="light" onClick={this.togglePointsSort}>⇅</Button></th>
-                            <th style={{verticalAlign: 'middle'}}>Weighted Points <Button variant="light" onClick={this.toggleWeightedPointsSort}>⇅</Button></th>
-                            <th style={{verticalAlign: 'middle'}}>Game Time <Button variant="light" onClick={this.toggleGameTimeSort}>⇅</Button></th>
+                            <th style={{verticalAlign: 'middle'}}>
+                                # <Button variant="light" onClick={this.toggleRankSort}>⇅</Button>
+                            </th>
+                            <th style={{verticalAlign: 'middle'}}>
+                                Username <Button variant="light" onClick={this.toggleUsernameSort}>⇅</Button>
+                            </th>
+                            <th style={{verticalAlign: 'middle'}}>
+                                Points <Button variant="light" onClick={this.togglePointsSort}>⇅</Button>
+                            </th>
+                            <th style={{verticalAlign: 'middle'}}>
+                                Weighted Points <Button variant="light"
+                                                        onClick={this.toggleWeightedPointsSort}>⇅</Button>
+                            </th>
+                            <th style={{verticalAlign: 'middle'}}>
+                                Game Time <Button variant="light" onClick={this.toggleGameTimeSort}>⇅</Button>
+                            </th>
+                            {this.props.users.userData && this.props.users.userData.isAdmin ?
+                                <th style={{verticalAlign: 'middle'}}>Delete</th> : null}
                         </tr>
                         </thead>
                         <tbody>
-                        {this.props.games.leaderboard.map((g) =>
+                        {this.props.games.leaderboard.map((g, i) =>
                             <tr key={g.gameId}>
-                                <td>{g.rank}</td>
-                                <td>{g.username}</td>
-                                <td>{g.points}</td>
-                                <td>{g.weightedPoints}</td>
-                                <td>{g.duration > 60 ?
+                                <td style={{verticalAlign: 'middle'}}>{g.rank}</td>
+                                <td style={{verticalAlign: 'middle'}}>{g.username}</td>
+                                <td style={{verticalAlign: 'middle'}}>{g.points}</td>
+                                <td style={{verticalAlign: 'middle'}}>{g.weightedPoints}</td>
+                                <td style={{verticalAlign: 'middle'}}>{g.duration > 60 ?
                                     <span>{Math.round(g.duration / 60)} minutes {g.duration % 60} seconds</span>
                                     : <span>{g.duration} seconds</span>}</td>
+                                {this.props.users.userData && this.props.users.userData.isAdmin ?
+                                    <td style={{verticalAlign: 'middle'}}>
+                                        <Button variant="primary" onClick={() => this.deleteGame(i)}>Delete</Button>
+                                    </td> : null}
                             </tr>)}
                         </tbody>
                     </Table> : <p>Loading...</p>}

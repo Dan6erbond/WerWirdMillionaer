@@ -20,7 +20,8 @@ export type KnownErrors =
     | "INCORRECT_PASSWORD"
     | "PASSWORD_NOT_CONTAINS_LETTERS"
     | "PASSWORD_NOT_CONTAINS_SPECIAL_CHARACTERS"
-    | "PASSWORD_TOO_SHORT";
+    | "PASSWORD_TOO_SHORT"
+    | "NO_MORE_QUESTIONS";
 
 export interface AnswerResult {
     type: 'ANSWER_RESULT';

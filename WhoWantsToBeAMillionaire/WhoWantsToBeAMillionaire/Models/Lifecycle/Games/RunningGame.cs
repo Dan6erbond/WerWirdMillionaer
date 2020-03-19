@@ -17,7 +17,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         {
             get
             {
-                var jokerUsed = CurrentQuestion.JokerUsed;
+                var jokerUsed = CurrentQuestion?.JokerUsed ?? false;
                 if (!jokerUsed)
                 {
                     jokerUsed = AskedQuestions.FirstOrDefault(q => q.JokerUsed) != null;
@@ -32,14 +32,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             get
             {
                 var questionIds = new List<int>();
-
-                if (CurrentQuestion != null)
-                {
-                    questionIds.Add(CurrentQuestion.QuestionId);
-                }
-
+                if (CurrentQuestion != null) questionIds.Add(CurrentQuestion.QuestionId);
                 AskedQuestions.ForEach(q => questionIds.Add(q.QuestionId));
-
                 return questionIds;
             }
         }
@@ -48,7 +42,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         {
             return CurrentQuestion.UseJoker();
         }
-        
+
         public RunningGame(int userId, IEnumerable<int> categories)
         {
             TimeStarted = DateTime.Now;
@@ -67,6 +61,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             CurrentQuestion.TimeAnswered = DateTime.Now;
             CurrentQuestion.AnsweredAnswer = CurrentQuestion.Answers.First(a => a.AnswerId == answer.AnswerId);
             AskedQuestions.Add(CurrentQuestion);
+            CurrentQuestion = null;
             return new AnswerResult(answer.Correct);
         }
 

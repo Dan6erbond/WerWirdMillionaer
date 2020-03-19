@@ -113,12 +113,11 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var quizQuestions = _questionRepository.Query(quizQuestionSpecification);
 
             var random = new Random();
-            int index;
             QuizQuestion quizQuestion;
 
             if (quizQuestions.Count != 0)
             {
-                index = random.Next(quizQuestions.Count);
+                var index = random.Next(quizQuestions.Count);
                 quizQuestion = quizQuestions[index];
             }
             else

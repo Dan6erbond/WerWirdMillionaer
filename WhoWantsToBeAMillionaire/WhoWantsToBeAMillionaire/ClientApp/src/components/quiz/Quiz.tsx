@@ -53,7 +53,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
             this.props.history.push("/");
         }
     }
-    
+
     private endGame() {
         const token = this.props.users.token!!;
         this.props.gameActions.endGame(token);
@@ -63,6 +63,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const counterInterval = this.state.counterInterval;
         const token = this.props.users.token!!;
         const loading = this.props.games.answering || this.props.games.loadingQuestion;
+        const ending = this.props.games.ending;
 
         if (!this.props.games.categories) {
             this.props.gameActions.fetchCategories();
@@ -70,14 +71,16 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
 
         const runningGame = this.props.games.runningGame;
         if (runningGame) {
-            const answerCorrect = runningGame.answerCorrect;
             const quizResult = runningGame.result;
             const currentQuestion = runningGame.currentQuestion;
+            const answerCorrect = runningGame.answerCorrect;
 
             if (quizResult && counterInterval) {
                 if (counterInterval) clearTimeout(counterInterval);
                 this.setState({secondsElapsed: 0, counterInterval: undefined});
-            } else if (!loading && (!currentQuestion || answerCorrect)) {
+            } else if (runningGame.questionsOver && !ending && !quizResult) {
+                this.props.gameActions.endGame(token);
+            } else if (!quizResult && !loading && !ending && (!currentQuestion || answerCorrect)) {
                 this.props.gameActions.fetchQuestion(token);
             }
         }
@@ -117,15 +120,14 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const categories = this.props.games.categories;
         const question = runningGame ? runningGame.currentQuestion : undefined;
         const quizResult = runningGame ? runningGame.result : undefined;
-        if (quizResult) console.log(quizResult);
         const usedJoker = runningGame ? runningGame.usedJoker : undefined;
 
         return (
             <div>
-                {quizResult ?
+                {quizResult && runningGame ?
                     <div>
                         <br/>
-                        <QuizEnd result={quizResult} playAgain={this.playAgain}/>
+                        <QuizEnd result={quizResult} playAgain={this.playAgain} questionsOver={runningGame.questionsOver}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
                             {runningGame ? <p>{this.state.secondsElapsed}</p> : null}

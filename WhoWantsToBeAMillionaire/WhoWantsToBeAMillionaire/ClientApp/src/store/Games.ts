@@ -32,6 +32,7 @@ interface RunningGame {
     answerCorrect?: boolean;
     result?: QuizResult;
     usedJoker: boolean;
+    questionsOver: boolean;
 }
 
 export interface Game {
@@ -43,6 +44,7 @@ export interface Game {
     duration: number;
     rank: number;
     weightedPoints: number;
+    categories: number[];
 }
 
 export interface Round {
@@ -63,6 +65,7 @@ export interface GameState {
     loadingQuestion: boolean;
     leaderboard?: Game[];
     userGames?: Game[];
+    ending: boolean;
 }
 
 // -----------------
@@ -99,6 +102,11 @@ interface SetUserGamesAction {
     games: Game[] | undefined;
 }
 
+interface SetEndingAction {
+    type: 'SET_ENDING';
+    ending: boolean;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 
@@ -108,7 +116,8 @@ type KnownAction =
     | SetCategoriesAction
     | SetAnsweringAction
     | SetLeaderboardAction
-    | SetUserGamesAction;
+    | SetUserGamesAction
+    | SetEndingAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -141,7 +150,8 @@ export const actionCreators = {
                         askedQuestions: [],
                         currentQuestion: undefined,
                         result: undefined,
-                        usedJoker: false
+                        usedJoker: false,
+                        questionsOver: false
                     }
                 });
             })
@@ -161,6 +171,11 @@ export const actionCreators = {
             .then(response => {
                 if (!response.ok) {
                     return (response.json() as Promise<ErrorResponse>).then(error => {
+                        if (error.type === "NO_MORE_QUESTIONS") {
+                            const runningGame = getState().gameState.runningGame!!;
+                            runningGame.questionsOver = true;
+                            dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+                        }
                         throw new Error(error.title);
                     });
                 }
@@ -273,6 +288,7 @@ export const actionCreators = {
         dispatch({type: 'SET_RUNNING_GAME', game: undefined});
     },
     endGame: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        dispatch({type: 'SET_ENDING', ending: true});
         fetch('api/games/end', {
             method: 'GET',
             headers: {
@@ -318,6 +334,31 @@ export const actionCreators = {
             })
             .then(data => {
                 dispatch({type: 'SET_LEADERBOARD', leaderboard: data});
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    },
+    deleteGame: (index: number, token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        const gameState = getState().gameState;
+        let leaderboard: Game[] = Object.assign([], gameState.leaderboard!!);
+        const id = leaderboard[index].gameId;
+
+        fetch(`api/admin/leaderboard/delete/${id}`, {
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        throw new Error(error.title);
+                    });
+                }
+                leaderboard.splice(index, 1);
+                dispatch({type: 'SET_LEADERBOARD', leaderboard: leaderboard});
             })
             .catch(error => {
                 console.error(error);
@@ -395,7 +436,8 @@ const unloadedState: GameState = {
     answering: false,
     loadingQuestion: false,
     leaderboard: undefined,
-    userGames: undefined
+    userGames: undefined,
+    ending: false
 };
 
 export const reducer: Reducer<GameState> = (state: GameState | undefined, incomingAction: Action): GameState => {
@@ -411,6 +453,7 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
             retVal.runningGame = action.game;
             retVal.loadingQuestion = false;
             retVal.answering = false;
+            retVal.ending = false;
             break;
         case "SET_CATEGORIES":
             retVal.categories = action.categories;
@@ -426,6 +469,9 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
             break;
         case "SET_USER_GAMES":
             retVal.userGames = action.games;
+            break;
+        case "SET_ENDING":
+            retVal.ending = action.ending;
             break;
     }
     return retVal;

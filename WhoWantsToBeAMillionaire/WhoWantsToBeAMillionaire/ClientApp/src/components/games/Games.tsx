@@ -65,6 +65,8 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
                             <Accordion.Collapse eventKey={`${i}`}>
                                 <Card.Body>
                                     <p>
+                                        <b>Categories: </b> {this.props.games.categories!!.filter(c => g.categories.includes(c.categoryId!!)).map(c => c.name).join(", ")}
+                                        <br/>
                                         <FontAwesomeIcon icon="stopwatch"/> <b>Game time:</b> {g.duration > 60 ?
                                         <span>{Math.round(g.duration / 60)} minutes {g.duration % 60} seconds</span>
                                         : <span>{g.duration} seconds</span>}
