@@ -197,22 +197,29 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var pointsComparer = new GamePointsComparer();
             games.Sort(pointsComparer);
 
-            //TODO: Figure out more efficient way to complete this task
-            for (int i = 0; i < games.Count; i++)
-            {
-                games[i].Rank = i + 1;
-            }
-
-
             if (user != null)
             {
+                games = games.Where(g => g.UserId == user.UserId || !g.Hidden).ToList();
+
+                for (int i = 0; i < games.Count; i++)
+                {
+                    if(!games[i].Hidden) games[i].Rank = i + 1;
+                }
+
                 games = games.Where(g => g.UserId == user.UserId).ToList();
                 var dateComparer = new GameDateComparer();
                 games.Sort(dateComparer);
-                return games;
+            }
+            else
+            {
+                games = games.Where(g => g.Points > 0 && !g.Hidden).ToList();
+
+                for (int i = 0; i < games.Count; i++)
+                {
+                    games[i].Rank = i + 1;
+                }
             }
 
-            games = games.Where(g => g.Points > 0).ToList(); // remove lost games from leaderboard
             return games;
         }
     }

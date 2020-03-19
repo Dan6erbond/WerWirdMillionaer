@@ -42,7 +42,7 @@ export interface Game {
     rounds: Round[];
     points: number;
     duration: number;
-    rank: number;
+    rank?: number;
     weightedPoints: number;
     categories: number[];
 }

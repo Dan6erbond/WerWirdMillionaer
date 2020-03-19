@@ -97,23 +97,10 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Admin
 
         public void DeleteGame(int id)
         {
-            var roundSpecification = new RoundSpecification(id);
-            var rounds = _roundRepository.Query(roundSpecification);
-            foreach (var round in rounds)
-            {
-                _roundRepository.Delete(round);
-            }
-
-            var categoryGameSpecification = new CategoryGameSpecification(gameId: id);
-            var categoryGames = _categoryGameRepository.Query(categoryGameSpecification);
-            foreach (var categoryGame in categoryGames)
-            {
-                _categoryGameRepository.Delete(categoryGame);
-            }
-
             var gameSpecification = new GameSpecification(gameId: id);
             var game = _gameRepository.Query(gameSpecification).First();
-            _gameRepository.Delete(game);
+            game.Hidden = true;
+            _gameRepository.Update(game);
         }
     }
 }

@@ -23,8 +23,8 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         public int Create(Game item)
         {
             var sql =
-                @"INSERT INTO `games` (`GameId`, `UserId`, `Start`) 
-                VALUES (NULL, @UserId, @Start);
+                @"INSERT INTO `games` (`GameId`, `UserId`, `Start`, `Hidden`) 
+                VALUES (NULL, @UserId, @Start, @Hidden);
                 SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
 
@@ -36,7 +36,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         public void Update(Game item)
         {
             var sql =
-                "UPDATE `games` SET `UserId` = @UserId, `Start` = @Start WHERE `games`.`GameId` = @GameId";
+                "UPDATE `games` SET `UserId` = @UserId, `Start` = @Start, `Hidden` = @Hidden WHERE `games`.`GameId` = @GameId";
             _connection.Execute(sql, item);
 
             List = _connection.Query<Game>("SELECT * FROM `games`").ToList();

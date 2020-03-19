@@ -73,7 +73,7 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
                                         <br/>
                                         <FontAwesomeIcon icon="coins"/> <b>Points:</b> {g.points}
                                         <br/>
-                                        <FontAwesomeIcon icon="trophy"/> <b>Rank:</b> {g.rank}
+                                        <FontAwesomeIcon icon="trophy"/> <b>Rank:</b> {g.rank ? g.rank : <em>Game hidden from leaderboard.</em>}
                                     </p>
                                     <ListGroup>
                                         {g.rounds.map((r: Round, j) => <GameRound round={r} key={j}/>)}
