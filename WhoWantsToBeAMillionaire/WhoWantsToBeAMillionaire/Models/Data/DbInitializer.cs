@@ -147,6 +147,39 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     {
                         new QuizQuestion
                         {
+                            Question = "Which Italian artist painted the Birth of Venus?",
+                            Answers = new List<QuizAnswer>
+                            {
+                                new QuizAnswer("Botticelli", true),
+                                new QuizAnswer("Michelangelo"),
+                                new QuizAnswer("Raphael"),
+                                new QuizAnswer("Caravaggio")
+                            }
+                        },
+                        new QuizQuestion
+                        {
+                            Question = "Who was the original author of Dracula?",
+                            Answers = new List<QuizAnswer>
+                            {
+                                new QuizAnswer("Bram Stoker", true),
+                                new QuizAnswer("Oscar Wilde"),
+                                new QuizAnswer("Florence Balcombe"),
+                                new QuizAnswer("Mary Shelley")
+                            }
+                        },
+                        new QuizQuestion
+                        {
+                            Question = "In which Spanish city die the Joan Miro museum open in 1975?",
+                            Answers = new List<QuizAnswer>
+                            {
+                                new QuizAnswer("Barcelona", true),
+                                new QuizAnswer("Madrid"),
+                                new QuizAnswer("Valencia"),
+                                new QuizAnswer("Granada")
+                            }
+                        },
+                        new QuizQuestion
+                        {
                             Question = "Which two months are named after Roman emperors?",
                             Answers = new List<QuizAnswer>
                             {
@@ -364,8 +397,40 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                         }
                     }
                 };
+                
+                var culture = new Category
+                {
+                    Name = "Culture",
+                    Questions = new List<QuizQuestion>
+                    {
+                        new QuizQuestion
+                        {
+                            Question =
+                                "What color are the domes of churches in Russia commonly?",
+                            Answers = new List<QuizAnswer>
+                            {
+                                new QuizAnswer("Gold", true),
+                                new QuizAnswer("Red"),
+                                new QuizAnswer("Silver"),
+                                new QuizAnswer("Blue")
+                            }
+                        },
+                        new QuizQuestion
+                        {
+                            Question =
+                                "In which city is the famous Manneken Pis fountain?",
+                            Answers = new List<QuizAnswer>
+                            {
+                                new QuizAnswer("Brussels", true),
+                                new QuizAnswer("Amsterdam"),
+                                new QuizAnswer("Bruges"),
+                                new QuizAnswer("Antwerp")
+                            }
+                        }
+                    }
+                };
 
-                var categories = new List<Category> {automotives, travel, geography, history, popCulture, animals};
+                var categories = new List<Category> {automotives, travel, geography, history, popCulture, animals, culture};
 
                 foreach (var category in categories)
                 {
