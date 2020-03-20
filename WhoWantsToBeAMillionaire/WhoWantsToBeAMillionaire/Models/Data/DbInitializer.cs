@@ -217,6 +217,8 @@ namespace WhoWantsToBeAMillionaire.Models.Data
 
             foreach (var category in categories)
             {
+                if (category.Questions.Count == 0) continue;
+
                 var categorySpecification = new CategorySpecification(categoryName: category.Name);
                 var cat = categoryRepository.Query(categorySpecification).FirstOrDefault();
                 var categoryId = cat?.CategoryId ?? categoryRepository.Create(category);
@@ -234,12 +236,16 @@ namespace WhoWantsToBeAMillionaire.Models.Data
 
                     var questionSpecification = new QuizQuestionSpecification(question: question.Question);
                     var q = quizQuestionRepository.Query(questionSpecification).FirstOrDefault();
-                    var questionId = q?.QuestionId ?? quizQuestionRepository.Create(question);
 
-                    foreach (var answer in question.Answers)
+                    if (q == null)
                     {
-                        answer.QuestionId = questionId;
-                        quizAnswerRepository.Create(answer);
+                        var questionId = quizQuestionRepository.Create(question);
+
+                        foreach (var answer in question.Answers)
+                        {
+                            answer.QuestionId = questionId;
+                            quizAnswerRepository.Create(answer);
+                        }
                     }
                 }
             }
