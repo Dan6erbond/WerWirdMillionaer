@@ -17,7 +17,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
         public QuizQuestion(string question, params string[] answers)
         {
             Question = question;
-            Answers.Add(new QuizAnswer(answers[1], true));
+            Answers.Add(new QuizAnswer(answers[0], true));
             for (int i = 1; i < 4; i++)
             {
                 Answers.Add(new QuizAnswer(answers[i]));
