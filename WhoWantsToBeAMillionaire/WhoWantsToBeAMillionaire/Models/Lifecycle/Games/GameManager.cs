@@ -163,17 +163,23 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var lastAnswerSpecification = new QuizAnswerSpecification(rounds.Last().AnswerId);
                 var lastAnswer = _answerRepository.Query(lastAnswerSpecification).First();
 
+                int duration = 0;
+                int points = 0;
+                
                 foreach (var round in rounds)
                 {
-                    game.Duration += round.Duration;
+                    duration += round.Duration;
 
                     var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
                     var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
                     if (answer != null && answer.Correct && lastAnswer.Correct)
                     {
-                        game.Points += 30;
+                        points += 30;
                     }
                 }
+
+                game.Duration = duration;
+                game.Points = points;
 
                 if (user != null && game.UserId != user.UserId)
                 {
