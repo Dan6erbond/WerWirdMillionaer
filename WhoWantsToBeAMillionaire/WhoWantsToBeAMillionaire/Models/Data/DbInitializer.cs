@@ -22,7 +22,11 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                         new QuizQuestion("Who invented Ferrari?",
                             "Enzo Ferrari", "Marco Ferrari", "Ferrrari Murcielago", "Ferruccio Ferrari"),
                         new QuizQuestion("What is both a French wine region and a luxury American automobile?",
-                            "Cadillac", "Chevrolet", "Mercury", "Burgundy")
+                            "Cadillac", "Chevrolet", "Mercury", "Burgundy"),
+                        new QuizQuestion("Which Japanese car brand existed from 1932 until 1983?",
+                            "Datsun", "Nissan", "Toyota", "Honda"),
+                        new QuizQuestion("Which Italian family is in charge of FIAT?",
+                            "Agnelli", "Rossi", "Esposito", "Romano")
                     }
                 };
 
@@ -106,7 +110,6 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     }
                 };
 
-
                 var biology = new Category
                 {
                     Name = "Biology",
@@ -130,6 +133,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                             "Eucalyptus", "Bambus", "Peppermint", "Basil")
                     }
                 };
+                
                 var culture = new Category
                 {
                     Name = "Culture",
@@ -190,10 +194,26 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     }
                 };
 
+                var technology = new Category
+                {
+                    Name = "Technology",
+                    Questions = new List<QuizQuestion>
+                    {
+                        new QuizQuestion("What was the network of computers called from which the internet emerged?",
+                            "Arpanet", "Darpanet", "Netlink", "Swissnet"),
+                        new QuizQuestion("In what year was Google launched on the web?",
+                            "1998", "1997", "1995", "1999"),
+                        new QuizQuestion("Which unit is an indication for the sound quality of MP3?",
+                            "Kbps", "Gb", "Db", "RAM"),
+                        new QuizQuestion("What does RAM stand for?",
+                            "Random Access Memory", "Random Antenna Modem", "Routing Access Machine", "Rolling Abbreviation Mechanic")
+                    }
+                };
+                
                 var categories = new List<Category>
                 {
                     automotives, travel, geography, history, popCulture, biology, culture, englishLiterature,
-                    bigBangTheory
+                    bigBangTheory, technology
                 };
 
                 foreach (var category in categories)
