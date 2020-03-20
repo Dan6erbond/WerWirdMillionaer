@@ -1,0 +1,6 @@
+# Interactive => Interaktiv for German systems
+
+netsh advfirewall firewall add rule name="Kestrel Port Opener" dir=in action=allow protocol=TCP localport=5000,5001
+
+netsh http add urlacl url=http://*:7231/ user=Interaktiv listen=yes
+netsh advfirewall firewall add rule name="IIS Express Port Opener" dir=in action=allow protocol=TCP localport=7231,44309
