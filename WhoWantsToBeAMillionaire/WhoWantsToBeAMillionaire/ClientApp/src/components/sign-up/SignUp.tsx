@@ -33,15 +33,16 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     public componentDidUpdate() {
         this.doForwards();
 
-        if (this.props.userCreated) {
+        if (this.props.userCreated && !this.props.token) {
             this.props.login(this.state.username, this.state.password);
-        } else if (this.props.token) {
+        } else if (this.props.token && !this.props.userData) {
             this.props.requestUserData(this.props.token);
         }
     }
 
     private doForwards() {
         const userData = this.props.userData;
+        console.log(userData)
 
         if (userData && !userData.isAdmin) {
             this.props.history.push("quiz");
