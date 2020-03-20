@@ -90,8 +90,6 @@ class Admin extends React.Component<AdminProps & RouteComponentProps, AdminState
 
         return (
             <div>
-                <br/>
-
                 {categories ? <div>
                     <div>
                         <ButtonGroup aria-label="Basic example">

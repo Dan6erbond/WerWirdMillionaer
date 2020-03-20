@@ -175,7 +175,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                 Name = "Big Bang Theory",
                 Questions = new List<QuizQuestion>
                 {
-                    new QuizQuestion("What did Sheldon and Amy win his Nobel Prize for?",
+                    new QuizQuestion("What did Sheldon and Amy win their Nobel Prize for?",
                         "Super-Asymmetry", "Dark Matter", "Proton Decay", "Neutrino"),
                     new QuizQuestion("What's the name of Howard and Bernadette's first child?",
                         "Halley", "Michael", "John", "Sarah"),

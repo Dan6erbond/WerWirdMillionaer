@@ -126,7 +126,6 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
             <div>
                 {quizResult && runningGame ?
                     <div>
-                        <br/>
                         <QuizEnd result={quizResult} playAgain={this.playAgain} questionsOver={runningGame.questionsOver}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>

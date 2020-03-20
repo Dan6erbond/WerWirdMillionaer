@@ -35,13 +35,12 @@ export default class CategorySelection extends React.Component<CategorySelection
     public render() {
         return (
             <div>
-                <br/>
                 <h3>Select categories</h3>
                 <br/>
-                <div>
-                    <ToggleButtonGroup vertical type="checkbox" onChange={this.toggleCategory}>
+                <div style={{textAlign: 'center'}}>
+                    <ToggleButtonGroup vertical type="checkbox" onChange={this.toggleCategory} style={{margin: '0 auto'}}>
                         {this.props.categories.map(c =>
-                            <ToggleButton value={c.categoryId!!} key={c.categoryId!!}>{c.name}</ToggleButton>
+                            <ToggleButton value={c.categoryId!!} size="lg" key={c.categoryId!!}>{c.name}</ToggleButton>
                         )}
                     </ToggleButtonGroup>
                 </div>

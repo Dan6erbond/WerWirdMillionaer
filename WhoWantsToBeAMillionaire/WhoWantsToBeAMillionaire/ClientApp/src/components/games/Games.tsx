@@ -53,7 +53,6 @@ class Games extends React.Component<GamesProps & RouteComponentProps> {
     public render() {
         return (
             <div>
-                <br/>
                 {this.props.games.userGames ? <Accordion>
                     {this.props.games.userGames.map((g: Game, i) =>
                         <Card key={i}>

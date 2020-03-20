@@ -98,7 +98,6 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
     public render() {
         return (
             <div>
-                <br/>
                 <h4>Leaderboard</h4>
                 <br/>
                 {this.props.games.leaderboard ?
