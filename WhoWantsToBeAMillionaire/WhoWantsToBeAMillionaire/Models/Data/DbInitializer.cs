@@ -12,20 +12,6 @@ namespace WhoWantsToBeAMillionaire.Models.Data
         public static void Initialize(IRepository<User> userRepository, IRepository<Category> categoryRepository,
             IRepository<QuizQuestion> quizQuestionRepository, IRepository<QuizAnswer> quizAnswerRepository)
         {
-            if (!userRepository.List.Any())
-            {
-                var hasher = new PasswordHasher();
-
-                hasher.GenerateSalt().HashPassword(hasher.Salt, "admin123");
-                var admin = new User("TestAdmin", hasher.Salt, hasher.Hashed);
-
-                hasher.GenerateSalt().HashPassword(hasher.Salt, "user123");
-                var user = new User("TestUser", hasher.Salt, hasher.Hashed);
-
-                userRepository.Create(admin);
-                userRepository.Create(user);
-            }
-
             if (!categoryRepository.List.Any())
             {
                 var automotives = new Category
@@ -33,28 +19,10 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     Name = "Automotives",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question = "Who invented Ferrari?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Enzo Ferrari", true),
-                                new QuizAnswer("Marco Ferrari"),
-                                new QuizAnswer("Ferrrari Murcielago"),
-                                new QuizAnswer("Ferruccio Ferrari")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "What is both a French wine region and a luxury American automobile?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Cadillac", true),
-                                new QuizAnswer("Chevrolet"),
-                                new QuizAnswer("Mercury"),
-                                new QuizAnswer("Burgundy")
-                            }
-                        }
+                        new QuizQuestion("Who invented Ferrari?",
+                            "Enzo Ferrari", "Marco Ferrari", "Ferrrari Murcielago", "Ferruccio Ferrari"),
+                        new QuizQuestion("What is both a French wine region and a luxury American automobile?",
+                            "Cadillac", "Chevrolet", "Mercury", "Burgundy")
                     }
                 };
 
@@ -63,17 +31,8 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     Name = "Travel",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question = "Which is a German airline?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Lufthansa", true),
-                                new QuizAnswer("Air Germany"),
-                                new QuizAnswer("JetBlue"),
-                                new QuizAnswer("easyJet")
-                            }
-                        }
+                        new QuizQuestion("Which is a German airline?",
+                            "Lufthansa", "Air Germany", "JetBlue", "easyJet")
                     }
                 };
 
@@ -82,61 +41,19 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     Name = "Geography",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question = "How many stars does the American flag have?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("50", true),
-                                new QuizAnswer("One"),
-                                new QuizAnswer("48"),
-                                new QuizAnswer("13")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "In which European city can you find the home of Anne Frank?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Amsterdam", true),
-                                new QuizAnswer("Rotterdam"),
-                                new QuizAnswer("Stockholm"),
-                                new QuizAnswer("Copenhagen")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "How long is the Great Wall of China?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("21,000 km (13,000 miles)", true),
-                                new QuizAnswer("25,0000 km (15,000 miles)"),
-                                new QuizAnswer("30,000 km (19,000 miles)"),
-                                new QuizAnswer("40,000 km (25,0000 miles)")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which animal is on the Flemish flag?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Lion", true),
-                                new QuizAnswer("Bear"),
-                                new QuizAnswer("Eagle"),
-                                new QuizAnswer("Unicorn")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "How many stars are featured on the flag of New Zealand?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Four", true),
-                                new QuizAnswer("13"),
-                                new QuizAnswer("Ten"),
-                                new QuizAnswer("Five")
-                            }
-                        }
+                        new QuizQuestion("How many stars does the American flag have?",
+                            "50", "One", "48", "13"),
+                        new QuizQuestion("In which European city can you find the home of Anne Frank?",
+                            "Amsterdam", "Rotterdam", "Stockholm", "Copenhagen"),
+                        new QuizQuestion("How long is the Great Wall of China?",
+                            "21,000 km (13,000 miles)", "25,0000 km (15,000 miles)", "30,000 km (19,000 miles)",
+                            "40,000 km (25,0000 miles)"),
+                        new QuizQuestion("Which animal is on the Flemish flag?",
+                            "Lion", "Bear", "Eagle", "Unicorn"),
+                        new QuizQuestion("How many stars are featured on the flag of New Zealand?",
+                            "Four", "13", "Ten", "Five"),
+                        new QuizQuestion("What is the capital of Australia?",
+                            "Canberra", "Sydney", "Melbourne", "Brisbane")
                     }
                 };
 
@@ -145,72 +62,20 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     Name = "History",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question = "Which Italian artist painted the Birth of Venus?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Botticelli", true),
-                                new QuizAnswer("Michelangelo"),
-                                new QuizAnswer("Raphael"),
-                                new QuizAnswer("Caravaggio")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Who was the original author of Dracula?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Bram Stoker", true),
-                                new QuizAnswer("Oscar Wilde"),
-                                new QuizAnswer("Florence Balcombe"),
-                                new QuizAnswer("Mary Shelley")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "In which Spanish city die the Joan Miro museum open in 1975?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Barcelona", true),
-                                new QuizAnswer("Madrid"),
-                                new QuizAnswer("Valencia"),
-                                new QuizAnswer("Granada")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which two months are named after Roman emperors?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("July and August", true),
-                                new QuizAnswer("June and July"),
-                                new QuizAnswer("August and September"),
-                                new QuizAnswer("June and August")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "In what year did Princess Diana die?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("1997", true),
-                                new QuizAnswer("1995"),
-                                new QuizAnswer("1989"),
-                                new QuizAnswer("2001")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which famous British murderer of the 19th century was never arrested?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Jack the Ripper", true),
-                                new QuizAnswer("Amelia Dyer"),
-                                new QuizAnswer("Peter Sutcliffe"),
-                                new QuizAnswer("Mary Ann Cotton")
-                            }
-                        }
+                        new QuizQuestion("In which English town did Adolf Hitler study art?",
+                            "Liverpool", "London", "Birmingham", "York"),
+                        new QuizQuestion("Which Italian artist painted the Birth of Venus?",
+                            "Botticelli", "Michelangelo", "Raphael", "Caravaggio"),
+                        new QuizQuestion("Who was the original author of Dracula?",
+                            "Bram Stoker", "Oscar Wilde", "Florence Balcombe", "Mary Shelley"),
+                        new QuizQuestion("In which Spanish city die the Joan Miro museum open in 1975?",
+                            "Barcelona", "Madrid", "Valencia", "Granada"),
+                        new QuizQuestion("Which two months are named after Roman emperors?",
+                            "July and August", "June and July", "August and September", "June and August"),
+                        new QuizQuestion("In what year did Princess Diana die?",
+                            "1997", "1995", "1989", "2001"),
+                        new QuizQuestion("Which famous British murderer of the 19th century was never arrested?",
+                            "Jack the Ripper", "Amelia Dyer", "Peter Sutcliffe", "Mary Ann Cotton")
                     }
                 };
 
@@ -219,218 +84,117 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     Name = "Pop Culture",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question =
-                                "Which actor is known for his roles in \"The Hurt Locker\", \"The Bourne Legacy\", and \"American Hustle\"?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Jeremy Renner", true),
-                                new QuizAnswer("Anthony Mackie"),
-                                new QuizAnswer("Matt Damon"),
-                                new QuizAnswer("Robert Downey Jr")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question =
-                                "Which actor appeared in famous films, such as \"Gone in 60 Seconds\", \"Face/Off\", \"Ghost Rider\"",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Nicholas Cage", true),
-                                new QuizAnswer("Giovanni Ribisi"),
-                                new QuizAnswer("John Travolta"),
-                                new QuizAnswer("Sam Elliott")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which actor played James Bond in 1990?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Pierce Brosnan", true),
-                                new QuizAnswer("Sean Connery"),
-                                new QuizAnswer("Roger Moore"),
-                                new QuizAnswer("Timothy Dalton")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question =
-                                "Which actor played the role of a famous fictional serial killer Hannibal Lecter?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Anthony Hopkins", true),
-                                new QuizAnswer("Gary Oldman"),
-                                new QuizAnswer("Rhys Ifans"),
-                                new QuizAnswer("Richard Brake")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Who is the most famous Hemsworth brother?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Chris Hemsworth", true),
-                                new QuizAnswer("Arnold Hemsworth"),
-                                new QuizAnswer("Liam Hemsworth"),
-                                new QuizAnswer("Luke Hemsworth")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which actor was awarded Oscars for the films \"Glory\" and \"Training Day\"?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Denzel Washington", true),
-                                new QuizAnswer("Andre Braugher"),
-                                new QuizAnswer("Matthew Broderick"),
-                                new QuizAnswer("Ethan Hawke")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which coffee chain did Madonna work at?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Dunkin Donuts", true),
-                                new QuizAnswer("Starbucks"),
-                                new QuizAnswer("Tim Hortons"),
-                                new QuizAnswer("McCafé")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which actor traveled with the circus at the age of 15 and was a tamer?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Chuck Norris", true),
-                                new QuizAnswer("Scott Adkins"),
-                                new QuizAnswer("Steven Seagal"),
-                                new QuizAnswer("Donnie Yen")
-                            }
-                        }
+                        new QuizQuestion(
+                            "Which actor is known for his roles in \"The Hurt Locker\", \"The Bourne Legacy\", and \"American Hustle\"?",
+                            "Jeremy Renner", "Anthony Mackie", "Matt Damon", "Robert Downey Jr"),
+                        new QuizQuestion(
+                            "Which actor appeared in famous films, such as \"Gone in 60 Seconds\", \"Face/Off\", \"Ghost Rider\"",
+                            "Nicholas Cage", "Giovanni Ribisi", "John Travolta", "Sam Elliott"),
+                        new QuizQuestion("Which actor played James Bond in 1990?",
+                            "Pierce Brosnan", "Sean Connery", "Roger Moore", "Timothy Dalton"),
+                        new QuizQuestion(
+                            "Which actor played the role of a famous fictional serial killer Hannibal Lecter?",
+                            "Anthony Hopkins", "Gary Oldman", "Rhys Ifans", "Richard Brake"),
+                        new QuizQuestion("Who is the most famous Hemsworth brother?",
+                            "Chris Hemsworth", "Arnold Hemsworth", "Liam Hemsworth", "Luke Hemsworth"),
+                        new QuizQuestion("Which actor was awarded Oscars for the films \"Glory\" and \"Training Day\"?",
+                            "Denzel Washington", "Andre Braugher", "Matthew Broderick", "Ethan Hawke"),
+                        new QuizQuestion("Which coffee chain did Madonna work at?",
+                            "Dunkin Donuts", "Starbucks", "Tim Hortons", "McCafé"),
+                        new QuizQuestion("Which actor traveled with the circus at the age of 15 and was a tamer?",
+                            "Chuck Norris", "Scott Adkins", "Steven Seagal", "Donnie Yen")
                     }
                 };
 
-                var animals = new Category
+
+                var biology = new Category
                 {
-                    Name = "Animals",
+                    Name = "Biology",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question = "What animal has three hearts?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Octopus", true),
-                                new QuizAnswer("Squid"),
-                                new QuizAnswer("Cockroach"),
-                                new QuizAnswer("Hagfish")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "What is the smallest bird?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Colibri", true),
-                                new QuizAnswer("Hummingbird"),
-                                new QuizAnswer("Finch"),
-                                new QuizAnswer("Goldcrest")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "What is the fastest land animal?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Cheetah", true),
-                                new QuizAnswer("Greyhound"),
-                                new QuizAnswer("Lion"),
-                                new QuizAnswer("Springbok")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "What is the thinnest natural thread?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Spider web", true),
-                                new QuizAnswer("Human hair"),
-                                new QuizAnswer("Dog hair"),
-                                new QuizAnswer("Horse hair")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which birds have scales on their wings?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Penguins", true),
-                                new QuizAnswer("Ducks"),
-                                new QuizAnswer("Swans"),
-                                new QuizAnswer("Puffins")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "Which animal has green-colored fat?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Crocodile", true),
-                                new QuizAnswer("Alligator"),
-                                new QuizAnswer("Fox"),
-                                new QuizAnswer("Dolphin")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question = "What is the largest spider in the world?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Goliath Birdeater", true),
-                                new QuizAnswer("Giant Huntsman"),
-                                new QuizAnswer("Grammostola Anthracina"),
-                                new QuizAnswer("Colombian Giant Tarantula")
-                            }
-                        }
+                        new QuizQuestion("What animal has three hearts?",
+                            "Octopus", "Squid", "Cockroach", "Hagfish"),
+                        new QuizQuestion("What is the smallest bird?",
+                            "Colibri", "Hummingbird", "Finch", "Goldcrest"),
+                        new QuizQuestion("What is the fastest land animal?",
+                            "Cheetah", "Greyhound", "Lion", "Springbok"),
+                        new QuizQuestion("What is the thinnest natural thread?",
+                            "Spider web", "Human hair", "Dog hair", "Horse hair"),
+                        new QuizQuestion("Which birds have scales on their wings?",
+                            "Penguins", "Ducks", "Swans", "Puffins"),
+                        new QuizQuestion("Which animal has green-colored fat?",
+                            "Crocodile", "Alligator", "Fox", "Dolphin"),
+                        new QuizQuestion("What is the largest spider in the world?",
+                            "Goliath Birdeater", "Giant Huntsman", "Grammostola Anthracina", "Colombian Giant Tarantula"),
+                        new QuizQuestion("What is an evergreen tree or bush that grows in Australia?",
+                            "Eucalyptus", "Bambus", "Peppermint", "Basil")
                     }
                 };
-                
                 var culture = new Category
                 {
                     Name = "Culture",
                     Questions = new List<QuizQuestion>
                     {
-                        new QuizQuestion
-                        {
-                            Question =
-                                "What color are the domes of churches in Russia commonly?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Gold", true),
-                                new QuizAnswer("Red"),
-                                new QuizAnswer("Silver"),
-                                new QuizAnswer("Blue")
-                            }
-                        },
-                        new QuizQuestion
-                        {
-                            Question =
-                                "In which city is the famous Manneken Pis fountain?",
-                            Answers = new List<QuizAnswer>
-                            {
-                                new QuizAnswer("Brussels", true),
-                                new QuizAnswer("Amsterdam"),
-                                new QuizAnswer("Bruges"),
-                                new QuizAnswer("Antwerp")
-                            }
-                        }
+                        new QuizQuestion("What color are the domes of churches in Russia commonly?",
+                            "Gold", "Red", "Silver", "Blue"),
+                        new QuizQuestion("In which city is the famous Manneken Pis fountain?",
+                            "Brussels", "Amsterdam", "Bruges", "Antwerp"),
+                        new QuizQuestion("Which artist painted The Scream?",
+                            "Edvard Munch", "Pablo Picasso", "Hans Gude", "Anders Zorn"),
+                        new QuizQuestion("Which artist painted the Mona Lisa?",
+                            "Leonardo Da Vinci", "Pablo Picasso", "Vincent van Gogh", "Claude Monet"),
+                        new QuizQuestion("Which famous French Engineer designed two bridges for the city of Porto?",
+                            "Gustave Eiffel", "Jules Dupuit", "Georges Claude", "Clément Ader"),
+                        new QuizQuestion("In which city can you see Michelangelo's David?",
+                            "Florence", "Rome", "Paris", "Berlin"),
+                        new QuizQuestion("Who painted the ceiling of the Sistine Chapel?",
+                            "Michelangelo", "Donatello", "Gian Lorenzo Bernini", "Amedeo Modigliani"),
+                        new QuizQuestion("In which country was the famous painter El Greco born?",
+                            "Greece", "Spain", "Turkey", "Italy"),
+                        new QuizQuestion("In which city was the composer Frédéric Chopin buried?",
+                            "Paris", "Marseille", "Lyon", "Nantes"),
+                        new QuizQuestion("Which artist painted the famous painting Guernica?",
+                            "Pablo Picasso", "Vincent van Gogh", "Leonardo Da Vinci", "Edvard Munch")
                     }
                 };
 
-                var categories = new List<Category> {automotives, travel, geography, history, popCulture, animals, culture};
+                var englishLiterature = new Category
+                {
+                    Name = "English Literature",
+                    Questions = new List<QuizQuestion>
+                    {
+                        new QuizQuestion("In which city did Romeo and Juliet live?",
+                            "Verona", "Mantua", "Venice", "Florence")
+                    }
+                };
+
+                var bigBangTheory = new Category
+                {
+                    Name = "Big Bang Theory",
+                    Questions = new List<QuizQuestion>
+                    {
+                        new QuizQuestion("What did Sheldon and Amy win his Nobel Prize for?",
+                            "Super-Asymmetry", "Dark Matter", "Proton Decay", "Neutrino"),
+                        new QuizQuestion("What's the name of Howard and Bernadette's first child?",
+                            "Halley", "Michael", "John", "Sarah"),
+                        new QuizQuestion("What school did Leonard go to?",
+                            "Princeton", "MIT", "Stanford", "Cambridge"),
+                        new QuizQuestion("What school did Rajesh go to?",
+                            "Cambridge", "MIT", "Stanford", "Princeton"),
+                        new QuizQuestion("What school did Howard go to?",
+                            "MIT", "Cambridge", "Stanford", "Princeton"),
+                        new QuizQuestion("At what age did Sheldon receive his PhD?",
+                            "16", "14", "17", "19"),
+                        new QuizQuestion("In what state did Penny grow up?",
+                            "Nebraska", "South Dakota", "Illinois", "Iowa")
+                    }
+                };
+
+                var categories = new List<Category>
+                {
+                    automotives, travel, geography, history, popCulture, biology, culture, englishLiterature,
+                    bigBangTheory
+                };
 
                 foreach (var category in categories)
                 {
@@ -456,6 +220,20 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                         }
                     }
                 }
+            }
+
+            if (!userRepository.List.Any())
+            {
+                var hasher = new PasswordHasher();
+
+                hasher.GenerateSalt().HashPassword(hasher.Salt, "admin123");
+                var admin = new User("TestAdmin", hasher.Salt, hasher.Hashed, true);
+
+                hasher.GenerateSalt().HashPassword(hasher.Salt, "user123");
+                var user = new User("TestUser", hasher.Salt, hasher.Hashed);
+
+                userRepository.Create(admin);
+                userRepository.Create(user);
             }
         }
     }

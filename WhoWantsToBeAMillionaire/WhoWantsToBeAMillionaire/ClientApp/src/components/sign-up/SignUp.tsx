@@ -21,36 +21,38 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     constructor(props: SignUpProps) {
         super(props);
         this.state = {username: "", password: ""};
-        
+
         this.signUp = this.signUp.bind(this);
-        this.doForwards = this.doForwards.bind(this);        
+        this.doForwards = this.doForwards.bind(this);
     }
-    
+
     public componentDidMount() {
         this.doForwards();
     }
 
     public componentDidUpdate() {
         this.doForwards();
-        
+
         if (this.props.userCreated) {
             this.props.login(this.state.username, this.state.password);
         } else if (this.props.token) {
             this.props.requestUserData(this.props.token);
         }
     }
-    
-    private doForwards(){
-        if (this.props.token && this.props.userData && !this.props.userData.isAdmin) {
+
+    private doForwards() {
+        const userData = this.props.userData;
+
+        if (userData && !userData.isAdmin) {
             this.props.history.push("quiz");
-        } else if (this.props.token && this.props.userData && this.props.userData.isAdmin) {
+        } else if (userData && userData.isAdmin) {
             this.props.history.push("admin");
         }
     }
 
     public render() {
         let usernameTaken = this.props.apiError === "USER_ALREADY_EXISTS";
-        
+
         return (
             <div className="form-container">
                 <h4 className="title">Sign up</h4>
