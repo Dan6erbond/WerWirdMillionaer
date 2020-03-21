@@ -29,13 +29,13 @@ interface LeaderboardProps {
 
 interface LeaderboardState {
     sort: LeaderboardSort;
-    fetched: boolean;
+    gamesFetched: boolean;
 }
 
 class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps, LeaderboardState> {
     constructor(props: LeaderboardProps & RouteComponentProps) {
         super(props);
-        this.state = {sort: LeaderboardSort.RankAscending, fetched: false};
+        this.state = {sort: LeaderboardSort.RankAscending, gamesFetched: false};
 
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
         this.toggleRankSort = this.toggleRankSort.bind(this);
@@ -51,14 +51,17 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
     }
 
     public componentDidUpdate(prevProps: Readonly<LeaderboardProps>, prevState: Readonly<LeaderboardState>, snapshot?: any) {
-        if (!this.state.fetched) {
-            this.ensureDataFetched();
-        }
+        this.ensureDataFetched();
     }
 
     private ensureDataFetched() {
-        this.setState({fetched: true});
-        this.props.gameActions.fetchLeaderboard();
+        if (!this.props.games.categories) {
+            this.props.gameActions.fetchCategories();
+        }
+        if (!this.state.gamesFetched) {
+            this.setState({gamesFetched: true});
+            this.props.gameActions.fetchLeaderboard();
+        }
     }
 
     private toggleRankSort() {
@@ -98,46 +101,56 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
     }
 
     public render() {
+        const style = {verticalAlign: 'middle'};
+        
         return (
             <div>
                 <h4>Leaderboard</h4>
                 <br/>
-                {this.props.games.leaderboard ?
-                    <Table striped bordered hover>
+                {this.props.games.leaderboard && this.props.games.categories ?
+                    <Table striped bordered hover responsive size="sm">
                         <thead>
                         <tr>
-                            <th style={{verticalAlign: 'middle'}}>
+                            <th style={style}>
                                 # <Button variant="light" onClick={this.toggleRankSort}>⇅</Button>
                             </th>
-                            <th style={{verticalAlign: 'middle'}}>
+                            <th style={style}>
                                 Username <Button variant="light" onClick={this.toggleUsernameSort}>⇅</Button>
                             </th>
-                            <th style={{verticalAlign: 'middle'}}>
+                            <th style={style}>
                                 Points <Button variant="light" onClick={this.togglePointsSort}>⇅</Button>
                             </th>
-                            <th style={{verticalAlign: 'middle'}}>
+                            <th style={style}>
                                 Weighted Points <Button variant="light"
                                                         onClick={this.toggleWeightedPointsSort}>⇅</Button>
                             </th>
-                            <th style={{verticalAlign: 'middle'}}>
+                            <th style={style}>
                                 Game Time <Button variant="light" onClick={this.toggleGameTimeSort}>⇅</Button>
                             </th>
+                            <th style={style}>
+                                Categories
+                            </th>
+                            <th style={style}>
+                                Time of Game
+                            </th>
                             {this.props.users.userData && this.props.users.userData.isAdmin ?
-                                <th style={{verticalAlign: 'middle'}}>Delete</th> : null}
+                                <th style={style}>Delete</th> : null}
                         </tr>
                         </thead>
                         <tbody>
                         {this.props.games.leaderboard.map((g, i) =>
-                            <tr key={g.gameId}>
-                                <td style={{verticalAlign: 'middle'}}>{g.rank}</td>
-                                <td style={{verticalAlign: 'middle'}}>{g.username}</td>
-                                <td style={{verticalAlign: 'middle'}}>{g.points}</td>
-                                <td style={{verticalAlign: 'middle'}}>{g.weightedPoints}</td>
-                                <td style={{verticalAlign: 'middle'}}>{g.duration > 60 ?
+                            <tr style={{verticalAlign: 'middle'}} key={g.gameId}>
+                                <td style={style}>{g.rank}</td>
+                                <td style={style}>{g.username}</td>
+                                <td style={style}>{g.points}</td>
+                                <td style={style}>{g.weightedPoints}</td>
+                                <td style={style}>{g.duration > 60 ?
                                     <span>{Math.round(g.duration / 60)} minutes {g.duration % 60} seconds</span>
                                     : <span>{g.duration} seconds</span>}</td>
+                                <td style={style}>{this.props.games.categories!!.filter(c => g.categories.includes(c.categoryId!!)).map(c => c.name).join(", ")}</td>
+                                <td style={style}>{new Date(Date.parse(g.start)).toLocaleString()}</td>
                                 {this.props.users.userData && this.props.users.userData.isAdmin ?
-                                    <td style={{verticalAlign: 'middle'}}>
+                                    <td style={style}>
                                         <Button variant="primary" onClick={() => this.deleteGame(i)}>Delete</Button>
                                     </td> : null}
                             </tr>)}
