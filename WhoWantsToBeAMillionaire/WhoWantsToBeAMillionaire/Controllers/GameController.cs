@@ -123,6 +123,16 @@ namespace WhoWantsToBeAMillionaire.Controllers
             }
         }
 
+        [HttpGet("checkTime")]
+        public IActionResult CheckTime()
+        {
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var user = _userManager.GetUser(username);
+
+            var result = _gameManager.CheckTime(user);
+            return Ok(result);
+        }
+
         [HttpGet("joker")]
         public IActionResult UseJoker()
         {

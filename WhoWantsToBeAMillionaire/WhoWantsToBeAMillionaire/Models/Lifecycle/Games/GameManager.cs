@@ -40,7 +40,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             _runningGames.Add(new RunningGame(user.UserId, categories));
         }
 
-        public QuizResult EndGame(User user, bool won = true)
+        public QuizResult EndGame(User user, bool won = true, bool timeOver = false)
         {
             var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
 
@@ -63,7 +63,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             {
                 var round = new Round
                 {
-                    Duration = (question.TimeAnswered - question.TimeAsked).Seconds,
+                    Duration = (int) (question.TimeAnswered - question.TimeAsked).TotalSeconds,
                     AnswerId = question.AnsweredAnswer?.AnswerId,
                     GameId = gameId,
                     QuestionId = question.QuestionId,
@@ -78,19 +78,36 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 _categoryGameRepository.Create(categoryGame);
             }
 
-            var result = runningGame.End(won);
+            var result = runningGame.End(won, timeOver);
 
-            if (!won)
+            if (!won && !timeOver)
             {
                 var questionId = runningGame.CurrentQuestion?.QuestionId ??
                                  runningGame.AskedQuestions.Last().QuestionId;
                 var answerSpecification =
                     new QuizAnswerSpecification(questionId: questionId, correct: true);
                 var answer = _answerRepository.Query(answerSpecification).First();
-                result.correctAnswer = answer.Answer;
+                result.CorrectAnswer = answer.Answer;
             }
 
             return result;
+        }
+        
+        public dynamic CheckTime(User user)
+        {
+            var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
+
+            // TODO: Throw error if no game has been found (gameIndex = -1)
+            
+            var game = _runningGames[gameIndex];
+            
+            var gameTime = (int) (game.TimeStarted - DateTime.Now).TotalSeconds; 
+            var questionTime = (int) (game.CurrentQuestion.TimeAsked - DateTime.Now).TotalSeconds;
+            
+            var result = new TimeResult(gameTime, questionTime);
+
+            if (result.QuestionTime <= 120) return result;
+            return EndGame(user, false, true);
         }
 
         public dynamic AnswerQuestion(User user, int questionId, int answerId)
@@ -112,7 +129,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
 
-            return result.Correct ? (dynamic) result : EndGame(user, false);
+            return result.Correct && result.QuestionDuration <= 120 ? (dynamic) result : EndGame(user, false, true);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)
@@ -176,23 +193,26 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var lastAnswerSpecification = new QuizAnswerSpecification(rounds.Last().AnswerId);
                 var lastAnswer = _answerRepository.Query(lastAnswerSpecification).First();
 
-                int duration = 0;
-                int points = 0;
-
-                foreach (var round in rounds)
+                if (lastAnswer.Correct && rounds.Last().Duration <= 120)
                 {
-                    duration += round.Duration;
-
-                    var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
-                    var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
-                    if (answer != null && answer.Correct && lastAnswer.Correct)
+                    int duration = 0;
+                    int points = 0;
+                
+                    foreach (var round in rounds)
                     {
-                        points += 30;
-                    }
-                }
+                        duration += round.Duration;
 
-                game.Duration = duration;
-                game.Points = points;
+                        var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
+                        var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
+                        if (answer != null && answer.Correct && round.Duration <= 120)
+                        {
+                            points += 30;
+                        }
+                    }
+
+                    game.Duration = duration;
+                    game.Points = points;
+                }
 
                 game.WeightedPoints = game.Points / Math.Max(game.Duration, 1);
 
@@ -207,8 +227,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 {
                     continue; // Saves time by not grabbing information for unneeded games
                 }
-
-
+                
+                //TODO: Use inner joins in repositories to increase performance
                 var userSpecification = new UserSpecification(game.UserId);
                 var u = _userRepository.Query(userSpecification).First();
                 game.Username = u.Username;
@@ -219,11 +239,14 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             if (user != null)
             {
-                games = games.Where(g => g.UserId == user.UserId || !g.Hidden).ToList();
+                games = games.Where(g => g.UserId == user.UserId || g.Points > 0 && !g.Hidden).ToList();
 
-                for (int i = 0; i < games.Count; i++)
+                var currRank = 1;
+                foreach (var game in games)
                 {
-                    if (!games[i].Hidden) games[i].Rank = i + 1;
+                    if (game.Points <= 0 || game.Hidden) continue;
+                    game.Rank = currRank;
+                    currRank++;
                 }
 
                 games = games.Where(g => g.UserId == user.UserId).ToList();

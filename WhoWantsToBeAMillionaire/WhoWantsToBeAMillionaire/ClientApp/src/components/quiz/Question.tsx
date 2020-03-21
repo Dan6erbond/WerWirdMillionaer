@@ -9,11 +9,28 @@ interface QuestionProps {
     answerQuestion: (specification: AnswerSpecification, answer: string) => void;
 }
 
-export default class Question extends React.Component<QuestionProps> {
+interface QuestionState {
+    secondsElapsed: number;
+    counterInterval?: ReturnType<typeof setInterval>;
+}
+
+export default class Question extends React.Component<QuestionProps, QuestionState> {
     constructor(props: QuestionProps) {
         super(props);
+        this.state = {secondsElapsed: 0, counterInterval: undefined};
 
         this.answerQuestion = this.answerQuestion.bind(this);
+        this.addSeconds = this.addSeconds.bind(this);
+    }
+
+    public componentDidUpdate(prevProps: Readonly<QuestionProps>) {
+        if (prevProps.question != this.props.question) {
+            this.setState({secondsElapsed: 0});
+        }
+        if (!this.state.counterInterval) {
+            const interval: ReturnType<typeof setInterval> = setInterval(this.addSeconds, 1000);
+            this.setState({counterInterval: interval});
+        }
     }
 
     private answerQuestion(answerNr: number) {
@@ -23,6 +40,10 @@ export default class Question extends React.Component<QuestionProps> {
             questionId: this.props.question.questionId!!,
             answerId: answer.answerId!!
         }, answer.answer);
+    }
+
+    private addSeconds() {
+        this.setState({secondsElapsed: this.state.secondsElapsed + 1});
     }
 
     public render() {
@@ -38,7 +59,12 @@ export default class Question extends React.Component<QuestionProps> {
                     <br/>
                     <p style={{textAlign: 'center'}}>{this.props.question.timesAsked === 0 ? "Never asked" :
                         `${Math.round(this.props.question.correctlyAnswered * 100 / this.props.question.timesAsked)}% correctly answered`}</p>
+                    <p style={{textAlign: 'center', fontWeight: 'bold'}}
+                        className={this.state.secondsElapsed > 120 ? "text-danger" : this.state.secondsElapsed > 90 ? "text-warning" : ""}>
+                        {this.state.secondsElapsed} seconds elapsed for this question
+                    </p>
                 </div>
+                <br/>
                 <Container>
                     <Row>
                         <Col>

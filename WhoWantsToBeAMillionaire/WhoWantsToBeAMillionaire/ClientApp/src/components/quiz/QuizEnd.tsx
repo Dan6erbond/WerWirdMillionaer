@@ -15,15 +15,18 @@ export default class QuizEnd extends React.Component<QuizEndProps> {
         return (
             <Jumbotron>
                 <h1>Game over!</h1>
-                {this.props.result.won ?
-                    <p>{this.props.questionsOver ? "You won since we don't have more questions to offer." : "You won!"}</p> :
-                    <p>
-                        You lost.
-                        <br/>
-                        <b>You answered: </b> {this.props.answer!!}
-                        <br/>
-                        <b>The correct answer was: </b> {this.props.result.correctAnswer!!}
-                    </p>}
+                {this.props.result.won ? this.props.questionsOver ?
+                    <p className="text-info">You won since we don't have more questions to offer.</p> :
+                    <p className="text-success">You won!</p> :
+                    this.props.result.timeOver ?
+                        <p className="text-warning">You ran out of time.</p> :
+                        <p className="text-danger">
+                            You lost.
+                            <br/>
+                            <b>You answered: </b> {this.props.answer!!}
+                            <br/>
+                            <b>The correct answer was: </b> {this.props.result.correctAnswer!!}
+                        </p>}
                 <p>
                     Game time: {this.props.result.timeElapsed > 60 ?
                     <span>{Math.round(this.props.result.timeElapsed / 60)} minutes {this.props.result.timeElapsed % 60} seconds</span>

@@ -26,6 +26,7 @@ export type KnownErrors =
 export interface AnswerResult {
     type: 'ANSWER_RESULT';
     correct: boolean;
+    questionDuration: number;
 }
 
 export interface QuizResult {
@@ -35,4 +36,11 @@ export interface QuizResult {
     points: number;
     timeElapsed: number;
     correctAnswer?: string;
+    timeOver: boolean;
+}
+
+export interface TimeResult {
+    type: 'TIME_RESULT';
+    gameTime: number;
+    questionTime: number;
 }

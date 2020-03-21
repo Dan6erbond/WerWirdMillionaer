@@ -52,7 +52,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.ensureDataFetched();
     }
 
-    public componentDidUpdate(prevProps: Readonly<QuizProps>, prevState: Readonly<QuizState>, snapshot?: any) {
+    public componentDidUpdate() {
         this.doForwards();
         this.ensureDataFetched();
     }
@@ -130,14 +130,14 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     }
 
     public render() {
-        const loading = this.props.games.answering || this.props.games.loadingQuestion || !this.props.games.categories;
+        const loading = this.props.games.answering || this.props.games.loadingQuestion || !this.props.games.categories || this.props.games.ending;
         const runningGame = this.props.games.runningGame;
 
         const categories = this.props.games.categories;
         const question = runningGame ? runningGame.currentQuestion : undefined;
         const quizResult = runningGame ? runningGame.result : undefined;
         const usedJoker = runningGame ? runningGame.usedJoker : undefined;
-
+        
         return (
             <div>
                 {quizResult && runningGame ?

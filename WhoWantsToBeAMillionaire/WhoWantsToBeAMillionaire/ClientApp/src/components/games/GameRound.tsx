@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import {Badge, ListGroup} from "react-bootstrap";
+import {Alert, Badge, ListGroup} from "react-bootstrap";
 import {QuizAnswer, QuizQuestion, Round} from "../../store/Games";
 import {ErrorResponse} from "../../store/ApiResponse";
 
@@ -64,6 +64,9 @@ export default class GameRound extends React.Component<GameRoundProps, GameRound
                     <h6>
                         {question.question} {round.usedJoker ?
                         <Badge variant="secondary">Joker Used</Badge> : null}
+                        {round.duration > 120 ? <Alert variant="warning">
+                            Took too long to answer.
+                        </Alert> : null}
                     </h6>
                     {answeredAnswer ?
                         <span>
