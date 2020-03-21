@@ -144,7 +144,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                     <div>
                         <QuizEnd result={quizResult} playAgain={this.playAgain}
                                  questionsOver={runningGame.questionsOver} answer={this.state.answer}/>
-                    </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
+                    </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question && categories ?
                         <div>
                             <p>
                                 <b>Time elapsed:</b> {this.state.secondsElapsed > 60 ?
@@ -159,7 +159,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                                         disabled={usedJoker}>Use Joker</Button>
                             </div>
                             <br/>
-                            <Question question={question} answerQuestion={this.answerQuestion}/>
+                            <Question question={question} answerQuestion={this.answerQuestion} categories={categories}/>
                             {this.state.displayCorrect ? <div>
                                 <br/>
                                 <br/>

@@ -1,10 +1,11 @@
 ﻿import * as React from 'react';
-import {QuizQuestion} from "../../store/Games";
-import {Button, Col, Container, Row} from "react-bootstrap";
+import {Category, QuizQuestion} from "../../store/Games";
+import {Badge, Button, Col, Container, Row} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
 
 interface QuestionProps {
     question: QuizQuestion;
+    categories: Category[];
     answerQuestion: (specification: AnswerSpecification, answer: string) => void;
 }
 
@@ -25,10 +26,15 @@ export default class Question extends React.Component<QuestionProps> {
     }
 
     public render() {
+        const categoryName = this.props.categories.filter(c => c.categoryId === this.props.question.categoryId)[0].name;
+
         return (
             <div>
                 <div>
-                    <h1 className="display-4">{this.props.question.question}</h1>
+                    <h1 className="display-4">
+                        {this.props.question.question} <Badge variant="secondary"
+                                                              style={{fontSize: '35%'}}>{categoryName}</Badge>
+                    </h1>
                     <br/>
                     <p style={{textAlign: 'center'}}>{this.props.question.timesAsked === 0 ? "Never asked" :
                         `${Math.round(this.props.question.correctlyAnswered * 100 / this.props.question.timesAsked)}% correctly answered`}</p>
