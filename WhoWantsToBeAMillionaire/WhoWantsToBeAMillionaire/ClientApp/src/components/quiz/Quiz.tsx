@@ -147,9 +147,11 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
                             <p>
-                                Time elapsed: {this.state.secondsElapsed}
+                                <b>Time elapsed:</b> {this.state.secondsElapsed > 60 ?
+                                <span>{Math.round(this.state.secondsElapsed / 60)} minutes {this.state.secondsElapsed % 60} seconds</span>
+                                : <span>{this.state.secondsElapsed} seconds</span>}
                                 <br/>
-                                Points: {runningGame.points}
+                                <b>Points:</b> {runningGame.points}
                             </p>
                             <br/>
                             <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
@@ -166,7 +168,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                                 </Alert>
                             </div> : null}
                             <br/>
-                            <Button variant="outline-primary" onClick={this.endGame}>End Game</Button>
+                            <br/>
+                            <div style={{textAlign: 'center'}}><Button variant="outline-primary" size="lg" onClick={this.endGame}>End Game</Button></div>
                         </div> : categories ?
                             <CategorySelection categories={categories}
                                                play={this.startGame}/> : null}
