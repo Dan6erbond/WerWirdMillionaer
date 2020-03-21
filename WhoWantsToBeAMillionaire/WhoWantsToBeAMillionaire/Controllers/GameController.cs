@@ -112,9 +112,15 @@ namespace WhoWantsToBeAMillionaire.Controllers
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = _userManager.GetUser(username);
 
-            var result = _gameManager.AnswerQuestion(user, specification.QuestionId, specification.AnswerId);
-
-            return Ok(result);
+            try
+            {
+                var result = _gameManager.AnswerQuestion(user, specification.QuestionId, specification.AnswerId);
+                return Ok(result);
+            }
+            catch (NoQuestionsAnsweredException e)
+            {
+                return BadRequest(new NoQuestionsAnsweredError(e.Message));
+            }
         }
 
         [HttpGet("joker")]

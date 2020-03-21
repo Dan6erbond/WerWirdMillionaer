@@ -49,6 +49,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var runningGame = _runningGames[gameIndex];
             _runningGames.RemoveAt(gameIndex);
 
+            if (!runningGame.AskedQuestions.Any()) throw new NoQuestionsAnsweredException("No questions have been answered in this quiz, nothing to save.");
+
             var game = new Game
             {
                 Start = runningGame.TimeStarted,
@@ -109,9 +111,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             // TODO: Check if answerId is valid
 
             var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
-            if (result.Correct) return result;
 
-            return EndGame(user, false);
+            return result.Correct ? (dynamic) result : EndGame(user, false);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)
