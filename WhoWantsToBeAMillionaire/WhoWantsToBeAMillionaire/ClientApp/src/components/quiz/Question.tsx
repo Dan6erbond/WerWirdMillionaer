@@ -5,7 +5,7 @@ import {AnswerSpecification} from "../../store/Specification";
 
 interface QuestionProps {
     question: QuizQuestion;
-    answerQuestion: (specification: AnswerSpecification) => void;
+    answerQuestion: (specification: AnswerSpecification, answer: string) => void;
 }
 
 export default class Question extends React.Component<QuestionProps> {
@@ -21,7 +21,7 @@ export default class Question extends React.Component<QuestionProps> {
         this.props.answerQuestion({
             questionId: this.props.question.questionId!!,
             answerId: answer.answerId!!
-        });
+        }, answer.answer);
     }
 
     public render() {

@@ -7,6 +7,7 @@ interface QuizEndProps {
     result: QuizResult;
     playAgain: () => void;
     questionsOver: boolean;
+    answer?: string;
 }
 
 export default class QuizEnd extends React.Component<QuizEndProps> {
@@ -14,11 +15,19 @@ export default class QuizEnd extends React.Component<QuizEndProps> {
         return (
             <Jumbotron>
                 <h1>Game over!</h1>
-                <p>{this.props.result.won ? this.props.questionsOver ? "You won since we don't have more questions to offer." : "You won." : "You lost."}</p>
+                {this.props.result.won ?
+                    <p>{this.props.questionsOver ? "You won since we don't have more questions to offer." : "You won!"}</p> :
+                    <p>
+                        You lost.
+                        <br/>
+                        <b>You answered: </b> {this.props.answer!!}
+                        <br/>
+                        <b>The correct answer was: </b> {this.props.result.correctAnswer!!}
+                    </p>}
                 <p>
                     Game time: {this.props.result.timeElapsed > 60 ?
-                        <span>{Math.round(this.props.result.timeElapsed / 60)} minutes {this.props.result.timeElapsed % 60} seconds</span>
-                        : <span>{this.props.result.timeElapsed} seconds</span>}
+                    <span>{Math.round(this.props.result.timeElapsed / 60)} minutes {this.props.result.timeElapsed % 60} seconds</span>
+                    : <span>{this.props.result.timeElapsed} seconds</span>}
                 </p>
                 <p>Points: {this.props.result.points}</p>
                 <ButtonToolbar aria-label="Toolbar with button groups">

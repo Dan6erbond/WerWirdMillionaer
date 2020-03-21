@@ -76,7 +76,19 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 _categoryGameRepository.Create(categoryGame);
             }
 
-            return runningGame.End(won);
+            var result = runningGame.End(won);
+
+            if (!won)
+            {
+                var questionId = runningGame.CurrentQuestion?.QuestionId ??
+                                 runningGame.AskedQuestions.Last().QuestionId;
+                var answerSpecification =
+                    new QuizAnswerSpecification(questionId: questionId, correct: true);
+                var answer = _answerRepository.Query(answerSpecification).First();
+                result.correctAnswer = answer.Answer;
+            }
+
+            return result;
         }
 
         public dynamic AnswerQuestion(User user, int questionId, int answerId)
@@ -165,7 +177,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
                 int duration = 0;
                 int points = 0;
-                
+
                 foreach (var round in rounds)
                 {
                     duration += round.Duration;
@@ -210,7 +222,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
                 for (int i = 0; i < games.Count; i++)
                 {
-                    if(!games[i].Hidden) games[i].Rank = i + 1;
+                    if (!games[i].Hidden) games[i].Rank = i + 1;
                 }
 
                 games = games.Where(g => g.UserId == user.UserId).ToList();

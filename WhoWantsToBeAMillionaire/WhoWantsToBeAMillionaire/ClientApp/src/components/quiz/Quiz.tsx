@@ -23,12 +23,19 @@ interface QuizState {
     counterInterval?: ReturnType<typeof setInterval>;
     displayCorrect: boolean;
     displayedCorrect: boolean;
+    answer?: string;
 }
 
 class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     constructor(props: QuizProps & RouteComponentProps) {
         super(props);
-        this.state = {secondsElapsed: 0, counterInterval: undefined, displayCorrect: false, displayedCorrect: false};
+        this.state = {
+            secondsElapsed: 0,
+            counterInterval: undefined,
+            displayCorrect: false,
+            displayedCorrect: false,
+            answer: undefined
+        };
 
         this.startGame = this.startGame.bind(this);
         this.answerQuestion = this.answerQuestion.bind(this);
@@ -116,7 +123,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         this.props.gameActions.reset();
     }
 
-    private answerQuestion(specification: AnswerSpecification) {
+    private answerQuestion(specification: AnswerSpecification, answer: string) {
+        this.setState({answer: answer});
         const token = this.props.users.token!!;
         this.props.gameActions.answerQuestion(token, specification);
     }
@@ -135,7 +143,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                 {quizResult && runningGame ?
                     <div>
                         <QuizEnd result={quizResult} playAgain={this.playAgain}
-                                 questionsOver={runningGame.questionsOver}/>
+                                 questionsOver={runningGame.questionsOver} answer={this.state.answer}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
                             {runningGame ? <p>{this.state.secondsElapsed}</p> : null}

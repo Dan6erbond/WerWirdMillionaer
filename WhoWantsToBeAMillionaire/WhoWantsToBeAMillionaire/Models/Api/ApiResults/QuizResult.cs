@@ -7,5 +7,6 @@
         public int Points { get; set; }
         public int TimeElapsed { get; set; }
         public bool JokerUsed { get; set; }
+        public string correctAnswer { get; set; }
     }
 }

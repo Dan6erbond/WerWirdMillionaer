@@ -34,4 +34,5 @@ export interface QuizResult {
     jokerUsed: boolean;
     points: number;
     timeElapsed: number;
+    correctAnswer?: string;
 }
