@@ -181,16 +181,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 game.Duration = duration;
                 game.Points = points;
 
-                if (user != null && game.UserId != user.UserId)
-                {
-                    continue; // Saves time by not grabbing information for unneeded games
-                }
-
                 game.WeightedPoints = game.Points / Math.Max(game.Duration, 1);
-
-                var userSpecification = new UserSpecification(game.UserId);
-                var u = _userRepository.Query(userSpecification).First();
-                game.Username = u.Username;
 
                 var categoryGameSpecification = new CategoryGameSpecification(gameId: game.GameId);
                 var categoryGames = _categoryGameRepository.Query(categoryGameSpecification);
@@ -198,10 +189,20 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 {
                     game.Categories.Add(categoryGame.CategoryId);
                 }
+
+                if (user != null && game.UserId != user.UserId)
+                {
+                    continue; // Saves time by not grabbing information for unneeded games
+                }
+
+
+                var userSpecification = new UserSpecification(game.UserId);
+                var u = _userRepository.Query(userSpecification).First();
+                game.Username = u.Username;
             }
 
-            var pointsComparer = new GamePointsComparer();
-            games.Sort(pointsComparer);
+            var weightedPointsComparer = new GameWeightedPointsComparer();
+            games.Sort(weightedPointsComparer);
 
             if (user != null)
             {

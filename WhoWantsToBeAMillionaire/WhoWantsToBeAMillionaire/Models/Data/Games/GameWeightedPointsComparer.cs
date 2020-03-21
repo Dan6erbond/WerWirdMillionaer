@@ -2,7 +2,7 @@
 
 namespace WhoWantsToBeAMillionaire.Models.Data.Games
 {
-    public class GamePointsComparer : IComparer<Game>
+    public class GameWeightedPointsComparer : IComparer<Game>
     {
         public int Compare(Game x, Game y)
         {
@@ -21,17 +21,17 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
                 return 1;
             }
 
-            if (x.Points == y.Points)
+            if (x.WeightedPoints == y.WeightedPoints)
             {
-                if (x.WeightedPoints > y.WeightedPoints)
+                if (x.Points > y.Points)
                 {
                     return -1;
                 }
 
-                return x.WeightedPoints < y.WeightedPoints ? 1 : 0;
+                return x.Points < y.Points ? 1 : 0;
             }
 
-            return x.Points > y.Points ? -1 : 1;
+            return x.WeightedPoints > y.WeightedPoints ? -1 : 1;
         }
     }
 }
