@@ -28,9 +28,7 @@ export default class QuizEnd extends React.Component<QuizEndProps> {
                             <b>The correct answer was: </b> {this.props.result.correctAnswer!!}
                         </p>}
                 <p>
-                    Game time: {this.props.result.timeElapsed > 60 ?
-                    <span>{Math.round(this.props.result.timeElapsed / 60)} minutes {this.props.result.timeElapsed % 60} seconds</span>
-                    : <span>{this.props.result.timeElapsed} seconds</span>}
+                    Game time: {this.props.result.timeElapsed.toTimeString()}
                 </p>
                 <p>Points: {this.props.result.points}</p>
                 <ButtonToolbar aria-label="Toolbar with button groups">

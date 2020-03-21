@@ -144,9 +144,7 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
                                 <td style={style}>{g.username}</td>
                                 <td style={style}>{g.points}</td>
                                 <td style={style}>{g.weightedPoints}</td>
-                                <td style={style}>{g.duration > 60 ?
-                                    <span>{Math.round(g.duration / 60)} minutes {g.duration % 60} seconds</span>
-                                    : <span>{g.duration} seconds</span>}</td>
+                                <td style={style}>{g.duration.toTimeString()}</td>
                                 <td style={style}>{this.props.games.categories!!.filter(c => g.categories.includes(c.categoryId!!)).map(c => c.name).join(", ")}</td>
                                 <td style={style}>{new Date(Date.parse(g.start)).toLocaleString()}</td>
                                 {this.props.users.userData && this.props.users.userData.isAdmin ?

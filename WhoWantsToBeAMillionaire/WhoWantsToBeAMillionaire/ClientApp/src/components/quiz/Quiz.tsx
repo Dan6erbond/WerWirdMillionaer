@@ -147,9 +147,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question && categories ?
                         <div>
                             <p>
-                                <b>Time elapsed:</b> {this.state.secondsElapsed > 60 ?
-                                <span>{Math.round(this.state.secondsElapsed / 60)} minutes {this.state.secondsElapsed % 60} seconds</span>
-                                : <span>{this.state.secondsElapsed} seconds</span>}
+                                <b>Time elapsed:</b> {this.state.secondsElapsed.toTimeString()}
                                 <br/>
                                 <b>Points:</b> {runningGame.points}
                             </p>
