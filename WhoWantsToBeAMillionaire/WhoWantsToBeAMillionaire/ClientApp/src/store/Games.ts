@@ -291,6 +291,13 @@ export const actionCreators = {
         dispatch({type: 'SET_RUNNING_GAME', game: undefined});
     },
     endGame: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        const runningGame = getState().gameState.runningGame!!;
+        
+        if (runningGame.points == 0) {
+            dispatch({type: 'SET_RUNNING_GAME', game: undefined});
+            return;
+        }
+
         dispatch({type: 'SET_ENDING', ending: true});
         fetch('api/games/end', {
             method: 'GET',
@@ -312,7 +319,6 @@ export const actionCreators = {
                 return response.json() as Promise<QuizResult>;
             })
             .then(data => {
-                const runningGame = getState().gameState.runningGame!!;
                 runningGame.result = data;
                 dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
             })
