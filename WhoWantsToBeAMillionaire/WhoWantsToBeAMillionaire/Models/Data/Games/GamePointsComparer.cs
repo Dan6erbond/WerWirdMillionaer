@@ -20,13 +20,23 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
             {
                 return 1;
             }
-            
-            if (x.Points < y.Points)
+
+            if (x.Points == y.Points)
             {
-                return 1;
+                if (x.WeightedPoints > y.WeightedPoints)
+                {
+                    return -1;
+                }
+
+                if (x.WeightedPoints < y.WeightedPoints)
+                {
+                    return 1;
+                }
+
+                return 0;
             }
 
-            return x.Points > y.Points ? -1 : 0;
+            return x.Points > y.Points ? -1 : 1;
         }
     }
 }

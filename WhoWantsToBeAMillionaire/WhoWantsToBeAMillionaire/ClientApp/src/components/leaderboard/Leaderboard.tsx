@@ -29,12 +29,13 @@ interface LeaderboardProps {
 
 interface LeaderboardState {
     sort: LeaderboardSort;
+    fetched: boolean;
 }
 
 class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps, LeaderboardState> {
     constructor(props: LeaderboardProps & RouteComponentProps) {
         super(props);
-        this.state = {sort: LeaderboardSort.RankAscending};
+        this.state = {sort: LeaderboardSort.RankAscending, fetched: false};
 
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
         this.toggleRankSort = this.toggleRankSort.bind(this);
@@ -49,14 +50,15 @@ class Leaderboard extends React.Component<LeaderboardProps & RouteComponentProps
         this.ensureDataFetched();
     }
 
-    public componentDidUpdate(prevProps: Readonly<LeaderboardProps>, prevState: Readonly<{}>, snapshot?: any) {
-        this.ensureDataFetched();
+    public componentDidUpdate(prevProps: Readonly<LeaderboardProps>, prevState: Readonly<LeaderboardState>, snapshot?: any) {
+        if (!this.state.fetched) {
+            this.ensureDataFetched();
+        }
     }
 
     private ensureDataFetched() {
-        if (!this.props.games.leaderboard) {
-            this.props.gameActions.fetchLeaderboard();
-        }
+        this.setState({fetched: true});
+        this.props.gameActions.fetchLeaderboard();
     }
 
     private toggleRankSort() {
