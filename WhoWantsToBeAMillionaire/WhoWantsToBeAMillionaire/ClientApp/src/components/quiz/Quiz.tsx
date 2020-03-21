@@ -7,7 +7,7 @@ import {RouteComponentProps} from "react-router";
 import Question from "./Question";
 import {bindActionCreators} from "redux";
 import CategorySelection from "./CategorySelection";
-import {Button} from "react-bootstrap";
+import {Alert, Button} from "react-bootstrap";
 import {AnswerSpecification} from "../../store/Specification";
 import QuizEnd from "./QuizEnd";
 
@@ -21,12 +21,14 @@ interface QuizProps {
 interface QuizState {
     secondsElapsed: number;
     counterInterval?: ReturnType<typeof setInterval>;
+    displayCorrect: boolean;
+    displayedCorrect: boolean;
 }
 
 class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     constructor(props: QuizProps & RouteComponentProps) {
         super(props);
-        this.state = {secondsElapsed: 0, counterInterval: undefined};
+        this.state = {secondsElapsed: 0, counterInterval: undefined, displayCorrect: false, displayedCorrect: false};
 
         this.startGame = this.startGame.bind(this);
         this.answerQuestion = this.answerQuestion.bind(this);
@@ -81,7 +83,13 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
             } else if (runningGame.questionsOver && !ending && !quizResult) {
                 this.props.gameActions.endGame(token);
             } else if (!quizResult && !loading && !ending && (!currentQuestion || answerCorrect)) {
+                this.setState({displayedCorrect: false});
                 this.props.gameActions.fetchQuestion(token);
+            }
+
+            if (answerCorrect && !this.state.displayedCorrect) {
+                this.setState({displayedCorrect: true, displayCorrect: true});
+                setTimeout(() => this.setState({displayCorrect: false}), 1000);
             }
         }
     }
@@ -126,7 +134,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
             <div>
                 {quizResult && runningGame ?
                     <div>
-                        <QuizEnd result={quizResult} playAgain={this.playAgain} questionsOver={runningGame.questionsOver}/>
+                        <QuizEnd result={quizResult} playAgain={this.playAgain}
+                                 questionsOver={runningGame.questionsOver}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
                             {runningGame ? <p>{this.state.secondsElapsed}</p> : null}
@@ -137,6 +146,13 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                             </div>
                             <br/>
                             <Question question={question} answerQuestion={this.answerQuestion}/>
+                            {this.state.displayCorrect ? <div>
+                                <br/>
+                                <br/>
+                                <Alert variant="success">
+                                    Correct answer!
+                                </Alert>
+                            </div> : null}
                             <br/>
                             <Button variant="outline-primary" onClick={this.endGame}>End Game</Button>
                         </div> : categories ?
