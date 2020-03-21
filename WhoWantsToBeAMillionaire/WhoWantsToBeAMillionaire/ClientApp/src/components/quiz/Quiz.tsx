@@ -146,7 +146,11 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                                  questionsOver={runningGame.questionsOver} answer={this.state.answer}/>
                     </div> : loading && runningGame ? <p>Loading...</p> : runningGame && question ?
                         <div>
-                            {runningGame ? <p>{this.state.secondsElapsed}</p> : null}
+                            <p>
+                                Time elapsed: {this.state.secondsElapsed}
+                                <br/>
+                                Points: {runningGame.points}
+                            </p>
                             <br/>
                             <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
                                 <Button variant="dark" onClick={() => this.useJoker()} style={{float: 'right'}}

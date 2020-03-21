@@ -33,6 +33,7 @@ interface RunningGame {
     result?: QuizResult;
     usedJoker: boolean;
     questionsOver: boolean;
+    points: number;
 }
 
 export interface Game {
@@ -151,7 +152,8 @@ export const actionCreators = {
                         currentQuestion: undefined,
                         result: undefined,
                         usedJoker: false,
-                        questionsOver: false
+                        questionsOver: false,
+                        points: 0
                     }
                 });
             })
@@ -272,6 +274,7 @@ export const actionCreators = {
                 switch (data.type) {
                     case "ANSWER_RESULT":
                         runningGame.answerCorrect = data.correct;
+                        runningGame.points += 30;
                         break;
                     case "QUIZ_RESULT":
                         runningGame.result = data;
