@@ -49,10 +49,6 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var runningGame = _runningGames[gameIndex];
             _runningGames.RemoveAt(gameIndex);
 
-            if (!runningGame.AskedQuestions.Any())
-                throw new NoQuestionsAnsweredException(
-                    "No questions have been answered in this quiz, nothing to save.");
-
             var game = new Game
             {
                 Start = runningGame.TimeStarted,
@@ -60,7 +56,11 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             };
             var gameId = _gameRepository.Create(game);
 
-            if (runningGame.CurrentQuestion != null) runningGame.AskedQuestions.Add(runningGame.CurrentQuestion);
+            if (runningGame.CurrentQuestion != null)
+            {
+                runningGame.CurrentQuestion.TimeAnswered = DateTime.Now;
+                runningGame.AskedQuestions.Add(runningGame.CurrentQuestion);
+            }
             foreach (var question in runningGame.AskedQuestions)
             {
                 var round = new Round
@@ -82,15 +82,12 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var result = runningGame.End(won, timeOver);
 
-            if (!won && !timeOver)
-            {
-                var questionId = runningGame.CurrentQuestion?.QuestionId ??
-                                 runningGame.AskedQuestions.Last().QuestionId;
-                var answerSpecification =
-                    new QuizAnswerSpecification(questionId: questionId, correct: true);
-                var answer = _answerRepository.Query(answerSpecification).First();
-                result.CorrectAnswer = answer.Answer;
-            }
+            var questionId = runningGame.CurrentQuestion?.QuestionId ??
+                             runningGame.AskedQuestions.Last().QuestionId;
+            var answerSpecification =
+                new QuizAnswerSpecification(questionId: questionId, correct: true);
+            var answer = _answerRepository.Query(answerSpecification).First();
+            result.CorrectAnswer = answer.Answer;
 
             return result;
         }
