@@ -18,6 +18,7 @@ export interface QuizQuestion {
     correctlyAnswered: number;
     answers: QuizAnswer[];
     uses: number;
+    deleted?: boolean;
 }
 
 export interface QuizAnswer {

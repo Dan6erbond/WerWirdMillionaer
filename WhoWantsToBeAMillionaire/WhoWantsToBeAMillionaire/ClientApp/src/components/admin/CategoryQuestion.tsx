@@ -6,6 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 interface CategoryQuestionProps {
     question: QuizQuestion;
     index: number;
+    setQuestion: (index: number, question: QuizQuestion) => void;
     editQuestion: (index: number, question: QuizQuestion, setSavingDone: () => void) => void;
     addQuestion: (index: number, question: QuizQuestion, setSavingDone: () => void) => void;
     deleteQuestion: (index: number) => void;
@@ -13,7 +14,6 @@ interface CategoryQuestionProps {
 }
 
 interface CategoryQuestionState {
-    question: QuizQuestion;
     saving: boolean;
     deleting: boolean;
 }
@@ -21,7 +21,7 @@ interface CategoryQuestionState {
 export default class CategoryQuestion extends React.Component<CategoryQuestionProps, CategoryQuestionState> {
     constructor(props: CategoryQuestionProps) {
         super(props);
-        this.state = {question: props.question, saving: false, deleting: false};
+        this.state = {saving: false, deleting: false};
 
         this.selectCorrect = this.selectCorrect.bind(this);
         this.setAnswer = this.setAnswer.bind(this);
@@ -32,8 +32,8 @@ export default class CategoryQuestion extends React.Component<CategoryQuestionPr
     }
 
     public render() {
-        const question = this.state.question;
-
+        const question = this.props.question;
+        
         return (
             <Card>
                 <Card.Header>
@@ -111,16 +111,18 @@ export default class CategoryQuestion extends React.Component<CategoryQuestionPr
         e.preventDefault();
 
         this.setState({saving: true});
+        
+        const question = this.props.question;
 
-        if (this.state.question.questionId) {
-            this.props.editQuestion(this.props.index, this.state.question, this.setSavingDone);
+        if (question.questionId) {
+            this.props.editQuestion(this.props.index, question, this.setSavingDone);
         } else {
-            this.props.addQuestion(this.props.index, this.state.question, this.setSavingDone);
+            this.props.addQuestion(this.props.index, question, this.setSavingDone);
         }
     }
 
     private selectCorrect(index: number) {
-        const question = this.state.question;
+        const question = this.props.question;
 
         if (!question.answers[index].correct) {
             question.answers[index].correct = true;
@@ -133,18 +135,18 @@ export default class CategoryQuestion extends React.Component<CategoryQuestionPr
             }
         }
 
-        this.setState({question: question});
+        this.props.setQuestion(this.props.index, question);
     }
 
     private setQuestion(q: string) {
-        const question = this.state.question;
+        const question = this.props.question;
         question.question = q;
-        this.setState({question: question});
+        this.props.setQuestion(this.props.index, question);
     }
 
     private setAnswer(index: number, answer: string) {
-        const question = this.state.question;
+        const question = this.props.question;
         question.answers[index].answer = answer;
-        this.setState({question: question});
+        this.props.setQuestion(this.props.index, question);
     }
 }

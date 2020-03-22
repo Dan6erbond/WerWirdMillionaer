@@ -26,6 +26,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
         this.addQuestion = this.addQuestion.bind(this);
         this.addQuestionUi = this.addQuestionUi.bind(this);
         this.setQuestionActiveKey = this.setQuestionActiveKey.bind(this);
+        this.setQuestion = this.setQuestion.bind(this);
     }
 
     public componentDidMount() {
@@ -70,9 +71,10 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
             <div>
                 <Accordion activeKey={`${this.state.questionActiveKey}`}>
                     {this.state.questions ? this.state.questions.map((q, i) =>
-                        <CategoryQuestion question={q} index={i} key={i} editQuestion={this.editQuestion}
-                                          addQuestion={this.addQuestion} deleteQuestion={this.deleteQuestion}
-                                          setQuestionActiveKey={this.setQuestionActiveKey}/>) : null}
+                        !q.deleted ? <CategoryQuestion question={q} index={i} key={i} editQuestion={this.editQuestion}
+                                                       addQuestion={this.addQuestion} deleteQuestion={this.deleteQuestion}
+                                                       setQuestionActiveKey={this.setQuestionActiveKey}
+                                                       setQuestion={this.setQuestion}/> : null) : null}
                 </Accordion>
 
                 <br/>
@@ -88,12 +90,22 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
         this.setState({questionActiveKey: key === this.state.questionActiveKey ? -1 : key});
     }
 
+    private setQuestion(index: number, question: QuizQuestion) {
+        if (!this.state.questions) {
+            return;
+        }
+
+        const questions: QuizQuestion[] = Object.assign([], this.state.questions);
+        questions[index] = question;
+        this.setState({questions: questions});
+    }
+
     private addQuestionUi() {
         if (!this.state.questions) {
             return;
         }
 
-        const questions = this.state.questions;
+        const questions: QuizQuestion[] = Object.assign([], this.state.questions);
         questions.push({
             questionId: undefined,
             categoryId: this.props.category.categoryId!!,
@@ -128,7 +140,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
             return;
         }
 
-        const questions = this.state.questions;
+        const questions: QuizQuestion[] = Object.assign([], this.state.questions);
 
         if (this.props.token) {
             fetch(`api/admin/questions/delete/${questions[index].questionId}`, {
@@ -144,7 +156,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
                             throw new Error(error.title);
                         });
                     } else {
-                        questions.splice(index, 1);
+                        questions[index].deleted = true;
                         this.setState({questions: questions});
                     }
                 })
@@ -159,7 +171,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
             return;
         }
 
-        const questions = this.state.questions;
+        const questions: QuizQuestion[] = Object.assign([], this.state.questions);
 
         if (this.props.token) {
             fetch(`api/admin/questions/edit`, {
@@ -193,7 +205,7 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
             return;
         }
 
-        const questions = this.state.questions;
+        const questions: QuizQuestion[] = Object.assign([], this.state.questions);
 
         if (this.props.token) {
             fetch(`api/admin/questions/add`, {
