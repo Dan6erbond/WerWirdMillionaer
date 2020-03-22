@@ -40,7 +40,7 @@ export default class Question extends React.Component<QuestionProps> {
                         `${Math.round(this.props.question.correctlyAnswered * 100 / this.props.question.timesAsked)}% correctly answered`}</p>
                     <p style={{textAlign: 'center', fontWeight: 'bold'}}
                        className={this.props.questionTime > 120 ? "text-danger" : this.props.questionTime > 90 ? "text-warning" : ""}>
-                        {this.props.questionTime.toTimeString()} elapsed for this question
+                        {(120 - this.props.questionTime).toTimeString()} remaining
                     </p>
                 </div>
                 <br/>

@@ -20,18 +20,16 @@ if (!Number.prototype.hasOwnProperty('toTimeString')) {
     Number.prototype.toTimeString = function () {
         const value = this.valueOf();
         
-        if (value > 60) {
-            let minutes = Math.round(value / 60);
+        if (value >= 60) {
+            let minutes = Math.floor(value / 60);
             let seconds = value % 60;
             
-            if (minutes > 1 && seconds > 1) {
+            if (minutes != 1 && seconds != 1) {
                 return `${minutes} minutes ${seconds} seconds`;
-            } else if (minutes > 1) {
+            } else if (minutes != 1) {
                 return `${minutes} minutes ${seconds} second`;
-            } else if (seconds > 1) {
-                return `${minutes} minute ${seconds} seconds`;
             } else {
-                return `${minutes} minutes ${seconds} seconds`;
+                return `${minutes} minute ${seconds} seconds`;
             }
         } else if (value != 1) {
             return `${value} seconds`;
