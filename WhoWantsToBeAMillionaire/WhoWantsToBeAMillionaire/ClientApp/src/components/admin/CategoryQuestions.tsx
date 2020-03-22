@@ -69,19 +69,26 @@ export default class CategoryQuestions extends React.Component<CategoryQuestions
     public render() {
         return (
             <div>
-                <Accordion activeKey={`${this.state.questionActiveKey}`}>
-                    {this.state.questions ? this.state.questions.map((q, i) =>
-                        !q.deleted ? <CategoryQuestion question={q} index={i} key={i} editQuestion={this.editQuestion}
-                                                       addQuestion={this.addQuestion} deleteQuestion={this.deleteQuestion}
-                                                       setQuestionActiveKey={this.setQuestionActiveKey}
-                                                       setQuestion={this.setQuestion}/> : null) : null}
-                </Accordion>
+                {this.state.questions ? <div>
+                    <Accordion activeKey={`${this.state.questionActiveKey}`}>
+                        {this.state.questions.map((q, i) =>
+                            !q.deleted ?
+                                <CategoryQuestion question={q} index={i} key={i} editQuestion={this.editQuestion}
+                                                  addQuestion={this.addQuestion}
+                                                  deleteQuestion={this.deleteQuestion}
+                                                  setQuestionActiveKey={this.setQuestionActiveKey}
+                                                  setQuestion={this.setQuestion}/> : null)}
+                    </Accordion>
 
-                <br/>
+                    <br/>
 
-                <Button variant="secondary" style={{float: 'right'}} onClick={this.addQuestionUi}>
-                    <FontAwesomeIcon icon="plus"/> Add Question
-                </Button>
+                    <div>
+                        <Button variant="secondary" style={{float: 'right'}} onClick={this.addQuestionUi}
+                                disabled={!!this.state.questions.filter(q => !q.questionId).length}>
+                            <FontAwesomeIcon icon="plus"/> Add Question
+                        </Button>
+                    </div>
+                </div> : <p><em>Loading...</em></p>}
             </div>
         )
     }
