@@ -65,6 +65,7 @@ export interface GameState {
     runningGame?: RunningGame;
     categories?: Category[];
     answering: boolean;
+    startingGame: boolean;
     loadingQuestion: boolean;
     leaderboard?: Game[];
     userGames?: Game[];
@@ -110,6 +111,11 @@ interface SetEndingAction {
     ending: boolean;
 }
 
+interface SetStartingGameAction {
+    type: 'SET_STARTING_GAME';
+    starting: boolean;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 
@@ -120,7 +126,8 @@ type KnownAction =
     | SetAnsweringAction
     | SetLeaderboardAction
     | SetUserGamesAction
-    | SetEndingAction;
+    | SetEndingAction
+    | SetStartingGameAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -128,6 +135,7 @@ type KnownAction =
 
 export const actionCreators = {
     startGame: (token: string, specification: GameSpecification): AppThunkAction<KnownAction> => (dispatch) => {
+        dispatch({type: 'SET_STARTING_GAME', starting: true});
         fetch('api/games/start', {
             method: 'POST',
             headers: {
@@ -481,6 +489,7 @@ const unloadedState: GameState = {
     runningGame: undefined,
     categories: undefined,
     answering: false,
+    startingGame: false,
     loadingQuestion: false,
     leaderboard: undefined,
     userGames: undefined,
@@ -501,6 +510,7 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
             retVal.loadingQuestion = false;
             retVal.answering = false;
             retVal.ending = false;
+            retVal.startingGame = false;
             break;
         case "SET_CATEGORIES":
             retVal.categories = action.categories;
@@ -519,6 +529,9 @@ export const reducer: Reducer<GameState> = (state: GameState | undefined, incomi
             break;
         case "SET_ENDING":
             retVal.ending = action.ending;
+            break;
+        case "SET_STARTING_GAME":
+            retVal.startingGame = action.starting;
             break;
     }
     return retVal;

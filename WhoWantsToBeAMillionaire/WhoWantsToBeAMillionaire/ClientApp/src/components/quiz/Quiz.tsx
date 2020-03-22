@@ -53,6 +53,14 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     public componentDidUpdate() {
         this.doForwards();
         this.ensureDataFetched();
+
+        const counterInterval = this.state.counterInterval;
+        const runningGame = this.props.games.runningGame;
+
+        if (counterInterval && (!runningGame && !this.props.games.startingGame || (runningGame && runningGame.result))) {
+            clearTimeout(counterInterval);
+            this.setState({counterInterval: undefined});
+        }
     }
 
     private doForwards() {
@@ -67,7 +75,6 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
     }
 
     private ensureDataFetched() {
-        const counterInterval = this.state.counterInterval;
         const token = this.props.users.token!!;
         const loading = this.props.games.answering || this.props.games.loadingQuestion;
         const ending = this.props.games.ending;
@@ -82,10 +89,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
             const currentQuestion = runningGame.currentQuestion;
             const answerCorrect = runningGame.answerCorrect;
 
-            if (quizResult && counterInterval) {
-                if (counterInterval) clearTimeout(counterInterval);
-                this.setState({counterInterval: undefined});
-            } else if (runningGame.questionsOver && !ending && !quizResult) {
+            if (runningGame.questionsOver && !ending && !quizResult) {
                 this.props.gameActions.endGame(token);
             } else if (!quizResult && !loading && !ending && (!currentQuestion || answerCorrect)) {
                 this.setState({displayedCorrect: false});
@@ -136,7 +140,7 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
         const question = runningGame ? runningGame.currentQuestion : undefined;
         const quizResult = runningGame ? runningGame.result : undefined;
         const usedJoker = runningGame ? runningGame.usedJoker : undefined;
-        
+
         return (
             <div>
                 {quizResult && runningGame ?
@@ -156,7 +160,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                                         disabled={usedJoker}>Use Joker</Button>
                             </div>
                             <br/>
-                            <Question question={question} answerQuestion={this.answerQuestion} categories={categories} questionTime={runningGame.questionTime}/>
+                            <Question question={question} answerQuestion={this.answerQuestion} categories={categories}
+                                      questionTime={runningGame.questionTime}/>
                             {this.state.displayCorrect ? <div>
                                 <br/>
                                 <br/>
@@ -166,7 +171,8 @@ class Quiz extends React.Component<QuizProps & RouteComponentProps, QuizState> {
                             </div> : null}
                             <br/>
                             <br/>
-                            <div style={{textAlign: 'center'}}><Button variant="outline-primary" size="lg" onClick={this.endGame}>End Game</Button></div>
+                            <div style={{textAlign: 'center'}}><Button variant="outline-primary" size="lg"
+                                                                       onClick={this.endGame}>End Game</Button></div>
                         </div> : categories ?
                             <CategorySelection categories={categories}
                                                play={this.startGame}/> : null}
