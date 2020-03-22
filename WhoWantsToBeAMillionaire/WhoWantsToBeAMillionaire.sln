@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhoWantsToBeAMillionaire", "WhoWantsToBeAMillionaire\WhoWantsToBeAMillionaire.csproj", "{277736CD-FD38-4384-9569-3BD0A2BE5D18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhoWantsToBeAMillionaire.AutomatedUiTests", "WhoWantsToBeAMillionaire.AutomatedUiTests\WhoWantsToBeAMillionaire.AutomatedUiTests.csproj", "{1D97EEF2-17FA-4479-A2BE-4AF9B1BC2D6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{277736CD-FD38-4384-9569-3BD0A2BE5D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{277736CD-FD38-4384-9569-3BD0A2BE5D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{277736CD-FD38-4384-9569-3BD0A2BE5D18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D97EEF2-17FA-4479-A2BE-4AF9B1BC2D6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D97EEF2-17FA-4479-A2BE-4AF9B1BC2D6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D97EEF2-17FA-4479-A2BE-4AF9B1BC2D6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D97EEF2-17FA-4479-A2BE-4AF9B1BC2D6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
