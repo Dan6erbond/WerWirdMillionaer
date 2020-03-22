@@ -49,7 +49,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             var runningGame = _runningGames[gameIndex];
             _runningGames.RemoveAt(gameIndex);
 
-            if (!runningGame.AskedQuestions.Any()) throw new NoQuestionsAnsweredException("No questions have been answered in this quiz, nothing to save.");
+            if (!runningGame.AskedQuestions.Any())
+                throw new NoQuestionsAnsweredException(
+                    "No questions have been answered in this quiz, nothing to save.");
 
             var game = new Game
             {
@@ -92,18 +94,18 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             return result;
         }
-        
+
         public dynamic CheckTime(User user)
         {
             var gameIndex = _runningGames.FindIndex(g => g.UserId == user.UserId);
 
             // TODO: Throw error if no game has been found (gameIndex = -1)
-            
+
             var game = _runningGames[gameIndex];
-            
-            var gameTime = (int) (DateTime.Now - game.TimeStarted).TotalSeconds; 
+
+            var gameTime = (int) (DateTime.Now - game.TimeStarted).TotalSeconds;
             var questionTime = (int) (DateTime.Now - game.CurrentQuestion.TimeAsked).TotalSeconds;
-            
+
             var result = new TimeResult(gameTime, questionTime);
 
             if (result.QuestionTime <= 120) return result;
@@ -129,7 +131,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
 
-            return result.Correct && result.QuestionDuration <= 120 ? (dynamic) result : EndGame(user, false, result.QuestionDuration > 120);
+            return result.Correct && result.QuestionDuration <= 120
+                ? (dynamic) result
+                : EndGame(user, false, result.QuestionDuration > 120);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)
@@ -193,26 +197,24 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 var lastAnswerSpecification = new QuizAnswerSpecification(rounds.Last().AnswerId);
                 var lastAnswer = _answerRepository.Query(lastAnswerSpecification).First();
 
-                if (lastAnswer.Correct && rounds.Last().Duration <= 120)
-                {
-                    int duration = 0;
-                    int points = 0;
+                var gameWon = lastAnswer.Correct && rounds.Last().Duration <= 120;
                 
-                    foreach (var round in rounds)
-                    {
-                        duration += round.Duration;
+                int duration = 0;
+                int points = 0;
 
-                        var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
-                        var answer = _answerRepository.Query(answerSpecification).FirstOrDefault();
-                        if (answer != null && answer.Correct && round.Duration <= 120)
-                        {
-                            points += 30;
-                        }
-                    }
+                foreach (var round in rounds)
+                {
+                    duration += round.Duration;
 
-                    game.Duration = duration;
-                    game.Points = points;
+                    if (!gameWon) continue;
+                    
+                    var answerSpecification = new QuizAnswerSpecification(round.AnswerId);
+                    var answer = _answerRepository.Query(answerSpecification).First();
+                    if (answer.Correct) points += 30;
                 }
+
+                game.Duration = duration;
+                game.Points = points;
 
                 game.WeightedPoints = game.Points / Math.Max(game.Duration, 1);
 
@@ -227,7 +229,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 {
                     continue; // Saves time by not grabbing information for unneeded games
                 }
-                
+
                 //TODO: Use inner joins in repositories to increase performance
                 var userSpecification = new UserSpecification(game.UserId);
                 var u = _userRepository.Query(userSpecification).First();

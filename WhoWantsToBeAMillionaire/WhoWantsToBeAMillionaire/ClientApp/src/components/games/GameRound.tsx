@@ -64,9 +64,12 @@ export default class GameRound extends React.Component<GameRoundProps, GameRound
                     <h6>
                         {question.question} {round.usedJoker ?
                         <Badge variant="secondary">Joker Used</Badge> : null}
-                        {round.duration > 120 ? <Alert variant="warning">
-                            Took too long to answer.
-                        </Alert> : null}
+                        {round.duration > 120 ? <div>
+                            <br/>
+                            <Alert variant="warning">
+                                Took too long to answer.
+                            </Alert>
+                        </div> : null}
                     </h6>
                     {answeredAnswer ?
                         <span>
