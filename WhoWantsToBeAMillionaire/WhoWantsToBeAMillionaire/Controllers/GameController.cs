@@ -123,7 +123,7 @@ namespace WhoWantsToBeAMillionaire.Controllers
             }
         }
 
-        [HttpGet("checkTime")]
+        [HttpGet("time")]
         public IActionResult CheckTime()
         {
             var username = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;

@@ -1,6 +1,6 @@
 ﻿import {Action, Reducer} from 'redux';
 import {AppThunkAction} from './';
-import {AnswerResult, ErrorResponse, QuizResult} from "./ApiResponse";
+import {AnswerResult, ErrorResponse, QuizResult, TimeResult} from "./ApiResponse";
 import {AnswerSpecification, GameSpecification} from "./Specification";
 import {LeaderboardSort} from "../components/leaderboard/Leaderboard";
 import '../extensions';
@@ -27,6 +27,8 @@ export interface QuizAnswer {
 }
 
 interface RunningGame {
+    quizTime: number;
+    questionTime: number;
     askedQuestions: QuizQuestion[];
     currentQuestion?: QuizQuestion;
     answerCorrect?: boolean;
@@ -147,6 +149,8 @@ export const actionCreators = {
                 dispatch({
                     type: 'SET_RUNNING_GAME',
                     game: {
+                        quizTime: 0,
+                        questionTime: 0,
                         answerCorrect: undefined,
                         askedQuestions: [],
                         currentQuestion: undefined,
@@ -292,7 +296,7 @@ export const actionCreators = {
     },
     endGame: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         const runningGame = getState().gameState.runningGame!!;
-        
+
         if (runningGame.points == 0) {
             dispatch({type: 'SET_RUNNING_GAME', game: undefined});
             return;
@@ -433,6 +437,40 @@ export const actionCreators = {
         }
 
         dispatch({type: 'SET_LEADERBOARD', leaderboard: leaderboard});
+    },
+    checkTime: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        const runningGame = getState().gameState.runningGame!!;
+
+        fetch('api/games/time', {
+            headers: {
+                "Accept": "application/json, text/plain, */*",
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return (response.json() as Promise<ErrorResponse>).then(error => {
+                        throw new Error(error.title);
+                    });
+                }
+                return response.json() as Promise<TimeResult | QuizResult>;
+            })
+            .then(data => {
+                switch (data.type) {
+                    case "TIME_RESULT":
+                        runningGame.quizTime = data.gameTime;
+                        runningGame.questionTime = data.questionTime;
+                        break;
+                    case "QUIZ_RESULT":
+                        runningGame.result = data;
+                        break;
+                }
+                dispatch({type: 'SET_RUNNING_GAME', game: runningGame});
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 };
 

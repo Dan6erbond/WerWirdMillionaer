@@ -101,8 +101,8 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
             
             var game = _runningGames[gameIndex];
             
-            var gameTime = (int) (game.TimeStarted - DateTime.Now).TotalSeconds; 
-            var questionTime = (int) (game.CurrentQuestion.TimeAsked - DateTime.Now).TotalSeconds;
+            var gameTime = (int) (DateTime.Now - game.TimeStarted).TotalSeconds; 
+            var questionTime = (int) (DateTime.Now - game.CurrentQuestion.TimeAsked).TotalSeconds;
             
             var result = new TimeResult(gameTime, questionTime);
 
@@ -129,7 +129,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
 
-            return result.Correct && result.QuestionDuration <= 120 ? (dynamic) result : EndGame(user, false, true);
+            return result.Correct && result.QuestionDuration <= 120 ? (dynamic) result : EndGame(user, false, result.QuestionDuration > 120);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)

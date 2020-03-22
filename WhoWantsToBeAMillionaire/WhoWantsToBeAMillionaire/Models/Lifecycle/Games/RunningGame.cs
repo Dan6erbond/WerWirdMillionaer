@@ -60,7 +60,6 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
         {
             CurrentQuestion.TimeAnswered = DateTime.Now;
             CurrentQuestion.AnsweredAnswer = CurrentQuestion.Answers.First(a => a.AnswerId == answer.AnswerId);
-
             var duration = (int) (CurrentQuestion.TimeAnswered - CurrentQuestion.TimeAsked).TotalSeconds;
 
             AskedQuestions.Add(CurrentQuestion);
