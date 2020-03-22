@@ -39,7 +39,7 @@ export default class Question extends React.Component<QuestionProps> {
                     <p style={{textAlign: 'center'}}>{this.props.question.timesAsked === 0 ? "Never asked" :
                         `${Math.round(this.props.question.correctlyAnswered * 100 / this.props.question.timesAsked)}% correctly answered`}</p>
                     <p style={{textAlign: 'center', fontWeight: 'bold'}}
-                       className={this.props.questionTime > 120 ? "text-danger" : this.props.questionTime > 90 ? "text-warning" : ""}>
+                       className={this.props.questionTime > 105 ? "text-danger" : this.props.questionTime > 75 ? "text-warning" : ""}>
                         {(120 - this.props.questionTime).toTimeString()} remaining
                     </p>
                 </div>
