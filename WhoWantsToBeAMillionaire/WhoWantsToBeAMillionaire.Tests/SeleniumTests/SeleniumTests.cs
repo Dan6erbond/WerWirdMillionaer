@@ -115,6 +115,32 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
             }
         }
 
+        [Fact]
+        public void TestJoker()
+        {
+            _loginPage.Navigate();
+
+            _loginPage.PopulateUsername("TestUser");
+            _loginPage.PopulatePassword("user123");
+            _loginPage.ClickLogin();
+
+            Thread.Sleep(msTimeout);
+
+            var cat = "Automotives";
+
+            _quizPage.SelectCategory(cat);
+            _quizPage.ClickPlayButton();
+
+            Thread.Sleep(msTimeout);
+            
+            _quizPage.UseJoker();
+
+            Thread.Sleep(msTimeout);
+
+            var availableAnswers = _quizPage.AnswerButtons.Count(b => b.Enabled);
+            Assert.Equal(2, availableAnswers);
+        }
+
         public void Dispose()
         {
             _driver.Quit();
