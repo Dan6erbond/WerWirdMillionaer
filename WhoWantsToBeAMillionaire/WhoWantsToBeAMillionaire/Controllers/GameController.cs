@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.WebEncoders.Testing;
 using WhoWantsToBeAMillionaire.Models;
+using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Games;
 using WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Exceptions;

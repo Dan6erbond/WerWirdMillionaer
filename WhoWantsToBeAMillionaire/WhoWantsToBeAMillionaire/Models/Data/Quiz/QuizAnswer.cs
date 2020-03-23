@@ -11,6 +11,14 @@
         {
         }
 
+        public QuizAnswer(int answerId, int questionId, string answer, bool correct = false)
+        {
+            AnswerId = answerId;
+            QuestionId = questionId;
+            Answer = answer;
+            Correct = correct;
+        }
+        
         public QuizAnswer(string answer, bool correct = false)
         {
             Answer = answer;

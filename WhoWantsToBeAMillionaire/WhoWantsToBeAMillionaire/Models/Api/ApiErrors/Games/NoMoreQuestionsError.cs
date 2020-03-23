@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Users
+﻿namespace WhoWantsToBeAMillionaire.Models.Api.ApiErrors.Games
 {
     public class NoMoreQuestionsError : ApiError
     {

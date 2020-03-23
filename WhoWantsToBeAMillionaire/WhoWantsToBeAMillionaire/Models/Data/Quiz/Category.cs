@@ -10,5 +10,15 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
 
         [JsonIgnore]
         public List<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
+
+        public Category()
+        {
+        }
+
+        public Category(int categoryId, string name)
+        {
+            CategoryId = categoryId;
+            Name = name;
+        }
     }
 }

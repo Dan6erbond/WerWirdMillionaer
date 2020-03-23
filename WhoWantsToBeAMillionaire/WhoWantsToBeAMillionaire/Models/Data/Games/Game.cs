@@ -20,5 +20,17 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         public int WeightedPoints { get; set; }
         public int? Rank { get; set; }
         public List<int> Categories { get; set; } = new List<int>();
+
+        public Game()
+        {
+        }
+
+        public Game(int gameId, int userId, DateTime start, bool hidden = false)
+        {
+            GameId = gameId;
+            UserId = userId;
+            Start = start;
+            Hidden = hidden;
+        }
     }
 }

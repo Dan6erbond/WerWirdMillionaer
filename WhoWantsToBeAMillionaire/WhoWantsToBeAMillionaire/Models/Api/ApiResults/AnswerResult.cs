@@ -1,4 +1,4 @@
-﻿namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
+﻿namespace WhoWantsToBeAMillionaire.Models.Api.ApiResults
 {
     public class AnswerResult
     {

@@ -12,6 +12,13 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         {
         }
 
+        public CategoryGame(int categoryGameId, int categoryId, int gameId)
+        {
+            CategoryGameId = categoryGameId;
+            CategoryId = categoryId;
+            GameId = gameId;
+        }
+
         public CategoryGame(int categoryId, int gameId)
         {
             CategoryId = categoryId;

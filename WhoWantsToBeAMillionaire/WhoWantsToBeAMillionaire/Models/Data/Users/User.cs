@@ -17,6 +17,15 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Users
         {
         }
 
+        public User(int userId, string username, byte[] salt, string password, bool isAdmin = false)
+        {
+            UserId = userId;
+            Username = username;
+            Salt = Convert.ToBase64String(salt);
+            Password = password;
+            IsAdmin = isAdmin;
+        }
+
         public User(string username, byte[] salt, string password, bool isAdmin = false)
         {
             Username = username;

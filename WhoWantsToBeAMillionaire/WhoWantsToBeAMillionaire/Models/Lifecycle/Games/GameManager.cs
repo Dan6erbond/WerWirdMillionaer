@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WhoWantsToBeAMillionaire.Models.Api.ApiResults;
 using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
 using WhoWantsToBeAMillionaire.Models.Data.Users;

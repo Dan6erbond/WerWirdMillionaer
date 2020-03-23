@@ -14,6 +14,13 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Quiz
         {
         }
 
+        public QuizQuestion(int questionId, int categoryId, string question)
+        {
+            QuestionId = questionId;
+            CategoryId = categoryId;
+            Question = question;
+        }
+
         public QuizQuestion(string question, params string[] answers)
         {
             Question = question;
