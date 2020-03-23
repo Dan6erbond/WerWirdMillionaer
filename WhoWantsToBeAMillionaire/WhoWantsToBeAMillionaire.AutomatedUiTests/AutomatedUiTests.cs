@@ -11,23 +11,21 @@ namespace WhoWantsToBeAMillionaire.AutomatedUiTests
     {
         private readonly IWebDriver _driver;
         private readonly ITestOutputHelper _outputHelper;
+
+        private readonly LoginPage _loginPage;
         
         public AutomatedUiTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
             _driver = new ChromeDriver();
-        }
-        
-        public void Dispose()
-        {
-            _driver.Quit();
-            _driver.Dispose();
+            
+            _loginPage = new LoginPage(_driver);
         }
 
         [Fact]
         public void TestSiteLoad()
         {
-            _driver.Navigate().GoToUrl("https://localhost:44309");
+            _loginPage.Navigate();
 
             Assert.Equal("WhoWantsToBeAMillionaire", _driver.Title);
             Assert.Contains("Log in", _driver.PageSource);
@@ -36,16 +34,22 @@ namespace WhoWantsToBeAMillionaire.AutomatedUiTests
         [Fact]
         public void TestLogin()
         {
-            _driver.Navigate().GoToUrl("https://localhost:44309");
+            _loginPage.Navigate();
             
-            _driver.FindElement(By.Id("formBasicUsername")).SendKeys("TestUser");
-            _driver.FindElement(By.Id("formBasicPassword")).SendKeys("user123");
-            _driver.FindElement(By.CssSelector("#root > div > div > form > div:nth-child(3) > button")).Click();
+            _loginPage.PopulateUsername("TestUser");
+            _loginPage.PopulateUsername("user123");
+            _loginPage.ClickLogin();
 
             Thread.Sleep(50);
             
             var url = _driver.Url;
             Assert.Contains("quiz", url);
+        }
+        
+        public void Dispose()
+        {
+            _driver.Quit();
+            _driver.Dispose();
         }
     }
 }
