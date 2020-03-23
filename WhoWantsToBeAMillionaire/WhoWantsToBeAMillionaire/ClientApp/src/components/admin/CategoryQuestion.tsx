@@ -81,7 +81,7 @@ export default class CategoryQuestion extends React.Component<CategoryQuestionPr
                                         </td>
                                         <td>
                                             <Form.Check custom type="radio" label="" checked={a.correct}
-                                                        id={`radio-${i}`} onChange={() => this.selectCorrect(i)}/>
+                                                        id={`radio-${this.props.index}-${i}`} onChange={() => this.selectCorrect(i)}/>
                                         </td>
                                     </tr>)}
                                     </tbody>
