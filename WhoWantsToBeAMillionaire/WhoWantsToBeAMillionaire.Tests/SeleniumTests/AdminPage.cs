@@ -53,7 +53,12 @@ namespace WhoWantsToBeAMillionaire.Tests.SeleniumTests
         }
 
         public void ClickAddQuestion() => AddQuestionButton.Click();
-        public void SetQuestion(string question) => QuestionInput.SendKeys(question);
+
+        public void SetQuestion(string question)
+        {
+            QuestionInput.Clear();
+            QuestionInput.SendKeys(question);
+        }
         public void SetAnswer(int index, string answer) => AnswerInputs[index].SendKeys(answer);
 
         public void SetCorrectAnswer(int index) =>

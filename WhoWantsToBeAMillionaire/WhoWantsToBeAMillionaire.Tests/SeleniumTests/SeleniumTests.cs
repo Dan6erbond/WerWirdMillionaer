@@ -184,6 +184,8 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
             _adminPage.SetAnswer(1, "Antwort 2");
             _adminPage.SetAnswer(2, "Antwort 3");
             _adminPage.SetAnswer(3, "Antwort 4");
+            
+            _adminPage.SetCorrectAnswer(2);
 
             _adminPage.SubmitQuestion();
 
@@ -264,6 +266,7 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
             
             var orgGames = _leaderboardPage.DeleteButtons.Count;
             _leaderboardPage.DeleteGame(0);
+            Thread.Sleep(msTimeout);
             Assert.Equal(orgGames - 1, _leaderboardPage.DeleteButtons.Count);
         }
 
