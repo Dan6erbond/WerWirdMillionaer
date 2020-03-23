@@ -18,7 +18,7 @@
                 return false;
             }
 
-            if (_username != null && item.Username != _username)
+            if (_username != null && item.Username.ToLower() != _username.ToLower())
             {
                 return false;
             }

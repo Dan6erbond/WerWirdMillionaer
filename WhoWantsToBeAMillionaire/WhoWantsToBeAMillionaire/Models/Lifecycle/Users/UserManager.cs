@@ -15,7 +15,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
     {
         private readonly IRepository<User> _userRepository;
         private readonly IConfiguration _configuration;
-        
+
         public UserManager(IRepository<User> userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
@@ -57,7 +57,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
             {
                 throw new IncorrectPasswordException($"Incorrect password given for user {credentials.Username}");
             }
-            
+
             var authClaims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
@@ -73,7 +73,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Users
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
-            
+
             return token;
         }
 
