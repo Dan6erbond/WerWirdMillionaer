@@ -29,4 +29,8 @@
       <ProjectReference Include="..\WhoWantsToBeAMillionaire\WhoWantsToBeAMillionaire.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="UnitTests" />
+    </ItemGroup>
+
 </Project>

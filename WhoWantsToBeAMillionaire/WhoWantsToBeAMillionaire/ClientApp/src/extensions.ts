@@ -24,14 +24,14 @@ if (!Number.prototype.hasOwnProperty('toTimeString')) {
             let minutes = Math.floor(value / 60);
             let seconds = value % 60;
             
-            if (minutes != 1 && seconds != 1) {
+            if (minutes !== 1 && seconds !== 1) {
                 return `${minutes} minutes ${seconds} seconds`;
-            } else if (minutes != 1) {
+            } else if (minutes !== 1) {
                 return `${minutes} minutes ${seconds} second`;
             } else {
                 return `${minutes} minute ${seconds} seconds`;
             }
-        } else if (value != 1) {
+        } else if (value !== 1) {
             return `${value} seconds`;
         } else {
             return `${value} second`;

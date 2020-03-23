@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests
 {
     public class TestHelper
     {

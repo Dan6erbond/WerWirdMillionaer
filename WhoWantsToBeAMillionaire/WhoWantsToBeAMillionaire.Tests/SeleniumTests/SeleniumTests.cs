@@ -1,19 +1,20 @@
 using System;
+using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using WhoWantsToBeAMillionaire.Tests.SeleniumTests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.SeleniumTests
 {
-    public class AutomatedUiTests : IDisposable, IClassFixture<WebApplicationFactory<Startup>>
+    public class AutomatedUiTests : IDisposable
     {
-        private const int msTimeout = 75;
-
-        private readonly WebApplicationFactory<Startup> _factory;
+        private const int msTimeout = 150;
 
         private readonly IWebDriver _driver;
         private readonly ITestOutputHelper _outputHelper;
@@ -21,10 +22,8 @@ namespace WhoWantsToBeAMillionaire.AutomatedUiTests
         private readonly LoginPage _loginPage;
         private readonly QuizPage _quizPage;
 
-        public AutomatedUiTests(ITestOutputHelper outputHelper, WebApplicationFactory<Startup> factory)
+        public AutomatedUiTests(ITestOutputHelper outputHelper)
         {
-            _factory = factory;
-            
             _outputHelper = outputHelper;
             _driver = new ChromeDriver();
 

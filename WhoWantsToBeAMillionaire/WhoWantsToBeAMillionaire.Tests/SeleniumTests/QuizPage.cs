@@ -2,7 +2,7 @@
 using System.Linq;
 using OpenQA.Selenium;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests.SeleniumTests
 {
     public class QuizPage : PageObjectModel
     {
@@ -27,18 +27,14 @@ namespace WhoWantsToBeAMillionaire.AutomatedUiTests
 
         private IWebElement AnswerButtonsContainer =>
             Driver.FindElement(By.XPath("//*[@id=\"root\"]/div/div/div/div[2]/div[2]"));
-
-        private IWebElement AnswerButton1 =>
-            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(1) > div:nth-child(1) > button"));
-
-        private IWebElement AnswerButton2 =>
-            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(1) > div:nth-child(2) > button"));
-
-        private IWebElement AnswerButton3 =>
-            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(3) > div:nth-child(1) > button"));
-
-        private IWebElement AnswerButton4 =>
-            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(3) > div:nth-child(2) > button"));
+        
+        public List<IWebElement> AnswerButtons => new List<IWebElement>
+        {
+            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(1) > div:nth-child(1) > button")),
+            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(1) > div:nth-child(2) > button")),
+            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(3) > div:nth-child(1) > button")),
+            AnswerButtonsContainer.FindElement(By.CssSelector("div:nth-child(3) > div:nth-child(2) > button"))
+        };
 
         private IWebElement EndGameButton =>
             Driver.FindElement(By.XPath("//*[@id=\"root\"]/div/div/div/div[3]/button"));
@@ -60,46 +56,9 @@ namespace WhoWantsToBeAMillionaire.AutomatedUiTests
         public void SelectCategory(string name) => CategoryButtons.First(b => b.Text == name).Click();
         public void ClickPlayButton() => PlayButton.Click();
 
-        public void ClickAnswer(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    AnswerButton1.Click();
-                    break;
-                case 1:
-                    AnswerButton2.Click();
-                    break;
-                case 2:
-                    AnswerButton3.Click();
-                    break;
-                default:
-                    AnswerButton4.Click();
-                    break;
-            }
-        }
+        public void ClickAnswer(int index) => AnswerButtons[index].Click();
+        public string GetAnswerText(int index) => AnswerButtons[index].Text;
 
-        public string GetAnswerText(int index)
-        {
-            string text;
-
-            switch (index)
-            {
-                case 0:
-                    text = AnswerButton1.Text;
-                    break;
-                case 1:
-                    text = AnswerButton2.Text;
-                    break;
-                case 2:
-                    text = AnswerButton3.Text;
-                    break;
-                default:
-                    text = AnswerButton4.Text;
-                    break;
-            }
-
-            return text;
-        }
+        public void UseJoker() => UseJokerButton.Click();
     }
 }

@@ -306,7 +306,7 @@ export const actionCreators = {
     endGame: (token: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         const runningGame = getState().gameState.runningGame!!;
 
-        if (runningGame.points == 0) {
+        if (runningGame.points === 0) {
             dispatch({type: 'SET_RUNNING_GAME', game: undefined});
             return;
         }

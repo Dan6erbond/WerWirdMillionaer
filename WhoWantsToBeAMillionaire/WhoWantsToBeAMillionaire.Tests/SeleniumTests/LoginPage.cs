@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests.SeleniumTests
 {
     public class LoginPage : PageObjectModel
     {

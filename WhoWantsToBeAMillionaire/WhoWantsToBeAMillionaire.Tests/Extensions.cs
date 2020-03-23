@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests
 {
     public static class WebDriverExtensions
     {

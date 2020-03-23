@@ -1,7 +1,6 @@
-﻿using System;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests.SeleniumTests
 {
     public abstract class PageObjectModel
     {

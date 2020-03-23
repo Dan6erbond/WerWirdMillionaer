@@ -4,7 +4,7 @@ using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests.Models.Data
+namespace WhoWantsToBeAMillionaire.Tests.Models.Data
 {
     public class UserMockRepository : IRepository<User>
     {

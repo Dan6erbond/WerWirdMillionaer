@@ -1,16 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using WhoWantsToBeAMillionaire.AutomatedUiTests.Models.Data;
 using WhoWantsToBeAMillionaire.Models;
 using WhoWantsToBeAMillionaire.Models.Data.Games;
 using WhoWantsToBeAMillionaire.Models.Data.Quiz;
@@ -18,8 +13,9 @@ using WhoWantsToBeAMillionaire.Models.Data.Users;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Admin;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Games;
 using WhoWantsToBeAMillionaire.Models.Lifecycle.Users;
+using WhoWantsToBeAMillionaire.Tests.Models.Data;
 
-namespace WhoWantsToBeAMillionaire.AutomatedUiTests
+namespace WhoWantsToBeAMillionaire.Tests
 {
     public class CustomWebApplicationFactory<TStartup>
         : WebApplicationFactory<TStartup> where TStartup : class
