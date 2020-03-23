@@ -15,10 +15,7 @@ namespace WhoWantsToBeAMillionaire.Tests.SeleniumTests
         {
         }
 
-        public new void Navigate()
-        {
-            Driver.FindElement(By.LinkText("Leaderboard")).Click();
-        }
+        public new void Navigate() => Driver.FindElement(By.LinkText("Leaderboard")).Click();
 
         public void DeleteGame(int index) => DeleteButtons[index].Click();
     }

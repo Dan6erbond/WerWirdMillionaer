@@ -24,6 +24,7 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
         private readonly QuizPage _quizPage;
         private readonly AdminPage _adminPage;
         private readonly LeaderboardPage _leaderboardPage;
+        private readonly MyGamesPage _myGamesPage;
 
         public AutomatedUiTests(ITestOutputHelper outputHelper)
         {
@@ -34,6 +35,7 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
             _quizPage = new QuizPage(_driver);
             _adminPage = new AdminPage(_driver);
             _leaderboardPage = new LeaderboardPage(_driver);
+            _myGamesPage = new MyGamesPage(_driver);
         }
 
         [Fact]
@@ -160,7 +162,7 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
 
             Thread.Sleep(msTimeout);
 
-            Assert.Contains("admin", _loginPage.Url);
+            Assert.Contains("admin", _adminPage.Url);
         }
 
         [Fact]
@@ -268,6 +270,54 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
             _leaderboardPage.DeleteGame(0);
             Thread.Sleep(msTimeout);
             Assert.Equal(orgGames - 1, _leaderboardPage.DeleteButtons.Count);
+        }
+
+        [Fact]
+        public void TestMyGames()
+        {
+            _loginPage.Navigate();
+
+            _loginPage.PopulateUsername("TestUser");
+            _loginPage.PopulatePassword("user123");
+            _loginPage.ClickLogin();
+
+            Thread.Sleep(msTimeout);
+            
+            _myGamesPage.Navigate();
+
+            Thread.Sleep(msTimeout);
+            
+            Assert.True(_myGamesPage.GameTitles.Count > 0);
+            Assert.Contains("Game played at", _myGamesPage.GameTitles.First().Text);
+        }
+
+        [Fact]
+        public void TestTimer()
+        {
+            _loginPage.Navigate();
+
+            _loginPage.PopulateUsername("TestUser");
+            _loginPage.PopulatePassword("user123");
+            _loginPage.ClickLogin();
+
+            Thread.Sleep(msTimeout);
+
+            var cat = "Automotives";
+
+            _quizPage.SelectCategory(cat);
+            _quizPage.ClickPlayButton();
+
+            Thread.Sleep(msTimeout);
+
+            var question = _quizPage.QuestionText.Text.Substring(0,
+                    _quizPage.QuestionText.Text.LastIndexOf(_quizPage.QuestionCategoryBadge.Text,
+                        StringComparison.Ordinal))
+                .Trim();
+            _outputHelper.WriteLine(question);
+
+            Thread.Sleep((60 * 2 + 5) * 1000);
+            
+            Assert.Equal("Game over!", _quizPage.GameOverText.Text);
         }
 
         public void Dispose()
