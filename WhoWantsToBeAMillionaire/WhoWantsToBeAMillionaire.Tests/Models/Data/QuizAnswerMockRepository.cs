@@ -13,7 +13,7 @@ namespace WhoWantsToBeAMillionaire.Tests.Models.Data
         {
             List = new List<QuizAnswer>
             {
-                new QuizAnswer(0, 0, "Enzo Ferrari"),
+                new QuizAnswer(0, 0, "Enzo Ferrari", true),
                 new QuizAnswer(0, 0, "Marco Ferrari"),
                 new QuizAnswer(0, 0, "Ferrrari Murcielago"),
                 new QuizAnswer(0, 0, "Ferruccio Ferrari")
