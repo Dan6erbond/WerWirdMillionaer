@@ -129,9 +129,9 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             var result = _runningGames[gameIndex].AnswerQuestion(quizAnswer);
 
-            return result.Correct && result.QuestionDuration <= 120
+            return result.Correct && !result.TimeOver
                 ? (dynamic) result
-                : EndGame(user, false, result.QuestionDuration > 120);
+                : EndGame(user, result.Correct || result.TimeOver, result.TimeOver);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)

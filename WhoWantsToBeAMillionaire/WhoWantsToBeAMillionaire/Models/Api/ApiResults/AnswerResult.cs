@@ -6,6 +6,8 @@
         public readonly bool Correct;
         public readonly int QuestionDuration;
 
+        public bool TimeOver => QuestionDuration > 120;
+
         public AnswerResult(bool correct, int duration)
         {
             Correct = correct;
