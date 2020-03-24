@@ -131,7 +131,7 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
 
             return result.Correct && !result.TimeOver
                 ? (dynamic) result
-                : EndGame(user, result.Correct || result.TimeOver, result.TimeOver);
+                : EndGame(user, result.Correct && !result.TimeOver, result.TimeOver);
         }
 
         public IQuestion<GameAnswer> GetQuestion(User user)
