@@ -15,7 +15,7 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
 {
     public class AutomatedUiTests : IDisposable
     {
-        private const int msTimeout = 150;
+        private const int msTimeout = 250;
 
         private readonly IWebDriver _driver;
         private readonly ITestOutputHelper _outputHelper;
@@ -76,6 +76,8 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
 
             _quizPage.SelectCategory(cat);
             _quizPage.ClickPlayButton();
+
+            Thread.Sleep(msTimeout);
 
             Assert.Equal(cat, _quizPage.QuestionCategoryBadge.Text);
         }
@@ -244,6 +246,8 @@ namespace WhoWantsToBeAMillionaire.SeleniumTests
 
             _leaderboardPage.Navigate();
             
+            Thread.Sleep(msTimeout);
+
             Assert.True(_leaderboardPage.DeleteButtons.Count > 0);
         }
 
