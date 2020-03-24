@@ -188,7 +188,9 @@ namespace WhoWantsToBeAMillionaire.Models.Data
                     new QuizQuestion("At what age did Sheldon receive his PhD?",
                         "16", "14", "17", "19"),
                     new QuizQuestion("In what state did Penny grow up?",
-                        "Nebraska", "South Dakota", "Illinois", "Iowa")
+                        "Nebraska", "South Dakota", "Illinois", "Iowa"),
+                    new QuizQuestion("What is Sheldon's IQ?",
+                        "187", "189", "172", "198")
                 }
             };
 
