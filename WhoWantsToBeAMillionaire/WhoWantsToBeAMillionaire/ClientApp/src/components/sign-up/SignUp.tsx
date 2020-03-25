@@ -42,7 +42,6 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
 
     private doForwards() {
         const userData = this.props.userData;
-        console.log(userData)
 
         if (userData && !userData.isAdmin) {
             this.props.history.push("quiz");
