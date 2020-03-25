@@ -64,8 +64,10 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     }
 
     private signUp(username: string, password: string) {
-        this.setState({username: username, password: password});
-        this.props.createUser(this.state.username, this.state.password);
+        this.setState({
+            username: username,
+            password: password
+        }, () => this.props.createUser(this.state.username, this.state.password));
     }
 }
 
