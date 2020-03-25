@@ -9,7 +9,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Users
     {
         public int UserId { get; set; }
         public string Username { get; set; }
-        public bool IsAdmin { get; set; } = false;
+        public bool IsAdmin { get; set; }
         [JsonIgnore] public string Salt { get; set; }
         [JsonIgnore] public string Password { get; set; }
 
