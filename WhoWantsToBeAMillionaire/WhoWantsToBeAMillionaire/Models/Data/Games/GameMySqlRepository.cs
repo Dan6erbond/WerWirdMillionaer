@@ -28,9 +28,16 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
                 SELECT CAST(LAST_INSERT_ID() as int);";
             var id = _connection.Query<int>(sql, item).Single();
 
-            List = _connection.Query<Game>("SELECT * FROM `games`").ToList();
+            Read();
 
             return id;
+        }
+
+        private void Read()
+        {
+            List = _connection
+                .Query<Game>(@"SELECT * FROM `games` INNER JOIN `users` ON `games`.UserId = `users`.`UserID`;")
+                .ToList();
         }
 
         public void Update(Game item)
@@ -39,7 +46,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
                 "UPDATE `games` SET `UserId` = @UserId, `Start` = @Start, `Hidden` = @Hidden WHERE `games`.`GameId` = @GameId";
             _connection.Execute(sql, item);
 
-            List = _connection.Query<Game>("SELECT * FROM `games`").ToList();
+            Read();
         }
 
         public void Delete(Game item)
@@ -47,7 +54,7 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
             var sql = "DELETE FROM `games` WHERE `games`.`GameId` = @GameId";
             _connection.Execute(sql, item);
 
-            List = _connection.Query<Game>("SELECT * FROM `games`").ToList();
+            Read();
         }
 
         public List<Game> Query(ISpecification<Game> specification)

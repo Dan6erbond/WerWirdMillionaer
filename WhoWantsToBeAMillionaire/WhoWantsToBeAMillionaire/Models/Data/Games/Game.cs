@@ -11,9 +11,9 @@ namespace WhoWantsToBeAMillionaire.Models.Data.Games
         [JsonIgnore] public int UserId { get; set; }
         public DateTime Start { get; set; }
         public bool Hidden { get; set; }
+        public string Username { get; set; }
 
         /* Data filled by logic */
-        public string Username { get; set; }
         public int Duration { get; set; }
         public List<Round> Rounds { get; set; } = new List<Round>();
         public int Points { get; set; }

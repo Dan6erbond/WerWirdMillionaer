@@ -227,11 +227,6 @@ namespace WhoWantsToBeAMillionaire.Models.Lifecycle.Games
                 {
                     continue; // Saves time by not grabbing information for unneeded games
                 }
-
-                //TODO: Use inner joins in repositories to increase performance
-                var userSpecification = new UserSpecification(game.UserId);
-                var u = _userRepository.Query(userSpecification).First();
-                game.Username = u.Username;
             }
 
             var weightedPointsComparer = new GameWeightedPointsComparer();
